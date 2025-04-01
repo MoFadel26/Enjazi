@@ -1,12 +1,17 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import { Link, useNavigate } from 'react-router-dom';
 import './style/Welcome.css'; // optional additional styling overrides
 
+
 function Welcome() {
+  const navigate = useNavigate();
+
+  
   return (
     <div>
       <header className="bg-gradient text-white py-5">
+      <button variant="primary" onClick={() => navigate('/login')}>Login</button>
+      <button variant="primary" onClick={() => navigate('/signup')}>Sign Up</button>
       </header>
 
       <section className="container py-5">
@@ -39,7 +44,7 @@ function Welcome() {
             </ul>
           </div>
           <div className="mb-3 mb-md-0">
-            <h6 className="fw-bold">Resources</h6>b
+            <h6 className="fw-bold">Resources</h6>
             <ul className="list-unstyled">
               <li>Blog</li>
               <li>Help Center</li>
