@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
 import "./style/Welcome.css"; // optional additional styling overrides
-import googleIcon from '../assets/icons/svg/guest/signup_login/google.svg';
+import googleIcon from '../../assets/icons/svg/google.svg';
 
 function SignUp() {
   // Define navigate
