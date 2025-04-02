@@ -10,11 +10,13 @@ function Welcome() {
   return (
     <div>
       <header className="bg-gradient text-white py-5">
-      <button variant="primary" onClick={() => navigate('/login')}>Login</button>
-      <button variant="primary" onClick={() => navigate('/signup')}>Sign Up</button>
+        <h2>Enjazi</h2>
+        <button variant="primary" onClick={() => navigate('/login')}>Login</button>
+        <button variant="primary" onClick={() => navigate('/signup')}>Sign Up</button>
       </header>
 
       <section className="container py-5">
+        
       </section>
 
       {/* Stats / How Enjazi Helps */}
@@ -34,6 +36,7 @@ function Welcome() {
               Your all-in-one productivity solution for achieving goals and staying focused.
             </p>
           </div>
+        
           <div className="mb-3 mb-md-0">
             <h6 className="fw-bold">Features</h6>
             <ul className="list-unstyled">
