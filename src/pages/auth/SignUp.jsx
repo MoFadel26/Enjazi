@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
-import "./style/Welcome.css"; // optional additional styling overrides
-import googleIcon from '../../assets/icons/svg/google.svg';
+import {FaGoogle} from 'react-icons/fa';
+// import googleIcon from '../../assets/icons/svg/google.svg';
+// import googleIcon from 'assets/icons/svg/google.svg'; // Adjust the path as necessary
 
 function SignUp() {
   // Define navigate
@@ -32,28 +33,8 @@ function SignUp() {
       <div className="w-full max-w-md p-8 bg-white shadow-md rounded-lg">
         <div className="mt-12 flex items-center flex-col">
           <h2 className="text-2xl xl:text-3xl font-extrabold">Sign Up</h2>
-          <div class="flex flex-row items-center mt-8 gap-5">
-              <button>
-                  <div class="bg-white p-2 rounded-full shadow-sm rounded-lg py-3 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline">
-                    <img src={googleIcon} alt="Google Icon" />
-                  </div>
-              </button>
-          </div>
+         
           <form onSubmit={handleSubmit} className="space-y-4 w-full flex-1 mt-8">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email address
-              </label>
-              <input
-                id="email"
-                type="email"
-                placeholder="Enter email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-300 focus:outline-none"
-                required
-              />
-            </div>
 
             <div>
               <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
@@ -65,6 +46,21 @@ function SignUp() {
                 placeholder="Pick a username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-300 focus:outline-none"
+                required
+              />
+            </div>
+
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                Email address
+              </label>
+              <input
+                id="email"
+                type="email"
+                placeholder="Enter email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-300 focus:outline-none"
                 required
               />
@@ -93,6 +89,14 @@ function SignUp() {
                   {showPassword ? 'Hide' : 'Show'}
                 </button>
               </div>
+
+              {/* <div class="flex flex-row items-center mt-8 gap-5">
+                    <button>
+                        <div class="bg-white p-2 rounded-full shadow-sm rounded-lg py-3 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline">
+                          <FaGoogle size="2em"/>
+                        </div>
+                    </button>
+              </div> */}
 
               </div>
               <button
