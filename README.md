@@ -22,7 +22,7 @@ Enjazi is a productivity platform designed to help users develop sustainable wor
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-repo/enjazi.git
+   https://github.com/MoFadel26/Enjazi.git
    cd enjazi
    ```
 
