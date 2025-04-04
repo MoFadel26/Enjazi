@@ -1,7 +1,6 @@
 // App.js
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Welcome from 'pages/guest/Welcome.js';
 import Login from 'pages/auth/Login.jsx';
 import SignUp from 'pages/auth/SignUp.jsx';
 import LandingPage from 'pages/App.jsx';
