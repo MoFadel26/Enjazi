@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import BuildMatrix from "./BuildMatrix";
 import { Link } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
 import ViewDay from "./ViewDay";
@@ -7,37 +8,7 @@ import ViewMonth from "./ViewMonth";
 
 import {
   format,
-  addDays,
-  subDays,
-  addMonths,
-  subMonths,
-  addWeeks,
-  subWeeks,
-  startOfMonth,
-  endOfMonth,
-  startOfWeek,
-  endOfWeek,
-  isSameMonth,
-  isSameDay
 } from 'date-fns';
-
-// This function can be used to build the matrix of the calendar
-function buildMatrix(date, startWeek=0) {
-  const initial = startOfWeek(startOfMonth(date), {startWeek});
-  const final = endOfWeek(endOfMonth(date), {startWeek});
-  let dayMatrix = [];
-  let temp = initial;
-
-  while (temp < final) {
-    let week = [];
-    for (let i = 0; i < 7; i++) {
-      week.push(temp);
-      temp = addDays(temp,1);
-    }
-    dayMatrix.push(week);
-  }
-  return dayMatrix;
-}
 
 // This function used for building the header of the calendar
 function Header({currentDate, onToday, onPrevious, onNext, view, setView}) {
