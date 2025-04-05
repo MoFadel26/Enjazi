@@ -35,6 +35,7 @@ export default function LandingPage() {
             <Link to="/login" className="text-white hover:text-blue-100 transition">
               Login
             </Link>
+
             <Link
               to="/signup"
               className="bg-white text-[#0284c7] px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-50 transition"

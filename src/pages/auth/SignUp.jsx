@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
 import {FaGoogle} from 'react-icons/fa';
 // import googleIcon from '../../assets/icons/svg/google.svg';
@@ -20,9 +19,6 @@ function SignUp() {
   const checkHasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
   const checkHasLongEnough = password.length >= 8;
 
-  // Will show check list whether the user enter the new valid password
-  const [checkIfPasswordFocus, setIsPasswordFocus] = useState(false);
-
   const handleSubmit = (e) => {
     e.preventDefault();
     /*Navigate to Login after Signing up*/
@@ -32,7 +28,6 @@ function SignUp() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-lg mt-8 mb-8 p-8 bg-white shadow-md rounded-lg">
-
         <div className="flex justify-center items-center mb-4">
           <div className="bg-[#0284c7] p-1 rounded mr-2">
             <div className="text-[#FFFFFF] font-bold text-6xl">E</div>
