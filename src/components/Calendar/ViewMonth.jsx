@@ -1,4 +1,4 @@
-import BuildMatrix from './BuildMatrix';
+import BuildMatrix from './Calendar/BuildMatrix';
 
 import {
   format,
