@@ -32,7 +32,7 @@ function SignUp() {
           <div className="bg-[#0284c7] p-1 rounded mr-2">
             <div className="text-[#FFFFFF] font-bold text-6xl">E</div>
           </div>
-          <div className="text-6xl font-bold">Enjazi</div>
+          <div className="text-6xl font-bold">njazi</div>
         </div>
 
         <div className="mt-12 flex items-center flex-col">

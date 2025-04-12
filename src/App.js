@@ -5,6 +5,7 @@ import Login from 'pages/auth/Login.jsx';
 import SignUp from 'pages/auth/SignUp.jsx';
 import LandingPage from 'pages/App.jsx';
 import Forget from 'pages/auth/Forget';
+import TasksPage from './pages/user/TaskPage';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/forget" element={<Forget />} />
+        <Route path="/taskpage" element={<TasksPage />} />
       </Routes>
     </BrowserRouter>
   );

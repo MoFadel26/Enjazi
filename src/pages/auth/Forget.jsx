@@ -15,7 +15,7 @@ function Forget() {
           <div className="bg-[#0284c7] p-1 rounded mr-2">
             <div className="text-[#FFFFFF] font-bold text-6xl">E</div>
           </div>
-          <div className="text-6xl font-bold">Enjazi</div>
+          <div className="text-6xl font-bold">njazi</div>
         </div>
         <h2 className="text-2xl font-semibold text-center mb-6">Forget Password?</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
