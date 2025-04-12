@@ -5,16 +5,33 @@ import Login from 'pages/auth/Login.jsx';
 import SignUp from 'pages/auth/SignUp.jsx';
 import LandingPage from 'pages/App.jsx';
 import Forget from 'pages/auth/Forget';
+import Dashboard from 'pages/dashboard/Dashboard';
+import MainLayout from 'components/layout/MainLayout';
+import Admin from 'pages/admin/admin';
+import Tasks from 'pages/tasks/Tasks';
+import Performance from 'pages/performance/Performance';
+import Rooms from 'pages/rooms/Rooms';
+import Settings from 'pages/settings/settings';
+
+
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* <Route path="/" element={<Welcome />} /> */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/forget" element={<Forget />} />
+        <Route element={<MainLayout />}>
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/tasks" element={<Tasks />} />
+          <Route path="/calendar" element={<Tasks />} />
+          <Route path="/performance" element={<Performance />} />
+          <Route path="/rooms" element={<Rooms />} />
+          <Route path="/settings" element={<Settings />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );
