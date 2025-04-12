@@ -59,7 +59,7 @@ export default function Sidebar() {
         `}
       >
         <div className="h-full flex flex-col">
-          <div className="p-6 border-b border-[#e2e8f0] flex items-center">
+          <div className="p-7 border-b border-[#e2e8f0] flex items-center">
             <div className="bg-[#f97316] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
               <span className="font-bold">E</span>
             </div>
