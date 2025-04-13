@@ -25,7 +25,7 @@ export default function LandingPage() {
               <div className="bg-white p-1 rounded mr-2">
                 <div className="text-[#0284c7] font-bold">E</div>
               </div>
-              Enjazi
+              njazi
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -35,7 +35,7 @@ export default function LandingPage() {
             <Link to="/login" className="text-white hover:text-blue-100 transition">
               Login
             </Link>
-            <Link to="/taskpage" className="text-white hover:text-blue-100 transition">
+            <Link to="/tasks" className="text-white hover:text-blue-100 transition">
               TaskPage
             </Link>
             <Link

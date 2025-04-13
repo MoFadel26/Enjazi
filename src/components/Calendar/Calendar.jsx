@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import ViewDay from "./Calendar/ViewDay";
-import ViewWeek from "./Calendar/ViewWeek";
-import ViewMonth from "./Calendar/ViewMonth";
+import ViewDay from "./ViewDay";
+import ViewWeek from "./ViewWeek";
+import ViewMonth from "./ViewMonth";
 
 import {
   format,
