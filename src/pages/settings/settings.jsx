@@ -5,7 +5,10 @@ import { FaUser, FaPalette, FaClock, FaChartLine, FaBell, FaLink } from "react-i
 // Import the Profile component from the same directory
 import Profile from 'components/settings/Profile';
 import Appearance from "components/settings/Appearance";
-import Pomodoro from "components/settings/Pomodoro";      
+import Pomodoro from "components/settings/Pomodoro";
+import Productivity from "components/settings/Productivity";   
+import Notifications from "components/settings/Notifications";   
+import Integrations from "components/settings/Integrations";
 // Other tab components will be imported similarly when created
 
 export default function Settings() {
@@ -22,11 +25,11 @@ export default function Settings() {
             case "pomodoro":
                 return <Pomodoro />;
             case "productivity":
-                return <div>Productivity Settings (Component to be implemented)</div>;
+                return <Productivity />;
             case "notifications":
-                return <div>Notifications Settings (Component to be implemented)</div>;
+                return <Notifications />;
             case "integrations":
-                return <div>Integrations Settings (Component to be implemented)</div>;
+                return <Integrations />;
             default:
                 return <Profile />;
         }
