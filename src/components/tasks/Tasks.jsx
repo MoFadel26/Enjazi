@@ -25,7 +25,7 @@ function getTodayString() {
 }
 
 // Function for comparing a task's due date with today's date to check if the task is scheduled in the future.
-function checkIssUpcoming(date) {
+function checkIsUpcoming(date) {
   const today = new Date(getTodayString());
   const taskDate = new Date(date);
   return taskDate > today;

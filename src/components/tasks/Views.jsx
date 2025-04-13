@@ -9,7 +9,7 @@ import {
   HighPriorityIcon,
 } from "./Icons";
 
-function View({
+export function View({
   selectedView,
   setSelectedView,
   selectedPriority,
