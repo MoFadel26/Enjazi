@@ -13,8 +13,6 @@ import Performance from 'pages/performance/Performance';
 import Rooms from 'pages/rooms/Rooms';
 import Settings from 'pages/settings/settings';
 
-
-
 function App() {
   return (
     <BrowserRouter>

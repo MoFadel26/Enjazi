@@ -1,5 +1,4 @@
 import React from "react";
-import { useState, useEffect } from "react";
 
 const listOfTasks = [];
 
@@ -34,7 +33,7 @@ function checkIssUpcoming(date) {
 
 // ----------------------- Main Function -----------------------
 
-function Tasks() {
+export function Tasks() {
   return (
     <div>
         
