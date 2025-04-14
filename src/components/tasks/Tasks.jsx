@@ -33,10 +33,3 @@ function checkIsUpcoming(date) {
 
 // ----------------------- Main Function -----------------------
 
-export function Tasks() {
-  return (
-    <div>
-        
-    </div>
-  );
-}
