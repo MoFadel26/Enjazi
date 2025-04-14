@@ -13,7 +13,7 @@ import {
   Github,
 } from 'lucide-react';
 
-import FeatureCard from 'components/featureCard';
+import FeatureCard from 'components/FeatureCard';
 
 export default function LandingPage() {
   return (
