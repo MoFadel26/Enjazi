@@ -11,22 +11,13 @@ export default function Dashboard(){
             <div className="flex-1 px-4 py-6 md:px-6 md:py-8">
                 <h1 className="text-2xl font-bold text-[#0f172a] mb-2">Welcome back, {'{Name}'}</h1>
                 <p className="text-[#64748b] mb-6">Here's an overview of your progress today</p>
-
-                {/* Daily Progress Bar */}
                 <DailyProgress />
-
-                {/* Main Content Grid */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
-                    {/* Left Column - Priority Tasks & Focus Stats */}
                     <div className="lg:col-span-2 space-y-6">
                         <PriorityTasks />
                         <FocusStats />
                     </div>
-
-                    {/* Right Column - Upcoming Schedule */}
-                    <div>
                         <UpcomingSchedule />
-                    </div>
                 </div>
             </div>
         </div>

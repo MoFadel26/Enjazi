@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import {FaGoogle} from 'react-icons/fa';
 // import googleIcon from '../../assets/icons/svg/google.svg';
 // import googleIcon from 'assets/icons/svg/google.svg'; // Adjust the path as necessary
@@ -28,12 +28,14 @@ function SignUp() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-lg mt-8 mb-8 p-8 bg-white shadow-md rounded-lg">
-        <div className="flex justify-center items-center mb-4">
-          <div className="bg-[#0284c7] p-1 rounded mr-2">
-            <div className="text-[#FFFFFF] font-bold text-6xl">E</div>
+        <Link to="/">
+          <div className="flex justify-center items-center mb-4">
+            <div className="bg-[#0284c7] p-1 rounded mr-2">
+              <div className="text-[#FFFFFF] font-bold text-6xl">E</div>
+            </div>
+            <div className="text-6xl font-bold">njazi</div>
           </div>
-          <div className="text-6xl font-bold">njazi</div>
-        </div>
+        </Link>
 
         <div className="mt-12 flex items-center flex-col">
 
