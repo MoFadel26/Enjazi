@@ -9,7 +9,7 @@ export function TaskItem({task, onToggleComplete, onOpenEdit}) {
     <div>
       <div className="flex items-start border-b last:border-b-0 space-x-3 py-4">
         {/*Button Check if complete the task + Custom check icon*/}
-        <button className="focus:outline-none mt-1 mb-1">
+        <button className="focus:outline-none mt-1 mb-1" onClick={handleClick}>
           <CheckIcon isCompleted={task.completed} />
         </button>
 

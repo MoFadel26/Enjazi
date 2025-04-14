@@ -40,3 +40,5 @@ function TopBar({ searchTerm, setSearchTerm, onOpenModal, onToggleMobileSidebar 
     </div>
   );
 }
+
+export default TopBar;

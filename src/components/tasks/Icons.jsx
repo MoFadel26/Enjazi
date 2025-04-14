@@ -193,7 +193,7 @@ export function renderPriority(priorityType) {
 
 // For mobile
 
-function SideViewIconMobile() {
+export function SideViewIconMobile() {
   return (
     <svg
       className="w-6 h-6 text-gray-700"
