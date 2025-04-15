@@ -127,7 +127,7 @@ export default function Rooms() {
     }
     
     // Update room content
-    setRoomContent(prev => ({ ...prev, [newId]: newRoomContentData }));
+    setNewRoomData(prev => ({ ...prev, [newId]: newRoomContentData }));
     
     // Initialize leaderboard
     setLeaderboardData(prev => ({ ...prev, [newId]: newLeaderboard }));
@@ -248,7 +248,7 @@ export default function Rooms() {
             ))}
           </div>
         </div>
-      )}
+      )};
 
       // Create Room View 
       {view === "createRoom" && (
