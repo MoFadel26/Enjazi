@@ -1,9 +1,7 @@
 import React, { useState } from "react";
-import TaskItem from "./TaskItem";
 import TaskList from "./TaskList";
-import TaskModel from "./EditAddTask";
+import TaskModal from "./EditAddTask";
 import View from "./Views";
-import Categories from "./Categories";
 import TopBar from "./TopBar";
 
 const listOfTasks = [];
@@ -39,7 +37,7 @@ function checkIsUpcoming(date) {
 
 // ----------------------- Main Function -----------------------
 
-function Tasks() {
+export function Tasks() {
   // ### Main States
   
   // Set initial state (list of tasks)
@@ -55,7 +53,7 @@ function Tasks() {
   const [toDate, setToDate] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editDate, setEditData] = useState(null);
+  const [editData, setEditData] = useState(null);
 
   // For mobile sidebar
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -81,7 +79,7 @@ function Tasks() {
 
   // Model Handlers
 
-  const openEditModel = (task) => {
+  const openEditModal = (task) => {
     setEditData(task);
     setIsModalOpen(true);
   }
@@ -95,8 +93,8 @@ function Tasks() {
     setIsModalOpen(false);
   }
 
-  const handleModelSubmit = (task) => {
-    if (editDate) handleEditTask(task);
+  const handleModalSubmit = (task) => {
+    if (editData) handleEditTask(task);
     else handleAddTask(task);
     closeModal();
   }
@@ -138,8 +136,53 @@ function Tasks() {
   const filteredTasks = filterTasks();
 
   return (
-    <div>
+    <div className="min-h-screen flex flex-col w-full min-h-screen bg-[#f8fafc] font-inter">
+      {/* Top Bar with mobile hamburger toggle */}
+      <TopBar
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        onOpenModal={openAddModal}
+        onToggleMobileSidebar={() => setMobileSidebarOpen(true)}
+      />
 
+
+      {/* Desktop Sidebar */}
+      <div className="flex-1 flex max-w-7xl mx-auto w-full">
+        <div>
+          <View
+            selectedView={selectedView}
+            setSelectedView={setSelectedView}
+            selectedPriority={selectedPriority}
+            setSelectedPriority={setSelectedPriority}
+            selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
+            fromDate={fromDate}
+            setFromDate={setFromDate}
+            toDate={toDate}
+            setToDate={setToDate}
+          />
+        </div>
+
+        {/* Main Task List */}
+        <div className="flex-1 p-4 md:p-6">
+          <TaskList
+            tasks={filteredTasks}
+            filteredView={selectedView}
+            onToggleComplete={handleToggleComplete}
+            onOpenEditModal={openEditModal}
+          />
+        </div>
+      </div>
+
+      {/* Task Modal */}
+      <div>
+        <TaskModal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          onSubmit={handleModalSubmit}
+          initialData={editData}
+        />
+      </div>
     </div>
   );
 

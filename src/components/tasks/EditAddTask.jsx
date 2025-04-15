@@ -2,7 +2,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import getTodayString from "./Tasks";
 
-export function TaskModel({data, onSubmit, isOpen, onClose}) {
+export function TaskModal({data, onSubmit, isOpen, onClose}) {
   const [title, setTitle] = useState(data?.title ||  "");
   const [description, setDescription] = useState(data?.description || "");
   const [category, setCategory] = useState(data?.category || "Work");
@@ -140,3 +140,5 @@ export function TaskModel({data, onSubmit, isOpen, onClose}) {
     </div>
   );
 }
+
+export default TaskModal;

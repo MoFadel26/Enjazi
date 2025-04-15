@@ -15,6 +15,7 @@ export function TaskList({ tasks, filteredView, onToggleComplete, onOpenEditModa
         <h2 className="text-xl font-semibold text-gray">
           {title} ({tasks.length})
         </h2>
+        
       </div>
       {tasks.length === 0 ? (
         <div className="text-center text-gray-400 py-6">No tasks found...</div>
@@ -33,3 +34,5 @@ export function TaskList({ tasks, filteredView, onToggleComplete, onOpenEditModa
     </div>
   );
 }
+
+export default TaskList;

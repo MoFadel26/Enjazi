@@ -1,41 +1,50 @@
 import React from "react";
 import {
-  SearchIcon,
   SideViewIconMobile
 } from "./Icons";
+import {Search, Plus} from "lucide-react"
 
 
 function TopBar({ searchTerm, setSearchTerm, onOpenModal, onToggleMobileSidebar }) {
   return (
-    <div className="bg-white border-b px-6 py-3 flex flex-col md:flex-row md:items-center md:justify-between">
-      <div className="flex items-center">
-        {/* Mobile Hamburger: visible only on small screens */}
-        <button onClick={onToggleMobileSidebar} className="mr-4 md:hidden focus:outline-none">
-          <SideViewIconMobile />
-        </button>
-        <div>
-          <h1 className="text-2xl font-semibold text-gray-700">Tasks</h1>
-          <p className="text-sm text-gray-400">Manage and organize your tasks</p>
-        </div>
-      </div>
+    <div className="bg-white border-b border-[#e2e8f0] p-3 md:p-3">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
 
-      <div className="mt-3 md:mt-0 flex items-center space-x-3">
-        <div className="relative">
-          <input
-            type="text"
-            className="border border-gray-300 rounded-md pl-9 pr-3 py-2 text-sm focus:outline-none text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="Search tasks..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <SearchIcon />
+        <div className="flex items-center">
+          {/* Mobile Hamburger: visible only on small screens */}
+          {/* <button onClick={onToggleMobileSidebar} className="mr-4 md:hidden focus:outline-none">
+            <SideViewIconMobile />
+          </button> */}
+
+          <div>
+            <h1 className="text-2xl font-semibold text-gray-700">Tasks</h1>
+            <p className="text-sm text-gray-400">Manage and organize your tasks</p>
+          </div>
+
         </div>
-        <button
-          onClick={onOpenModal}
-          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1"
-        >
-          + New Task
-        </button>
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1 md:w-64">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <Search className="w-4 h-4 text-[#94a3b8]" />
+            </div>
+            <input
+              type="text"
+              className="bg-[#f8fafc] border border-[#e2e8f0] text-[#0f172a] text-sm rounded-md focus:ring-[#07b0ed] focus:border-[#07b0ed] block w-full pl-10 p-2.5"
+              placeholder="Search tasks..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <div className="mt-3 md:mt-0 flex items-center space-x-3">
+            <button
+              onClick={onOpenModal}
+              className="flex items-center gap-1 bg-[#07b0ed] hover:bg-[#07b0ed]/90 text-white px-4 py-2.5 rounded-md text-sm font-medium transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              <span className="hidden md:inline">New Task</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

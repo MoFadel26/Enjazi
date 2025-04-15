@@ -9,6 +9,7 @@ import Dashboard from 'pages/dashboard/Dashboard';
 import MainLayout from 'components/layout/MainLayout';
 import Admin from 'pages/admin/admin';
 import Tasks from 'pages/tasks/TaskPage.jsx';
+import Calendar from 'pages/calendar/Calendar';
 import Performance from 'pages/performance/Performance';
 import Rooms from 'pages/rooms/Rooms';
 import Settings from 'pages/settings/settings';
@@ -25,7 +26,7 @@ function App() {
           <Route path="/admin" element={<Admin />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/tasks" element={<Tasks />} />
-          <Route path="/calendar" element={<Tasks />} />
+          <Route path="/calendar" element={<Calendar />} />
           <Route path="/performance" element={<Performance />} />
           <Route path="/rooms" element={<Rooms />} />
           <Route path="/settings" element={<Settings />} />
