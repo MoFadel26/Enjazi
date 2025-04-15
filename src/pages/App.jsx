@@ -13,7 +13,7 @@ import {
   Github,
 } from 'lucide-react';
 
-import FeatureCard from 'components/featureCard';
+import FeatureCard from 'components/FeatureCard';
 
 export default function LandingPage() {
   return (
@@ -25,7 +25,7 @@ export default function LandingPage() {
               <div className="bg-white p-1 rounded mr-2">
                 <div className="text-[#0284c7] font-bold">E</div>
               </div>
-              Enjazi
+              njazi
             </div>
           </div>
           <div className="flex items-center gap-4">

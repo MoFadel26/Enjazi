@@ -11,12 +11,14 @@ function Forget() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-lg mt-8 mb-8 p-8 bg-white shadow-md rounded-lg">
-        <div className="flex justify-center items-center mb-4">
-          <div className="bg-[#0284c7] p-1 rounded mr-2">
-            <div className="text-[#FFFFFF] font-bold text-6xl">E</div>
+        <Link to="/">
+          <div className="flex justify-center items-center mb-4">
+            <div className="bg-[#0284c7] p-1 rounded mr-2">
+              <div className="text-[#FFFFFF] font-bold text-6xl">E</div>
+            </div>
+            <div className="text-6xl font-bold">njazi</div>
           </div>
-          <div className="text-6xl font-bold">Enjazi</div>
-        </div>
+        </Link>
         <h2 className="text-2xl font-semibold text-center mb-6">Forget Password?</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

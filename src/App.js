@@ -8,12 +8,10 @@ import Forget from 'pages/auth/Forget';
 import Dashboard from 'pages/dashboard/Dashboard';
 import MainLayout from 'components/layout/MainLayout';
 import Admin from 'pages/admin/admin';
-import Tasks from 'pages/tasks/Tasks';
+import Tasks from 'pages/tasks/TaskPage.jsx';
 import Performance from 'pages/performance/Performance';
 import Rooms from 'pages/rooms/Rooms';
 import Settings from 'pages/settings/settings';
-
-
 
 function App() {
   return (
