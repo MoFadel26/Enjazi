@@ -14,7 +14,7 @@ const friends = [
 
 export default function PerformanceDashboard() {
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6 bg-[#f8fafc]">
       {/* Overview Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
@@ -70,9 +70,16 @@ export default function PerformanceDashboard() {
                   <th>Comparison</th>
                 </tr>
               </thead>
-              <tbody>
+                <tbody>
                 {friends.map((friend, index) => (
-                  <tr key={index} className={`border-b ${friend.name === 'You' ? 'bg-blue-50' : ''}`}>
+                  <tr
+                    key={index}
+                    className={`
+                      border-b transition-colors
+                      ${friend.name === 'You' ? 'bg-orange-50' : ''}
+                      hover:bg-blue-100
+                    `}
+                  >
                     <td className="py-2">{index + 1}</td>
                     <td>
                       <div className="font-medium">{friend.name}</div>
@@ -80,10 +87,18 @@ export default function PerformanceDashboard() {
                     </td>
                     <td>{friend.hours}h</td>
                     <td className="w-48"><Progress value={friend.progress} /></td>
-                    <td className={`text-sm ${friend.trend === 'up' ? 'text-red-500' : friend.trend === 'down' ? 'text-green-500' : 'text-muted-foreground'}`}>{friend.comparison}</td>
+                    <td
+                      className={`
+                        text-sm
+                        ${friend.trend === 'up' ? 'text-red-500' : friend.trend === 'down' ? 'text-green-500' : 'text-muted-foreground'}
+                      `}
+                    >
+                      {friend.comparison}
+                    </td>
                   </tr>
                 ))}
               </tbody>
+
             </table>
           </div>
 
