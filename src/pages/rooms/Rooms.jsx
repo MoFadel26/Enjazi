@@ -248,9 +248,9 @@ export default function Rooms() {
             ))}
           </div>
         </div>
-      )};
+      )}
 
-      // Create Room View 
+      {/*Create Room View*/}
       {view === "createRoom" && (
         <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
           <div className="mb-4">
