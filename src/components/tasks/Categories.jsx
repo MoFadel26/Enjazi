@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  WorkIcon,
-  PersonalIcon,
-  HealthIcon,
-  EducationIcon,
-} from "./Icons";
+import {Book, Dumbbell , House, Briefcase, CodeXml, Coffee} from "lucide-react";
 
 export function Categories({
   selectedCategory,
@@ -17,41 +12,89 @@ export function Categories({
         <h2 className="text-sm mb-4 font-bold text-gray-400">Views</h2>
         <ul className="mb-5 text-gray-600 text-sm space-y-2ou gap-3">
           <li
-            className={`flex items-center gap-4 font-medium curser-pointer${
-              selectedCategory === "Work" ? "text-blue-600 font-medium bg-[#f0f9ff] text-[#07b0ed]" : "text-[#64748b] hover:bg-[#f8fafc] hover:text-[#0f172a]"
-            } hover:text-blue-500 font-medium`}
+            className={`
+              flex items-center px-2 py-2 gap-2 rounded-md transition-colors w-full text-left
+              ${
+                selectedCategory === "Work"
+                  ? "bg-[#f0f9ff] text-[#07b0ed]"
+                  : "text-[#64748b] hover:bg-[#f8fafc] hover:text-[#0f172a]"
+              }
+            `}
             onClick={() => setSelectedCategory("Work")}
           >
-            <WorkIcon />
+            <Briefcase />
             Work
           </li>
           <li
-            className={`flex items-center font-medium curser-pointer${
-              selectedCategory === "Personal" ? "text-blue-600 font-medium bg-[#f0f9ff] text-[#07b0ed]" : "text-[#64748b] hover:bg-[#f8fafc] hover:text-[#0f172a]"
-            } hover:text-blue-500 font-medium`}
+            className={`
+              flex items-center px-2 py-2 gap-2 rounded-md transition-colors w-full text-left
+              ${
+                selectedCategory === "Personal"
+                  ? "bg-[#f0f9ff] text-[#07b0ed]"
+                  : "text-[#64748b] hover:bg-[#f8fafc] hover:text-[#0f172a]"
+              }
+            `}
             onClick={() => setSelectedCategory("Personal")}
           >
-            <PersonalIcon />
+            <House />
             Personal
           </li>
 
           <li
-            className={`flex items-center font-medium curser-pointer${
-              selectedCategory === "Health" ? "text-blue-600 font-medium bg-[#f0f9ff] text-[#07b0ed]" : "text-[#64748b] hover:bg-[#f8fafc] hover:text-[#0f172a]"
-            } hover:text-blue-500 font-medium`}
+            className={`
+              flex items-center px-2 py-2 gap-2 rounded-md transition-colors w-full text-left
+              ${
+                selectedCategory === "Health"
+                  ? "bg-[#f0f9ff] text-[#07b0ed]"
+                  : "text-[#64748b] hover:bg-[#f8fafc] hover:text-[#0f172a]"
+              }
+            `}
             onClick={() => setSelectedCategory("Health")}
           >
-            <HealthIcon />
+            <Dumbbell />
             Health
           </li>
           <li
-            className={`flex items-center font-medium curser-pointer${
-              selectedCategory === "Education" ? "text-blue-600 font-medium bg-[#f0f9ff] text-[#07b0ed]" : "text-[#64748b] hover:bg-[#f8fafc] hover:text-[#0f172a]"
-            } hover:text-blue-500 font-medium`}
+            className={`
+              flex items-center px-2 py-2 gap-2 rounded-md transition-colors w-full text-left
+              ${
+                selectedCategory === "Education"
+                  ? "bg-[#f0f9ff] text-[#07b0ed]"
+                  : "text-[#64748b] hover:bg-[#f8fafc] hover:text-[#0f172a]"
+              }
+            `}
             onClick={() => setSelectedCategory("Education")}
           >
-            <EducationIcon />
+            <Book />
             Education
+          </li>
+          <li
+            className={`
+              flex items-center px-2 py-2 gap-2 rounded-md transition-colors w-full text-left
+              ${
+                selectedCategory === "Code"
+                  ? "bg-[#f0f9ff] text-[#07b0ed]"
+                  : "text-[#64748b] hover:bg-[#f8fafc] hover:text-[#0f172a]"
+              }
+            `}
+            onClick={() => setSelectedCategory("Code")}
+          >
+            <CodeXml />
+            Code
+          </li>
+          <li
+            className={`
+              flex items-center px-2 py-2 gap-2 rounded-md transition-colors w-full text-left
+              ${
+                selectedCategory === "Social"
+                  ? "bg-[#f0f9ff] text-[#07b0ed]"
+                  : "text-[#64748b] hover:bg-[#f8fafc] hover:text-[#0f172a]"
+              }
+            `}
+            onClick={() => setSelectedCategory("Social")}
+          >
+            <Coffee />
+            Social
           </li>
         </ul>
       </div>
