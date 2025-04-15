@@ -5,7 +5,7 @@ import {
   HighPriorityIcon,
 } from "./Icons";
 
-import {Calendar, Clock, CheckCircle, ArrowRight, Plus, CodeXml, ListFilter} from "lucide-react";
+import {Calendar, Clock, CheckCircle, ListFilter, FilterIcon} from "lucide-react";
 
 export function View({
   selectedView,
@@ -18,7 +18,7 @@ export function View({
   setToDate
 }) {
   return (
-    <div className=" mt-4 ml-4 lg:block w-64 bg-white border rounded-md ">
+    <div className=" mt-4 ml-4 lg:block w-64 bg-white border rounded-md">
       <div className="px-4 py-4 ">
         {/* Views */}
         <h2 className="text-md mb-4 font-bold">Views</h2>
@@ -28,7 +28,7 @@ export function View({
         <ul className="mb-5 text-gray-600 text-sm space-y-2">
           <li
             className={`
-              flex items-center px-2 py-2 gap-2 rounded-md transition-colors w-full text-left
+              flex items-center px-2 py-2 gap-2 rounded-md transition-colors w-full text-left cursor-pointer
               ${
                 selectedView === "all"
                   ? "bg-[#f0f9ff] text-[#07b0ed]"
@@ -42,7 +42,7 @@ export function View({
           </li>
           <li
             className={`
-              flex items-center px-2 py-2 gap-2 rounded-md transition-colors w-full text-left
+              flex items-center px-2 py-2 gap-2 rounded-md transition-colors w-full text-left cursor-pointer
               ${
                 selectedView === "today"
                   ? "bg-[#f0f9ff] text-[#07b0ed]"
@@ -56,7 +56,7 @@ export function View({
           </li>
           <li
             className={`
-              flex items-center px-2 py-2 gap-2 rounded-md transition-colors w-full text-left
+              flex items-center px-2 py-2 gap-2 rounded-md transition-colors w-full text-left cursor-pointer
               ${
                 selectedView === "upcoming"
                   ? "bg-[#f0f9ff] text-[#07b0ed]"
@@ -70,7 +70,7 @@ export function View({
           </li>
           <li
             className={`
-              flex items-center px-2 py-2 gap-2 rounded-md transition-colors w-full text-left
+              flex items-center px-2 py-2 gap-2 rounded-md transition-colors w-full text-left cursor-pointer
               ${
                 selectedView === "completed"
                   ? "bg-[#f0f9ff] text-[#07b0ed]"
@@ -95,7 +95,22 @@ export function View({
         <ul className="mb-5 text-gray-600 text-sm space-y-2">
           <li
             className={`
-              flex items-center px-2 py-2 gap-2 rounded-md transition-colors w-full text-left
+              flex items-center px-2 py-2 gap-2 rounded-md transition-colors w-full text-left cursor-pointer
+              ${
+                selectedPriority === "All"
+                  ? "bg-[#f0f9ff] text-[#07b0ed]"
+                  : "text-[#64748b] hover:bg-[#f8fafc] hover:text-[#0f172a]"
+              }
+            `}
+            onClick={() => setSelectedPriority("All")}
+          >
+            <ListFilter className="w-4 h-4"/>
+            All Priorities
+          </li>
+
+          <li
+            className={`
+              flex items-center px-2 py-2 gap-2 rounded-md transition-colors w-full text-left cursor-pointer
               ${
                 selectedPriority === "High"
                   ? "bg-[#f0f9ff] text-[#07b0ed]"
@@ -109,7 +124,7 @@ export function View({
           </li>
           <li
             className={`
-              flex items-center px-2 py-2 gap-2 rounded-md transition-colors w-full text-left
+              flex items-center px-2 py-2 gap-2 rounded-md transition-colors w-full text-left cursor-pointer
               ${
                 selectedPriority === "Medium"
                   ? "bg-[#f0f9ff] text-[#07b0ed]"
@@ -123,7 +138,7 @@ export function View({
           </li>
           <li
             className={`
-              flex items-center px-2 py-2 gap-2 rounded-md transition-colors w-full text-left
+              flex items-center px-2 py-2 gap-2 rounded-md transition-colors w-full text-left cursor-pointer
               ${
                 selectedPriority === "Low"
                   ? "bg-[#f0f9ff] text-[#07b0ed]"
@@ -154,7 +169,7 @@ export function View({
               <input
                 type="date"
                 placeholder="mm/dd/yyyy"
-                className="border border-gray-300 rounded px-2 py-1 focus:ring-1 focus:ring-blue-400 focus:outline-none"
+                className="border border-gray-300 rounded px-2 py-1 focus:ring-1 focus:ring-blue-400 focus:outline-none cursor-pointer" 
                 value={fromDate}
                 onChange={(e) => setFromDate(e.target.value)}
               />
@@ -164,7 +179,7 @@ export function View({
               <input
                 type="date"
                 placeholder="mm/dd/yyyy"
-                className="border border-gray-300 rounded px-2 py-1 focus:ring-1 focus:ring-blue-400 focus:outline-none"
+                className="border border-gray-300 rounded px-2 py-1 focus:ring-1 focus:ring-blue-400 focus:outline-none cursor-pointer"
                 value={toDate}
                 onChange={(e) => setToDate(e.target.value)}
               />

@@ -3,13 +3,14 @@ import TaskList from "./TaskList";
 import TaskModal from "./EditAddTask";
 import View from "./Views";
 import TopBar from "./TopBar";
+import Categories from "./Categories";
 
 const listOfTasks = [];
 
 // ----------------------- Helper Functions -----------------------
 
 // Function helps us to accept date string and convert it into localized
-function formatDate(dateString) {
+export function formatDate(dateString) {
   if (!dateString) return "";
   const dateObject = new Date(dateString);
   return dateObject.toLocaleDateString(undefined, {
@@ -136,7 +137,7 @@ export function Tasks() {
   const filteredTasks = filterTasks();
 
   return (
-    <div className="min-h-screen flex flex-col w-full min-h-screen bg-[#f8fafc] font-inter">
+    <div className="min-h-screen flex flex-col w-full bg-[#f8fafc] font-inter flex-wrap">
       {/* Top Bar with mobile hamburger toggle */}
       <TopBar
         searchTerm={searchTerm}
@@ -146,8 +147,8 @@ export function Tasks() {
       />
 
 
-      {/* Desktop Sidebar */}
-      <div className="flex-1 flex max-w-7xl mx-auto w-full">
+      <div className="flex-1 flex max-w-7xl w-full flex-wrap sm:mx-auto md:mx-auto lg:mx-0">
+        {/* Desktop Sidebar */}
         <div>
           <View
             selectedView={selectedView}
@@ -161,10 +162,15 @@ export function Tasks() {
             toDate={toDate}
             setToDate={setToDate}
           />
+
+          <Categories
+            selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
+          />
         </div>
 
         {/* Main Task List */}
-        <div className="flex-1 p-4 md:p-6">
+        <div className="flex-1 p-4 w-full">
           <TaskList
             tasks={filteredTasks}
             filteredView={selectedView}
