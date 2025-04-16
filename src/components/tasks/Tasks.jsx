@@ -147,7 +147,7 @@ export function Tasks() {
       />
 
 
-      <div className="flex-1 flex max-w-7xl w-full flex-wrap sm:mx-auto md:mx-auto lg:mx-0">
+      <div className="flex-1 flex w-full flex-wrap sm:mx-auto md:mx-auto lg:mx-0">
         {/* Desktop Sidebar */}
         <div>
           <View
