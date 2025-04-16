@@ -16,13 +16,13 @@ export function TaskList({ tasks, filteredView, onToggleComplete, onOpenEditModa
           {title} ({tasks.length})
         </h2>
       </div>
-      <div className="-mx-4 mb-3 mt-3">
+     <div className="-mx-4 mb-3 mt-3">
         <hr className="border-t border-[#e2e8f0]" />
       </div>
       {tasks.length === 0 ? (
         <div className="text-center text-gray-400 py-6">No tasks found...</div>
       ) : (
-        <div className="divide-y divide-gray-200">
+        <div className="">
           {tasks.map((task) => (
             <TaskItem
               key={task.id}
