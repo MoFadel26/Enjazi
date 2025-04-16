@@ -5,7 +5,7 @@ import {
   HighPriorityIcon,
 } from "./Icons";
 
-import {Calendar, Clock, CheckCircle, ListFilter, FilterIcon} from "lucide-react";
+import {Calendar, Clock, CheckCircle, ListFilter} from "lucide-react";
 
 export function View({
   selectedView,

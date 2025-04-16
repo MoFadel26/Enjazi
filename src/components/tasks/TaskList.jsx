@@ -28,7 +28,7 @@ export function TaskList({ tasks, filteredView, onToggleComplete, onOpenEditModa
               key={task.id}
               task={task}
               onToggleComplete={onToggleComplete}
-              onOpenEditModal={onOpenEditModal}
+              onOpenEdit={onOpenEditModal}
             />
           ))}
         </div>

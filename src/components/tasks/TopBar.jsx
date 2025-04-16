@@ -1,24 +1,15 @@
 import React from "react";
-import {
-  SideViewIconMobile
-} from "./Icons";
 import {Search, Plus} from "lucide-react"
 
 
-function TopBar({ searchTerm, setSearchTerm, onOpenModal, onToggleMobileSidebar }) {
+function TopBar({ searchTerm, setSearchTerm, onOpenModal,}) {
   return (
-    <div className="bg-white border-b border-[#e2e8f0] p-3 md:p-3">
+    <div className="bg-white border-b border-[#e2e8f0] p-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
 
         <div className="flex items-center">
-          {/* Mobile Hamburger: visible only on small screens */}
-          {/* <button onClick={onToggleMobileSidebar} className="mr-4 md:hidden focus:outline-none">
-            <SideViewIconMobile />
-          </button> */}
-
           <div>
-            <h1 className="text-2xl font-semibold text-gray-700">Tasks</h1>
-            <p className="text-sm text-gray-400">Manage and organize your tasks</p>
+            <h1 className="text-2xl font-bold text-[#0f172a]">Tasks</h1>
           </div>
 
         </div>
@@ -35,7 +26,7 @@ function TopBar({ searchTerm, setSearchTerm, onOpenModal, onToggleMobileSidebar 
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <div className="mt-3 md:mt-0 flex items-center space-x-3">
+          <div>
             <button
               onClick={onOpenModal}
               className="flex items-center gap-1 bg-[#07b0ed] hover:bg-[#07b0ed]/90 text-white px-4 py-2.5 rounded-md text-sm font-medium transition-colors"

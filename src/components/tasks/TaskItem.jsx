@@ -1,5 +1,5 @@
 import React from "react";
-import formatDate from "./Tasks";
+import { formatDate } from "./Tasks";
 import {CalendarIcon, CheckIcon, renderCategoryIcon, renderPriority} from "./Icons"
 export function TaskItem({task, onToggleComplete, onOpenEdit}) {
   const handleClick = () => {

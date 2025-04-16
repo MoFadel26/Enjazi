@@ -1,6 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import getTodayString from "./Tasks";
+import { getTodayString } from "./Tasks";
 
 export function TaskModal({data, onSubmit, isOpen, onClose}) {
   const [title, setTitle] = useState(data?.title ||  "");
@@ -68,10 +68,10 @@ export function TaskModal({data, onSubmit, isOpen, onClose}) {
 
           {/*Description of the task*/}
           <div>
-            <lable className="text-sm font-medium text-gray mb-2">
+            <label className="text-sm font-medium text-gray mb-2">
               Description
-            </lable>
-            <textarea type="text" placeholder="Enter task description" value={description} onChange={(e) => setDescription(e.target.value)}
+            </label>
+            <textarea type="text" placeholder="Enter task description" value={description} onChange={(e) => setDescription(e.target.value)} rows={3}
               className="rounded-md text-gray-700 text-sm block w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
             </textarea>
@@ -81,9 +81,9 @@ export function TaskModal({data, onSubmit, isOpen, onClose}) {
           <div>
             {/*Priority of the task*/}
             <div>
-              <lable className="text-sm font-medium text-gray mb-2">
+              <label className="text-sm font-medium text-gray mb-2">
                 Priority
-              </lable>
+              </label>
               <select value={priority} onChange={(e) => setPriority(e.target.value)}
                 className="rounded-md text-gray-700 text-sm block w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"  
               >
@@ -94,9 +94,9 @@ export function TaskModal({data, onSubmit, isOpen, onClose}) {
             </div>
             {/*Category of the task*/}
             <div>
-              <lable className="text-sm font-medium text-gray mb-2">
+              <label className="text-sm font-medium text-gray mb-2">
                 Category
-              </lable>
+              </label>
               <select value={category} onChange={(e) => setCategory(e.target.value)}
                 className="rounded-md text-gray-700 text-sm block w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"  
               >
@@ -104,15 +104,17 @@ export function TaskModal({data, onSubmit, isOpen, onClose}) {
                 <option value="Personal">Personal</option>
                 <option value="Health">Health</option>
                 <option value="Education">Education</option>
+                <option value="Code">Code</option>
+                <option value="Social">Social</option>
               </select>
             </div>
           </div>
 
           {/*Date Due of the task*/}
           <div>
-            <lable className="text-sm font-medium text-gray mb-2">
+            <label className="text-sm font-medium text-gray mb-2">
               Description
-            </lable>
+            </label>
             <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)}
               className="rounded-md text-gray-700 text-sm block w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
