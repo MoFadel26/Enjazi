@@ -23,7 +23,7 @@ const pathToTitle = {
         <Sidebar />
   
         <div className="flex flex-col flex-1 overflow-hidden">
-          <Header title={title} />
+          {/*<Header title={title} />*/}
   
           <main className="p-4 overflow-auto">
             <Outlet />
