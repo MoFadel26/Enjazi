@@ -3,10 +3,10 @@ import React, { useState } from "react";
 const Appearance = () => {
   // State for appearance settings
   const [settings, setSettings] = useState({
-    colorTheme: "light", // light, dark, system
-    accentColor: "#00A3FF", // Default blue
-    fontSize: "medium", // small, medium, large
-    animation: "enable", // enable, disable
+    colorTheme: "light", 
+    accentColor: "#00A3FF", 
+    fontSize: "medium", 
+    animation: "enable", 
   });
 
   // Handle theme selection

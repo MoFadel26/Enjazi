@@ -1,4 +1,4 @@
-// File: C:\Users\almoh\OneDrive\Desktop\Enjazi\src\pages\settings\Profile.jsx
+
 import React, { useState } from "react";
 
 export default function Profile() {

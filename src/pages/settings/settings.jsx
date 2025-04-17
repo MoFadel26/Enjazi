@@ -1,18 +1,15 @@
-// File: C:\Users\almoh\OneDrive\Desktop\Enjazi\src\pages\settings\settings.jsx
 import React, { useState } from "react";
 import { FaUser, FaPalette, FaClock, FaChartLine, FaBell, FaLink } from "react-icons/fa";
 
-// Import the Profile component from the same directory
 import Profile from 'components/settings/Profile';
 import Appearance from "components/settings/Appearance";
 import Pomodoro from "components/settings/Pomodoro";
 import Productivity from "components/settings/Productivity";   
 import Notifications from "components/settings/Notifications";   
 import Integrations from "components/settings/Integrations";
-// Other tab components will be imported similarly when created
 
 export default function Settings() {
-    // State to track which tab is currently active
+
     const [activeTab, setActiveTab] = useState("profile");
     
     // Render the active tab component
