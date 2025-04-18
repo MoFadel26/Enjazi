@@ -18,8 +18,8 @@ const Notifications = () => {
 
   const [quietHours, setQuietHours] = useState({
     enabled: false,
-    from: "00:00", // 12 AM
-    to: "06:00", // 6 AM
+    from: "00:00", 
+    to: "06:00", 
   });
 
   // Handle email notification toggles
