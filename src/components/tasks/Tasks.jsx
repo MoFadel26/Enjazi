@@ -15,6 +15,8 @@ const listOfTasks = [
     priority: "High",
     category: "Education",
     dueDate: "2025-04-03",
+    startTime: "09:00",
+    endTime: "10:00",
     completed: true,
   },
   {
@@ -24,6 +26,8 @@ const listOfTasks = [
     priority: "Medium",
     category: "Personal",
     dueDate: "2025-04-12",
+    startTime: "09:00",
+    endTime: "10:00",
     completed: false,
   },
   {
@@ -33,6 +37,8 @@ const listOfTasks = [
     priority: "Medium",
     category: "Education",
     dueDate: "2025-04-15",
+    startTime: "09:00",
+    endTime: "10:00",
     completed: false,
   },
 ];
