@@ -3,7 +3,6 @@ import React from "react";
 
 import {
   format,
-  addMonths,
   subMonths,
   startOfMonth,
   endOfMonth,
@@ -20,7 +19,6 @@ import { useRef } from "react";
 import {  
   Plus,
   Book,
-  Search,
 	ChevronLeft,
   ChevronRight,
   Dumbbell,
@@ -29,6 +27,9 @@ import {
   CodeXml,
   Coffee,
   ListFilter,
+  X,
+  Trash2,
+  Check
 } from "lucide-react";
 
 
@@ -215,7 +216,7 @@ function taskToEvent (task) {
 
 
 function EventForm ({event,  onSave, onDelete, onCancel}) {
-	const [title, setTitle]= useState(event?. title || "");
+	const [title, setTitle]= useState(event?.title || "");
 	const [description, setDiscription] = useState(event?.description || "");
   const [priority, setPriority] = useState(event?.priority || "Low");
 	const [colour, setColour] = useState(event?.colour || priorityColours[priority]);
@@ -264,58 +265,116 @@ function EventForm ({event,  onSave, onDelete, onCancel}) {
 	}
 
 	return (
-		<div>
-			<form className="space-4" onSubmit={handleSubmit}>
-				<input
-					required
-					value={title}
-					onChange={(e) => setTitle(e.target.value)}
-					placeholder="Event title"
-					className="w-full p-2 border rounded"
-				/>
+		<div  className="relative max-w-md mx-auto shadow-xl rounded-xl border-t-8">
 
-				<div className="flex space-x-2 items-center">
-					<label className="text-sm font-medium w-24">Priority</label>
-					<select
-						value={priority}
-						onChange={(event) => setPriority(event.target.value)}
-						className="flex-1 p-2 border rounded"
-					>
-						{Object.keys(priorityColours).map((priority) => (
-							<option key={priority}>{priority}</option>
-						))}
-					</select>
-					{renderPriority(priority)}
+      <header className="px-6 py-4 flex items-center justify-between">
+        <h2 className="font-semibold text-lg truncate">{event ? "Edit Event" : "Create Event"}</h2>
+        <button onClick={onCancel} className="p-1 rounded-full hover:bg-slate-200 hover:bg-gray-400">
+          <X className="w-4 h-4" />
+        </button>
+      </header>
+      
+			<form className="space-y-4 p-6" onSubmit={handleSubmit}>
+        <div className="grid gap-2">
+          <labe className="text-sm font-medium"l>Title <span className="text-red-500">*</span></labe>
+          <input
+            required
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Event title"
+            className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-transparent px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
+          />
+        </div>
+
+        {/* Priority Selection */}
+        <div className="grid gap-2">
+          <label className="text-sm font-medium">
+            Priority
+          </label>
+          <div className="flex items-center gap-2">
+            <select
+              value={priority}
+              onChange={(e) => setPriority(e.target.value)}
+              className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-transparent px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
+            >
+              {Object.keys(priorityColours).map((p) => (
+                <option key={p}>{p}</option>
+              ))}
+            </select>
+            {renderPriority(priority)}
+          </div>
+        </div>
+
+
+        {/* Color Selection */}
+        <div className="grid gap-2">
+          <label className="text-sm font-medium">
+            Color
+          </label>
+          <div className="flex items-center gap-2">
+            <select
+              value={colour}
+              onChange={(e) => setColour(e.target.value)}
+              className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-transparent px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
+            >
+              {colourOptions.map(({ value, label }) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+            {renderPriority(priority)}
+          </div>
+        </div>
+
+				<div className="flex flex-col gap-4">
+					<div className="flex flex-col gap-2">
+            <label className="text-sm font-medium">
+              Date
+            </label>
+            <input
+              type="date"
+              required
+              value={date}
+              onChange={(event) => setDate(event.target.value)}
+              className="rounded-lg border border-slate-300 dark:border-slate-600 bg-transparent px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
+            />
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-4 flex-1">
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium">
+                Start
+              </label>
+              <input
+                type="time"
+                required
+                value={startTime}
+                onChange={(event) => setStartTime(event.target.value)}
+                className="rounded-lg border border-slate-300 dark:border-slate-600 bg-transparent px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium">
+                End
+              </label>
+              <input
+                type="time"
+                required
+                value={endTime}
+                onChange={(event) => setEndTime(event.target.value)}
+                className="rounded-lg border border-slate-300 dark:border-slate-600 bg-transparent px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
+              />
+            </div>
+          </div>
 				</div>
 
-				<div className="flex space-x-2">
-					<input
-						type="date"
-						required
-						value={date}
-						onChange={(event) => setDate(event.target.value)}
-						className="flex-1 p-2 border rounded"
-					/>
-					<input
-						type="time"
-						required
-						value={startTime}
-						onChange={(event) => setStartTime(event.target.value)}
-						className="w-24 p-2 border rounded"
-					/>
-					<input
-						type="time"
-						required
-						value={endTime}
-						onChange={(event) => setEndTime(event.target.value)}
-						className="w-24 p-2 border rounded"
-					/>
-				</div>
 				<textarea 
 					value={description}
 					onChange={(event) => setDiscription(event.target.value)}
 					placeholder="Description (optional)"
-					className="w-full p-3 border rounded"
+					className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-transparent px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
 					rows={3}
 				/>
 
@@ -385,7 +444,7 @@ function CalendarPage() {
 	// Going next day
 	function goNext () {
 		if (view === 'month') {
-		  setCurrentDate((date) => subMonths(date,1));
+		  setCurrentDate((date) => subMonths(date,-1));
 		 } else if (view === 'week') {
 			setCurrentDate((date) => addDays(date, 7));
 		 } else {
@@ -524,7 +583,7 @@ function CalendarPage() {
     return (
       <div className="hidden md:block flex-1 overflow-x-auto">
         <div
-          className="min-w-[900px] grid grid-cols-[50px_repeat(7,1fr)]"
+          className="min-w-[900px] grid grid-cols-[60px_repeat(7,1fr)]"
           style={{ height: "100%" }}
         >
           {/* Header */}
@@ -597,16 +656,10 @@ function CalendarPage() {
           <h3 className="text-lg font-semibold">
             {format(currentDate, "EEEE, MMM d")}
           </h3>
-          <button
-            onClick={() => openModel()}
-            className="hidden md:flex items-center px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-md"
-          >
-            <Plus className="w-4 h-4 mr-1" /> Add event
-          </button>
         </div>
         {/* Timeline - Grid*/}
         <div
-          className="min-w-[400px] grid grid-cols-[50px_1fr]"
+          className="min-w-[400px] grid grid-cols-[60px_1fr]"
           style={{ height: "calc(100% - 56px)" }}
         >
           <div>
@@ -746,7 +799,7 @@ function CalendarPage() {
             return (
               <div
                 key={tempEvent.id}
-                onClick={() => openModel(ev)}
+                onClick={() => openModel(tempEvent)}
                 className={`p-2 text-sm rounded cursor-pointer flex items-center space-x-1 ${
                   colourStyles[tempEvent.colour] || tempEvent.colour
                 }`}
@@ -769,20 +822,71 @@ function CalendarPage() {
 	}
 
   return (
-		<div>
-      <div>
+    <div className="flex flex-col h-screen bg-gray-50 overflow-auto border rounded">
+      <div className="flex flex-col flex-1 max-w-7xl w-full mx-auto bg-white shadow">
         {/* Header of Calendar*/}
+        <div className="flex justify-between items-center border-b shrink-0 bg-white sticky top-0 px-4 z-30 md:px-6 py-3 border-b">
+          {/* Left Side */}
+          <div className="md:flex items-center hidden space-x-3">
+            <button className="p-2 hover:bg-gray-100 rounded-full" onClick={goPrevious}>
+              <ChevronLeft className="w-5 h-5"></ChevronLeft>
+            </button>
+            <button className="px-3 py-1 rounded bg-gray-100" onClick={goToday}>
+              Today
+            </button>
+            <button className="p-2 hover:bg-gray-100 rounded-full" onClick={goNext}>
+              <ChevronRight className="w-5 h-5"></ChevronRight>
+            </button>
+            <h2 className="ml-4 text-lg font-semibold">
+              {format(currentDate, "MMMM yyyy")}
+            </h2>
+          </div>
+          
+          {/* Right Side */}
+          <div className="flex items-center space-x-2">
+            {/* Switch (View) */}
+            <div className="hidden md:flex space-x-2">
+              {
+                [
+                  {value: "month", label: "Month"},
+                  {value: "week", label: "Week"},
+                  {value: "day", label: "Day"}
+                ].map(({value, label}) => (
+                  <button 
+                    key={value} onClick={()=>setView(value)} 
+                    className={`px-3 py-1 rounded-md text-sm transition ${view === value ? "bg-red-100 text-red-700" : "text-gray-600 hover:bg-gray-100"}`}
+                  >{label}</button>
+                ))
+              }
+            </div>
 
+            {/* Add Event */}
+            <button
+              onClick={() => openModel()}
+              className="hidden md:flex items-center px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-md"
+            >
+            <Plus className="w-4 h-4 mr-1" /> Add event
+            </button>
+          </div>
+        </div>
         {/* Body of Calendar*/}
+        <div>
+          <div className="flex flex-col flex-1">
+            {/* Large Screens */}
+
+            {view === 'month' && <MonthView></MonthView>}
+            {view === 'week' && <WeekView></WeekView>}
+            {view === 'day' && <TodayView></TodayView>}
+            {/* Small Screens */}
+
+          </div>
+        </div>
       </div>
 
       {/* Open Model*/}
       {modelOpen && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-          <div className="bg-white w-full max-w-md p-6 rounded-lg shadow-lg">
-            <h3 className="text-xl font-bold mb-4">
-              {editEvent ? "Edit Event" : "Add Event"}
-            </h3>
+        <div className="bg-black flex items-center justify-center bg-opacity-30 fixed inset-0 backdrop-blur-sm z-50 transition-opacity">
+          <div className="bg-white max-w-md rounded-lg shadow-lg">
             <EventForm
               event={editEvent}
               onSave={handleSave}
