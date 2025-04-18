@@ -9,7 +9,7 @@ import Dashboard from 'pages/dashboard/Dashboard';
 import MainLayout from 'components/layout/MainLayout';
 import Admin from 'pages/admin/admin';
 import Tasks from 'pages/tasks/TaskPage.jsx';
-import Calendar from 'pages/calendar/Calendar';
+import Calendar from 'pages/calendar/CalendarPage';
 import Performance from 'pages/performance/Performance';
 import Rooms from 'pages/rooms/Rooms';
 import Settings from 'pages/settings/settings';
