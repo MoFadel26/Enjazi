@@ -434,29 +434,238 @@ function CalendarPage() {
 
 	//  ************** View by Months ************** 
 	function MonthView () {
+		const days=getMonthDays();
+		const blanks = Array.from({length: startOfMonth(currentDate).getDay()})
 		return (
-			<div>
-
-			</div>
+      <div className="hidden md:grid flex-1 grid-cols-7 auto-rows-[120px] border-t border-l border-gray-200 select-none">
+        {/* weekday header */}
+        {[
+          "Sun",
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat",
+        ].map((d) => (
+          <div
+            key={d}
+            className="bg-white py-2 text-center text-sm font-medium text-gray-500 border-r border-b border-gray-200"
+          >
+            {d}
+          </div>
+        ))}
+        {blanks.map((_, i) => (
+          <div key={i} className="border-r border-b border-gray-200 bg-white" />
+        ))}
+        {days.map((day) => {
+          const inMonth = isSameMonth(day, currentDate);
+          const todaysEvents = eventsOn(day);
+          const isToday = isSameDay(day, new Date());
+          return (
+            <div
+              key={day.toISOString()}
+              onClick={() => {
+                setCurrentDate(day);
+                setView("day");
+              }}
+              className={`p-1 overflow-hidden border-r border-b border-gray-200 bg-white cursor-pointer hover:bg-gray-50 ${
+                inMonth ? "" : "opacity-50"
+              }`}
+            >
+              <div className="flex items-center justify-between mb-0.5">
+                <span
+                  className={`text-xs font-semibold ${
+                    isToday ? "text-purple-600" : ""
+                  }`}
+                >
+                  {format(day, "d")}
+                </span>
+                {todaysEvents.length > 0 && (
+                  <span className="ml-1 inline-block rounded-full bg-purple-600 text-white text-[10px] w-4 h-4 leading-4 text-center">
+                    {todaysEvents.length}
+                  </span>
+                )}
+              </div>
+              <div className="space-y-0.5">
+                {todaysEvents.slice(0, 3).map((ev) => {
+                  const Icon = ev.icon;
+                  return (
+                    <div
+                      key={ev.id}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openModel(ev);
+                      }}
+                      className={`truncate text-[11px] px-1.5 py-0.5 rounded flex items-center ${colourStyles[ev.colour] || ev.colour}`}
+                    >
+                      {Icon && <Icon className="w-3 h-3 mr-0.5 opacity-80" />}
+                      {renderPriority(ev.priority)}
+                      <span className="flex-1 truncate">{ev.title}</span>
+                      <span className="ml-1 opacity-60 whitespace-nowrap">{format(ev.start, "h:mm a")}</span>
+                    </div>
+                  );
+                })}
+                {todaysEvents.length > 3 && (<div className="text-[10px] italic text-gray-500">+{todaysEvents.length - 3} more</div>)}
+              </div>
+            </div>
+          );
+        })}
+      </div>
 		);
 	}
 
 	//  ************** View by Weeks **************
 	function WeekView () {
-		return (
-			<div>
+    const startDay = startofWeek(currentDate);
+    const days = Array.from({length:7}, (_,y) => addDays(startDay, y));
+		const hours = Array.from({length:24}, (_,y) => y);
+    const H = 56; // --> Cell Height
+    return (
+      <div className="hidden md:block flex-1 overflow-x-auto">
+        <div
+          className="min-w-[900px] grid grid-cols-[50px_repeat(7,1fr)]"
+          style={{ height: "100%" }}
+        >
+          {/* Header */}
+          <div className="border-r border-b" />
+          {days.map((d) => (
+            <div
+              key={d}
+              className="border-b p-2 text-center font-medium sticky -top-px bg-white z-10"
+            >
+              {format(d, "EEE d")}
+            </div>
+          ))}
+          {/* Hour - Rows */}
+          {hours.map((hour) => (
+            <React.Fragment key={hour}>
+              {/* time */}
+              <div
+                className="border-r px-2 text-xs text-gray-500"
+                style={{ height: H}}
+              >
+                {hour % 12 || 12} {hour < 12 ? "AM" : "PM"}
+              </div>
+              {/* Days - Columns */}
+              {days.map((day) => {
+                const ev = event.find((e) => e.start.getHours() === hour && isSameDay(e.start, day));
+                const Icon = ev?.icon;
+                return (
+                  <div
+                    key={`${day}-${hour}`}
+                    className="relative border-t"
+                    style={{ height: H }}
+                  >
+                    {ev && (
+                      <div
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openModel(ev);
+                        }}
+                        className={`absolute left-1 right-1 top-[1px] p-1 rounded text-xs cursor-pointer flex items-center space-x-1 ${
+                          colourStyles[ev.colour] || ev.colour
+                        }`}
+                        style={{height:((ev.end - ev.start) / (1000 * 60 * 60)) * H -2,}}
+                      >
+                        {Icon && <Icon className="w-3 h-3" />}
+                        {renderPriority(ev.priority)}
+                        <span className="truncate">{ev.title}</span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </React.Fragment>
+          ))}
+        </div>
+      </div>
 
-			</div>
 		);
 	}
 
 	//  ************** View by Days **************
 	function TodayView () {
-		return (
-			<div>
+    const hours = Array.from({ length: 24 }, (_, i) => i);
+    const H = 56; // --> Cell Height
+    const todaysEvents = eventsOn(currentDate);
 
-			</div>
-		);
+    return (
+      <div className="flex-1 overflow-x-auto">
+        {/* Header */}
+        <div className="sticky top-0 z-20 bg-white p-4 border-b flex items-center justify-between">
+          <h3 className="text-lg font-semibold">
+            {format(currentDate, "EEEE, MMM d")}
+          </h3>
+          <button
+            onClick={() => openModel()}
+            className="hidden md:flex items-center px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-md"
+          >
+            <Plus className="w-4 h-4 mr-1" /> Add event
+          </button>
+        </div>
+        {/* Timeline - Grid*/}
+        <div
+          className="min-w-[400px] grid grid-cols-[50px_1fr]"
+          style={{ height: "calc(100% - 56px)" }}
+        >
+          <div>
+            {hours.map((hour) => (
+              <div
+                key={hour}
+                className="border-t px-2 text-xs text-gray-500"
+                style={{ height: H }}
+              >
+                {hour % 12 || 12} {hour < 12 ? "AM" : "PM"}
+              </div>
+            ))}
+          </div>
+          {/* event canvas */}
+          <div className="relative">
+            {hours.map((_, i) => (
+              <div
+                key={i}
+                className="border-t absolute left-0 right-0"
+                style={{ top: i * H, height: 0 }}
+              />
+            ))}
+            {todaysEvents.map((tempEvent) => {
+              const Icon = tempEvent.icon;
+              const sh = tempEvent.start.getHours();
+              const sm = tempEvent.start.getMinutes();
+              const duration = (tempEvent.end - tempEvent.start) / 3600000; // hrs
+              return (
+                <div
+                  key={tempEvent.id}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openModel(tempEvent);
+                  }}
+                  className={`absolute left-2 right-2 p-2 rounded shadow text-sm cursor-pointer flex items-start space-x-1 ${
+                    colourStyles[tempEvent.colour] || tempEvent.colour
+                  }`}
+                  style={{
+                    top: sh * H + (sm / 60) * H,
+                    height: duration * H - 4,
+                  }}
+                >
+                  {Icon && <Icon className="w-4 h-4" />}
+                  {renderPriority(tempEvent.priority)}
+                  <div className="flex-1">
+                    <div className="font-medium leading-tight truncate">
+                      {tempEvent.title}
+                    </div>
+                    <div className="text-xs opacity-70">
+                      {format(tempEvent.start, "h:mm a")} – {format(tempEvent.end, "h:mm a")}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
 	}
 
 	//  ************** Mobile View (Mobile Month) **************
@@ -532,21 +741,21 @@ function CalendarPage() {
           <div className="font-medium">
             Events on {format(currentDate, "MMM d, yyyy")}
           </div>
-          {eventsOn(currentDate).map((ev) => {
-            const Icon = ev.icon;
+          {eventsOn(currentDate).map((tempEvent) => {
+            const Icon = tempEvent.icon;
             return (
               <div
-                key={ev.id}
+                key={tempEvent.id}
                 onClick={() => openModel(ev)}
                 className={`p-2 text-sm rounded cursor-pointer flex items-center space-x-1 ${
-                  colourStyles[ev.colour] || ev.colour
+                  colourStyles[tempEvent.colour] || tempEvent.colour
                 }`}
               >
                 {Icon && <Icon className="w-3 h-3" />}
-                {renderPriority(ev.priority)}
-                <span className="truncate flex-1">{ev.title}</span>
+                {renderPriority(tempEvent.priority)}
+                <span className="truncate flex-1">{tempEvent.title}</span>
                 <span className="ml-2 text-xs opacity-70">
-                  {format(ev.start, "h:mm a")}
+                  {format(tempEvent.start, "h:mm a")}
                 </span>
               </div>
             );
@@ -561,7 +770,28 @@ function CalendarPage() {
 
   return (
 		<div>
+      <div>
+        {/* Header of Calendar*/}
 
+        {/* Body of Calendar*/}
+      </div>
+
+      {/* Open Model*/}
+      {modelOpen && (
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+          <div className="bg-white w-full max-w-md p-6 rounded-lg shadow-lg">
+            <h3 className="text-xl font-bold mb-4">
+              {editEvent ? "Edit Event" : "Add Event"}
+            </h3>
+            <EventForm
+              event={editEvent}
+              onSave={handleSave}
+              onDelete={handleDelete}
+              onCancel={closeModel}
+            />
+          </div>
+        </div>
+      )}
 		</div>
 	);
 }
