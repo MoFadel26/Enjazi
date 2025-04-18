@@ -213,6 +213,141 @@ function taskToEvent (task) {
   };
 }
 
+
+function EventForm ({event,  onSave, onDelete, onCancel}) {
+	const [title, setTitle]= useState(event?. title || "");
+	const [description, setDiscription] = useState(event?.description || "");
+  const [priority, setPriority] = useState(event?.priority || "Low");
+	const [colour, setColour] = useState(event?.colour || priorityColours[priority]);
+
+	// States for dates and times
+  const [date, setDate] = useState(
+    event ? format(event.start, "yyyy-MM-dd") : format(new Date(), "yyyy-MM-dd")
+  );
+  const [startTime, setStartTime] = useState(
+    event ? format(event.start, "HH:mm") : "09:00"
+  );
+  const [endTime, setEndTime] = useState(
+    event ? format(event.end, "HH:mm") : "10:00"
+  );
+
+	useEffect (() => {
+		if (!event) {
+			setColour(priorityColours[priority]);
+		}
+	}, [priority, event]);
+
+	function handleSubmit(ev) {
+		ev.preventDefault();
+		const [startH, startM] = startTime.split(":" ).map(Number);
+    const [endH, endM] = endTime.split(":" ).map(Number);
+    const [year, month, day] = date.split("-").map(Number);
+
+    const newEvt = {
+      id: event?.id,
+      title,
+      description,
+      priority,
+      start: new Date(year, month - 1, day, startH, startM),
+      end: new Date(year, month - 1, day, endH, endM),
+      colour,
+    };
+
+    onSave(newEvt);
+	}
+
+	function durationHours() {
+    const [sh, sm] = startTime.split(":" ).map(Number);
+    const [eh, em] = endTime.split(":" ).map(Number);
+    const diff = eh * 60 + em - (sh * 60 + sm);
+    return Math.max(diff / 60, 0);
+	}
+
+	return (
+		<div>
+			<form className="space-4" onSubmit={handleSubmit}>
+				<input
+					required
+					value={title}
+					onChange={(e) => setTitle(e.target.value)}
+					placeholder="Event title"
+					className="w-full p-2 border rounded"
+				/>
+
+				<div className="flex space-x-2 items-center">
+					<label className="text-sm font-medium w-24">Priority</label>
+					<select
+						value={priority}
+						onChange={(event) => setPriority(event.target.value)}
+						className="flex-1 p-2 border rounded"
+					>
+						{Object.keys(priorityColours).map((priority) => (
+							<option key={priority}>{priority}</option>
+						))}
+					</select>
+					{renderPriority(priority)}
+				</div>
+
+				<div className="flex space-x-2">
+					<input
+						type="date"
+						required
+						value={date}
+						onChange={(event) => setDate(event.target.value)}
+						className="flex-1 p-2 border rounded"
+					/>
+					<input
+						type="time"
+						required
+						value={startTime}
+						onChange={(event) => setStartTime(event.target.value)}
+						className="w-24 p-2 border rounded"
+					/>
+					<input
+						type="time"
+						required
+						value={endTime}
+						onChange={(event) => setEndTime(event.target.value)}
+						className="w-24 p-2 border rounded"
+					/>
+				</div>
+				<textarea 
+					value={description}
+					onChange={(event) => setDiscription(event.target.value)}
+					placeholder="Description (optional)"
+					className="w-full p-3 border rounded"
+					rows={3}
+				/>
+
+				<div className="flex space-x-2 justify-end">
+					<button
+						type="button"
+						onClick={onCancel}
+						className="px-4 py-2 border rounded"
+					>
+						Cancel
+					</button>
+					{event && (
+						<button
+							type="button"
+							onClick={() => onDelete(event.id)}
+							className="bg-red-500 px-4 py-2 text-white rounded"
+						>
+							Delete
+						</button>
+					)}
+					<button
+						type="submit"
+						className="bg-blue-600 px-4 py-2 hover:bg-blue-700 text-white rounded"
+					>
+						Save
+					</button>
+				</div>
+			</form>
+		</div>
+	);
+}
+
 function CalendarPage() {
 
 	// Initial States
@@ -237,7 +372,7 @@ function CalendarPage() {
 	// *** Navigations ***
 
 	// Going to previous day
-	function goPrev() {
+	function goPrevious() {
 		 if (view === 'month') {
 		  setCurrentDate((date) => subMonths(date,1));
 		 } else if (view === 'week') {
@@ -326,10 +461,101 @@ function CalendarPage() {
 
 	//  ************** Mobile View (Mobile Month) **************
 	function MobileView () {
-		return (
-			<div>
-
-			</div>
+    const days = getMonthDays();
+    return (
+      <div className="md:hidden space-y-4 flex-1">
+        <div className="flex items-center justify-between px-4">
+          <button onClick={goPrevious}>
+            <ChevronLeft />
+          </button>
+          <button
+            onClick={goToday}
+            className="px-3 py-1 bg-gray-100 rounded text-sm"
+          >
+            Today
+          </button>
+          <button onClick={goNext}>
+            <ChevronRight />
+          </button>
+        </div>
+        <div className="px-4 font-semibold text-lg">
+          {format(currentDate, "LLLL yyyy")}
+        </div>
+        <div className="grid grid-cols-7 text-center text-xs text-gray-500 px-4">
+          {["S", "M", "T", "W", "T", "F", "S"].map((d) => (
+            <div key={d}>{d}</div>
+          ))}
+        </div>
+        <div className="grid grid-cols-7 gap-1 px-4">
+          {days.map((day) => {
+            const cnt = eventsOn(day).length;
+            const selected = isSameDay(day, currentDate);
+            return (
+              <div
+                key={day}
+                onClick={() => {
+                  setCurrentDate(day);
+                  setView("day");
+                }}
+                className="h-10 flex flex-col items-center justify-center cursor-pointer"
+              >
+                <div
+                  className={`w-8 h-8 leading-8 text-center rounded-full text-sm ${
+                    selected
+                      ? "bg-purple-600 text-white"
+                      : "text-gray-700 hover:bg-gray-100"
+                  }`}
+                >
+                  {format(day, "d")}
+                </div>
+                {cnt > 0 && (
+                  <div className="mt-0.5 flex space-x-0.5">
+                    {[...Array(Math.min(cnt, 3))].map((_, i) => (
+                      <span
+                        key={i}
+                        className="w-1.5 h-1.5 bg-gray-700 rounded-full"
+                      />
+                    ))}
+                    {cnt > 3 && (
+                      <span className="text-[9px] text-gray-500">
+                        +{cnt - 3}
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        {/* daily list */}
+        <div className="px-4 space-y-2">
+          <div className="font-medium">
+            Events on {format(currentDate, "MMM d, yyyy")}
+          </div>
+          {eventsOn(currentDate).map((ev) => {
+            const Icon = ev.icon;
+            return (
+              <div
+                key={ev.id}
+                onClick={() => openModel(ev)}
+                className={`p-2 text-sm rounded cursor-pointer flex items-center space-x-1 ${
+                  colourStyles[ev.colour] || ev.colour
+                }`}
+              >
+                {Icon && <Icon className="w-3 h-3" />}
+                {renderPriority(ev.priority)}
+                <span className="truncate flex-1">{ev.title}</span>
+                <span className="ml-2 text-xs opacity-70">
+                  {format(ev.start, "h:mm a")}
+                </span>
+              </div>
+            );
+          })}
+          {eventsOn(currentDate).length === 0 && (
+            <div className="text-sm text-gray-500 italic">No events</div>
+          )}
+        </div>
+      </div>
 		);
 	}
 
