@@ -132,51 +132,21 @@ const colourOptions = Object.keys(colourStyles).map((key) => ({
 }));
 
 // Dots (Proiorites):
-function dot(className) {
-	return (<span className={`inline-block w-2 h-2 rounded-full mr-1 ${className}`}/>);
-}
 
-function LowPriorityIcon() {
-	return (
-		<dot className="bg-green-500" />
-	);
-}
+const Dot = ({ className = '' }) => (
+  <span className={`inline-block w-2 h-2 rounded-full mr-1 ${className}`} />
+);
 
-function MedPriorityIcon() {
-	return (
-		<dot className="bg-yellow-500" />
-	);
-}
+const LowPriorityIcon   = () => <Dot className="bg-green-500" />;
+const MedPriorityIcon   = () => <Dot className="bg-yellow-500" />;
+const HighPriorityIcon  = () => <Dot className="bg-red-500" />;
 
-function HighPriorityIcon() {
-	return (
-		<dot className="bg-red-500" />
-	);
-}
-
-
-export function renderPriority(priorityType) {
-  if (priorityType === "Low") {
-    return (
-      <span className="inline-flex items-center text-xs font-semibold">
-        <LowPriorityIcon />
-      </span>
-    );
-  } else if (priorityType === "Medium") {
-    return (
-      <span className="inline-flex items-center text-xs font-semibold">
-        <MedPriorityIcon />
-      </span>
-    );
-  } else if (priorityType === "High") {
-    return (
-      <span className="inline-flex items-center text-xs font-semibold">
-        <HighPriorityIcon />
-      </span>
-    );
-  }
+export const renderPriority = (priorityType) => {
+  if (priorityType === 'Low')    return <LowPriorityIcon />;
+  if (priorityType === 'Medium') return <MedPriorityIcon />;
+  if (priorityType === 'High')   return <HighPriorityIcon />;
   return null;
-}
+};
 
 // Helper Functions (Utiliies):
 function startofWeek(date) {
