@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PageHeader from "./PageHeader"; // Import the PageHeader component
 
 export default function Rooms() {
   const [view, setView] = useState("myRooms"); // myRooms, roomContent, leaderboard, publicRooms, createRoom
@@ -255,48 +256,101 @@ export default function Rooms() {
     };
   }, []);
 
-  return (
-    <div className="rooms-container p-4">
-      {/* Navigation Bar for mobile*/}
-      <div className="flex flex-col md:flex-row justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold mb-4 md:mb-0">Rooms</h1>
-        <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-3 w-full md:w-auto rooms-nav-buttons">
-          <button 
-            onClick={() => setView("myRooms")}
-            className={`px-4 py-2 rounded ${view === "myRooms" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
-          >
-            My Rooms
-          </button>
-          <button 
-            onClick={() => setView("publicRooms")}
-            className={`px-4 py-2 rounded ${view === "publicRooms" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
-          >
-            Public Rooms
-          </button>
-          <button 
-            onClick={showCreateRoomForm}
-            className="px-4 py-2 bg-green-500 text-white rounded"
-          >
-            Create Room
-          </button>
-        </div>
-      </div>
+  // Configure header based on current view
+  const getHeaderConfig = () => {
+    switch(view) {
+      case "myRooms":
+        return {
+          title: "Rooms",
+          description: "Manage your study and collaboration spaces",
+          createButtonText: "Create Room"
+        };
+      case "publicRooms":
+        return {
+          title: "Public Rooms",
+          description: "Discover and join community spaces",
+          showCreate: false
+        };
+      case "createRoom":
+        return {
+          title: "Create Room",
+          description: "Set up a new collaboration space",
+          showSearch: false,
+          showFilter: false,
+          showCreate: false
+        };
+      case "roomContent":
+        return {
+          title: roomContent[currentRoom]?.name || "Room",
+          description: roomContent[currentRoom]?.description || "",
+          showSearch: false,
+          showFilter: false,
+          showCreate: false
+        };
+      case "leaderboard":
+        return {
+          title: `${roomContent[currentRoom]?.name || "Room"} Leaderboard`,
+          description: "Track progress and rankings",
+          showSearch: false,
+          showFilter: true,
+          showCreate: false
+        };
+      default:
+        return {
+          title: "Rooms",
+          description: "Manage your study and collaboration spaces"
+        };
+    }
+  };
 
-      {/* My Rooms*/}
-      {view === "myRooms" && (
-        <div>
-          <h2 className="text-xl font-semibold mb-4">My Enrolled Rooms</h2>
-          
-          {enrolledRooms.length === 0 ? (
-            <p className="text-gray-500">You haven't joined any rooms yet. Check out the public rooms!</p>
-          ) : (
+  return (
+    <div className="rooms-container">
+      {/* PageHeader Component */}
+      <PageHeader
+        {...getHeaderConfig()}
+        showCreate={view !== "createRoom" && view !== "roomContent" && view !== "leaderboard"}
+        createButtonText="Create Room"
+      />
+
+      <div className="p-4">
+        {/* My Rooms */}
+        {view === "myRooms" && (
+          <div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {enrolledRooms.map(room => (
-                <div 
-                  key={room.id} 
-                  className="border rounded overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer mobile-full-width"
-                  onClick={() => selectRoom(room.id)}
-                >
+              {enrolledRooms.length === 0 ? (
+                <p className="text-gray-500">You haven't joined any rooms yet. Check out the public rooms!</p>
+              ) : (
+                enrolledRooms.map(room => (
+                  <div 
+                    key={room.id} 
+                    className="border rounded overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer mobile-full-width"
+                    onClick={() => selectRoom(room.id)}
+                  >
+                    <div className="h-40 overflow-hidden">
+                      <img 
+                        src={room.image || "/api/placeholder/300/200"} 
+                        alt={room.name} 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="p-4">
+                      <h3 className="font-semibold text-lg">{room.name}</h3>
+                      <p className="text-gray-600">Category: {room.category}</p>
+                      <p className="text-gray-600">Members: {room.memberCount}</p>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Public Rooms */}
+        {view === "publicRooms" && (
+          <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {publicRooms.map(room => (
+                <div key={room.id} className="border rounded overflow-hidden shadow-sm mobile-full-width">
                   <div className="h-40 overflow-hidden">
                     <img 
                       src={room.image || "/api/placeholder/300/200"} 
@@ -308,317 +362,284 @@ export default function Rooms() {
                     <h3 className="font-semibold text-lg">{room.name}</h3>
                     <p className="text-gray-600">Category: {room.category}</p>
                     <p className="text-gray-600">Members: {room.memberCount}</p>
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation(); // prevent triggering parent's onClick
+                        joinRoom(room.id);
+                      }}
+                      className="mt-2 px-3 py-1 bg-blue-500 text-white rounded text-sm"
+                    >
+                      Join Room
+                    </button>
                   </div>
                 </div>
               ))}
             </div>
-          )}
-        </div>
-      )}
-
-      {/* public rooms*/}
-      {view === "publicRooms" && (
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Public Rooms</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {publicRooms.map(room => (
-              <div key={room.id} className="border rounded overflow-hidden shadow-sm mobile-full-width">
-                <div className="h-40 overflow-hidden">
-                  <img 
-                    src={room.image || "/api/placeholder/300/200"} 
-                    alt={room.name} 
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="p-4">
-                  <h3 className="font-semibold text-lg">{room.name}</h3>
-                  <p className="text-gray-600">Category: {room.category}</p>
-                  <p className="text-gray-600">Members: {room.memberCount}</p>
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation(); // prevent triggering parent's onClick
-                      joinRoom(room.id);
-                    }}
-                    className="mt-2 px-3 py-1 bg-blue-500 text-white rounded text-sm"
-                  >
-                    Join Room
-                  </button>
-                </div>
-              </div>
-            ))}
           </div>
-        </div>
-      )}
+        )}
 
-      {/* create oom view */}
-      {view === "createRoom" && (
-        <div className="max-w-md mx-auto bg-white p-4 md:p-6 rounded-lg shadow-md">
-          <div className="mb-4">
-            <button 
-              onClick={() => setView("myRooms")}
-              className="px-3 py-1 bg-gray-200 rounded"
-            >
-              ← Back to Rooms
-            </button>
-          </div>
-          
-          <h2 className="text-2xl font-bold mb-6">Create a New Room</h2>
-          
-          <form onSubmit={handleCreateRoom}>
+        {/* Create Room View */}
+        {view === "createRoom" && (
+          <div className="max-w-md mx-auto bg-white p-4 md:p-6 rounded-lg shadow-md">
             <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="roomName">
-                Room Name
-              </label>
-              <input
-                id="roomName"
-                name="name"
-                type="text"
-                value={newRoomData.name}
-                onChange={handleInputChange}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                placeholder="Enter room name"
-                required
-              />
+              <button 
+                onClick={() => setView("myRooms")}
+                className="px-3 py-1 bg-gray-200 rounded"
+              >
+                ← Back to Rooms
+              </button>
             </div>
             
-            <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="roomDescription">
-                Description
-              </label>
-              <textarea
-                id="roomDescription"
-                name="description"
-                value={newRoomData.description}
-                onChange={handleInputChange}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                placeholder="Describe the purpose of your room"
-                rows="3"
-                required
-              ></textarea>
-            </div>
-            
-            {/* img upload section */}
-            <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="roomImage">
-                Room Image
-              </label>
-              <div className="flex flex-wrap items-center">
-                <input
-                  id="roomImage"
-                  name="image"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                />
-                <label 
-                  htmlFor="roomImage" 
-                  className="cursor-pointer bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline mb-2 md:mb-0"
-                >
-                  Choose Image
+            <form onSubmit={handleCreateRoom}>
+              <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="roomName">
+                  Room Name
                 </label>
-                <span className="ml-0 md:ml-3 text-sm text-gray-600 w-full md:w-auto">
-                  {newRoomData.image ? newRoomData.image.name : "No file chosen"}
-                </span>
+                <input
+                  id="roomName"
+                  name="name"
+                  type="text"
+                  value={newRoomData.name}
+                  onChange={handleInputChange}
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  placeholder="Enter room name"
+                  required
+                />
               </div>
               
-              {/* img preview */}
-              {imagePreview && (
-                <div className="mt-3">
-                  <p className="text-sm text-gray-700 mb-1">Preview:</p>
-                  <div className="border rounded overflow-hidden h-40">
-                    <img 
-                      src={imagePreview} 
-                      alt="Room preview" 
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-            
-            <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="roomCategory">
-                Category
-              </label>
-              <select
-                id="roomCategory"
-                name="category"
-                value={newRoomData.category}
-                onChange={handleInputChange}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              >
-                <option value="Education">Education</option>
-                <option value="Health">Health</option>
-                <option value="Technology">Technology</option>
-                <option value="Hobbies">Hobbies</option>
-                <option value="Wellness">Wellness</option>
-                <option value="Professional">Professional</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-            
-            <div className="mb-6">
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  name="isPublic"
-                  checked={newRoomData.isPublic}
+              <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="roomDescription">
+                  Description
+                </label>
+                <textarea
+                  id="roomDescription"
+                  name="description"
+                  value={newRoomData.description}
                   onChange={handleInputChange}
-                  className="mr-2"
-                />
-                <span className="text-gray-700 text-sm">Make this room public</span>
-              </label>
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  placeholder="Describe the purpose of your room"
+                  rows="3"
+                  required
+                ></textarea>
+              </div>
+              
+              {/* Image Upload Section */}
+              <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="roomImage">
+                  Room Image
+                </label>
+                <div className="flex flex-wrap items-center">
+                  <input
+                    id="roomImage"
+                    name="image"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                  />
+                  <label 
+                    htmlFor="roomImage" 
+                    className="cursor-pointer bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline mb-2 md:mb-0"
+                  >
+                    Choose Image
+                  </label>
+                  <span className="ml-0 md:ml-3 text-sm text-gray-600 w-full md:w-auto">
+                    {newRoomData.image ? newRoomData.image.name : "No file chosen"}
+                  </span>
+                </div>
+                
+                {/* Image Preview */}
+                {imagePreview && (
+                  <div className="mt-3">
+                    <p className="text-sm text-gray-700 mb-1">Preview:</p>
+                    <div className="border rounded overflow-hidden h-40">
+                      <img 
+                        src={imagePreview} 
+                        alt="Room preview" 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="roomCategory">
+                  Category
+                </label>
+                <select
+                  id="roomCategory"
+                  name="category"
+                  value={newRoomData.category}
+                  onChange={handleInputChange}
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                >
+                  <option value="Education">Education</option>
+                  <option value="Health">Health</option>
+                  <option value="Technology">Technology</option>
+                  <option value="Hobbies">Hobbies</option>
+                  <option value="Wellness">Wellness</option>
+                  <option value="Professional">Professional</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              
+              <div className="mb-6">
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    name="isPublic"
+                    checked={newRoomData.isPublic}
+                    onChange={handleInputChange}
+                    className="mr-2"
+                  />
+                  <span className="text-gray-700 text-sm">Make this room public</span>
+                </label>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row items-center justify-between">
+                <button
+                  type="submit"
+                  className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full sm:w-auto mb-2 sm:mb-0"
+                >
+                  Create Room
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setView("myRooms")}
+                  className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full sm:w-auto"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {/* Room Content */}
+        {view === "roomContent" && currentRoom && (
+          <div>
+            <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
+              <button 
+                onClick={() => setView("myRooms")}
+                className="px-3 py-1 bg-gray-200 rounded mb-2 sm:mb-0 w-full sm:w-auto"
+              >
+                ← Back to Rooms
+              </button>
+              <button 
+                onClick={showLeaderboard}
+                className="px-4 py-2 bg-purple-500 text-white rounded w-full sm:w-auto"
+              >
+                Leaderboard
+              </button>
             </div>
             
-            <div className="flex flex-col sm:flex-row items-center justify-between">
-              <button
-                type="submit"
-                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full sm:w-auto mb-2 sm:mb-0"
-              >
-                Create Room
-              </button>
-              <button
-                type="button"
-                onClick={() => setView("myRooms")}
-                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full sm:w-auto"
-              >
-                Cancel
-              </button>
+            {/* Room Header with Image */}
+            <div className="mb-6">
+              <div className="rounded-lg overflow-hidden shadow-md mb-4 h-40 md:h-60">
+                <img 
+                  src={roomContent[currentRoom]?.image || "/api/placeholder/800/400"} 
+                  alt={roomContent[currentRoom]?.name} 
+                  className="w-full h-full object-cover"
+                />
+              </div>
             </div>
-          </form>
-        </div>
-      )}
-
-      {/* room content  */}
-      {view === "roomContent" && currentRoom && (
-        <div>
-          <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
-            <button 
-              onClick={() => setView("myRooms")}
-              className="px-3 py-1 bg-gray-200 rounded mb-2 sm:mb-0 w-full sm:w-auto"
-            >
-              ← Back to Rooms
-            </button>
-            <button 
-              onClick={showLeaderboard}
-              className="px-4 py-2 bg-purple-500 text-white rounded w-full sm:w-auto"
-            >
-              Leaderboard
-            </button>
-          </div>
-          
-          {/* room Header with img */}
-          <div className="mb-6">
-            <div className="rounded-lg overflow-hidden shadow-md mb-4 h-40 md:h-60">
-              <img 
-                src={roomContent[currentRoom]?.image || "/api/placeholder/800/400"} 
-                alt={roomContent[currentRoom]?.name} 
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <h2 className="text-2xl font-bold">{roomContent[currentRoom]?.name}</h2>
-            <p className="text-gray-600">{roomContent[currentRoom]?.description}</p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="border rounded p-4">
-              <h3 className="font-semibold text-lg mb-2">Tasks</h3>
-              {roomContent[currentRoom]?.tasks.length === 0 ? (
-                <p className="text-gray-500">No tasks yet. Get started by adding your first task!</p>
-              ) : (
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="border rounded p-4">
+                <h3 className="font-semibold text-lg mb-2">Tasks</h3>
+                {roomContent[currentRoom]?.tasks.length === 0 ? (
+                  <p className="text-gray-500">No tasks yet. Get started by adding your first task!</p>
+                ) : (
+                  <ul className="list-disc pl-5">
+                    {roomContent[currentRoom]?.tasks.map((task, index) => (
+                      <li key={index}>{task}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+              <div className="border rounded p-4">
+                <h3 className="font-semibold text-lg mb-2">Announcements</h3>
                 <ul className="list-disc pl-5">
-                  {roomContent[currentRoom]?.tasks.map((task, index) => (
-                    <li key={index}>{task}</li>
+                  {roomContent[currentRoom]?.announcements.map((announcement, index) => (
+                    <li key={index}>{announcement}</li>
                   ))}
                 </ul>
-              )}
-            </div>
-            <div className="border rounded p-4">
-              <h3 className="font-semibold text-lg mb-2">Announcements</h3>
-              <ul className="list-disc pl-5">
-                {roomContent[currentRoom]?.announcements.map((announcement, index) => (
-                  <li key={index}>{announcement}</li>
-                ))}
-              </ul>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* lederboard View per room*/}
-      {view === "leaderboard" && currentRoom && (
-        <div>
-          <div className="mb-4">
-            <button 
-              onClick={() => setView("roomContent")}
-              className="px-3 py-1 bg-gray-200 rounded"
-            >
-              ← Back to Room
-            </button>
-          </div>
-          
-          <h2 className="text-2xl font-bold mb-2">{roomContent[currentRoom]?.name} Leaderboard</h2>
-          <p className="text-gray-600 mb-6">See how you rank among other members</p>
-          
-          <div className="overflow-x-auto table-container">
-            <table className="min-w-full border-collapse">
-              <thead>
-                <tr className="bg-gray-100">
-                  <th className="border p-2 text-left">Rank</th>
-                  <th className="border p-2 text-left">Member</th>
-                  <th className="border p-2 text-left">Points</th>
-                  <th className="border p-2 text-left">Streak</th>
-                  <th className="border p-2 text-left">Hours</th>
-                </tr>
-              </thead>
-              <tbody>
-                {leaderboardData[currentRoom]?.map((user) => (
-                  <tr key={user.userId} className={user.userId === "currentUser" ? "bg-blue-50" : ""}>
-                    <td className="border p-2">{user.rank}</td>
-                    <td className="border p-2 font-semibold">{user.username}</td>
-                    <td className="border p-2">{user.points}</td>
-                    <td className="border p-2">{user.streak} days</td>
-                    <td className="border p-2">{user.hours} hrs</td>
+        {/* Leaderboard View per Room */}
+        {view === "leaderboard" && currentRoom && (
+          <div>
+            <div className="mb-4">
+              <button 
+                onClick={() => setView("roomContent")}
+                className="px-3 py-1 bg-gray-200 rounded"
+              >
+                ← Back to Room
+              </button>
+            </div>
+            
+            <div className="overflow-x-auto table-container">
+              <table className="min-w-full border-collapse">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="border p-2 text-left">Rank</th>
+                    <th className="border p-2 text-left">Member</th>
+                    <th className="border p-2 text-left">Points</th>
+                    <th className="border p-2 text-left">Streak</th>
+                    <th className="border p-2 text-left">Hours</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {leaderboardData[currentRoom]?.map((user) => (
+                    <tr key={user.userId} className={user.userId === "currentUser" ? "bg-blue-50" : ""}>
+                      <td className="border p-2">{user.rank}</td>
+                      <td className="border p-2 font-semibold">{user.username}</td>
+                      <td className="border p-2">{user.points}</td>
+                      <td className="border p-2">{user.streak} days</td>
+                      <td className="border p-2">{user.hours} hrs</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-          <div className="mt-6 p-4 bg-blue-50 rounded border border-blue-200">
-            <h3 className="font-semibold text-lg mb-2">Your Stats</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 stats-grid">
-              {leaderboardData[currentRoom]?.map(user => {
-                if (user.userId === "currentUser") {
-                  return (
-                    <React.Fragment key={user.userId}>
-                      <div>
-                        <p className="text-gray-600">Rank</p>
-                        <p className="text-2xl font-bold">{user.rank}{user.rank === 1 ? 'st' : user.rank === 2 ? 'nd' : user.rank === 3 ? 'rd' : 'th'}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-600">Points</p>
-                        <p className="text-2xl font-bold">{user.points}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-600">Current Streak</p>
-                        <p className="text-2xl font-bold">{user.streak} days</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-600">Total Hours</p>
-                        <p className="text-2xl font-bold">{user.hours} hrs</p>
-                      </div>
-                    </React.Fragment>
-                  );
-                }
-                return null;
-              })}
+            <div className="mt-6 p-4 bg-blue-50 rounded border border-blue-200">
+              <h3 className="font-semibold text-lg mb-2">Your Stats</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 stats-grid">
+                {leaderboardData[currentRoom]?.map(user => {
+                  if (user.userId === "currentUser") {
+                    return (
+                      <React.Fragment key={user.userId}>
+                        <div>
+                          <p className="text-gray-600">Rank</p>
+                          <p className="text-2xl font-bold">{user.rank}{user.rank === 1 ? 'st' : user.rank === 2 ? 'nd' : user.rank === 3 ? 'rd' : 'th'}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-600">Points</p>
+                          <p className="text-2xl font-bold">{user.points}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-600">Current Streak</p>
+                          <p className="text-2xl font-bold">{user.streak} days</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-600">Total Hours</p>
+                          <p className="text-2xl font-bold">{user.hours} hrs</p>
+                        </div>
+                      </React.Fragment>
+                    );
+                  }
+                  return null;
+                })}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
