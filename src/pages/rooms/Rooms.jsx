@@ -7,21 +7,25 @@ export default function Rooms() {
     name: "",
     description: "",
     category: "Education",
-    isPublic: true
+    isPublic: true,
+    image: null
   });
   const [enrolledRooms, setEnrolledRooms] = useState([
     //example
-    { id: 1, name: "Study Group", memberCount: 24, category: "Education" },
-    { id: 2, name: "Fitness Challenge", memberCount: 16, category: "Health" },
-    { id: 3, name: "Book Club", memberCount: 8, category: "Hobbies" }
+    { id: 1, name: "Study Group", memberCount: 24, category: "Education", image: "/api/placeholder/300/200" },
+    { id: 2, name: "Fitness Challenge", memberCount: 16, category: "Health", image: "/api/placeholder/300/200" },
+    { id: 3, name: "Book Club", memberCount: 8, category: "Hobbies", image: "/api/placeholder/300/200" }
   ]);
   const [publicRooms, setPublicRooms] = useState([
-    { id: 4, name: "Coding Bootcamp", memberCount: 56, category: "Technology" },
-    { id: 5, name: "Language Exchange", memberCount: 38, category: "Education" },
-    { id: 6, name: "Mindfulness Group", memberCount: 19, category: "Wellness" }
+    { id: 4, name: "Coding Bootcamp", memberCount: 56, category: "Technology", image: "/api/placeholder/300/200" },
+    { id: 5, name: "Language Exchange", memberCount: 38, category: "Education", image: "/api/placeholder/300/200" },
+    { id: 6, name: "Mindfulness Group", memberCount: 19, category: "Wellness", image: "/api/placeholder/300/200" }
   ]);
   
-  // Per-room leaderboard data
+  // for image preview in create room form
+  const [imagePreview, setImagePreview] = useState(null);
+  
+  // per-room leaderboard data
   const [leaderboardData, setLeaderboardData] = useState({
     1: [
       { userId: "user1", username: "AlexProgress", points: 850, streak: 12, hours: 42, rank: 1 },
@@ -44,47 +48,52 @@ export default function Rooms() {
     ]
   });
   
-  //  room content for demo
+  //  oom content for demo
   const roomContent = {
     1: {
       name: "Study Group",
       description: "A place to focus on studying together",
       tasks: ["Complete math homework", "Read chapter 5", "Prepare for quiz"],
-      announcements: ["Quiz on Friday!", "New study materials uploaded"]
+      announcements: ["Quiz on Friday!", "New study materials uploaded"],
+      image: "/api/placeholder/800/400"
     },
     2: {
       name: "Fitness Challenge",
       description: "30-day fitness challenge group",
       tasks: ["Daily workout", "Log water intake", "Share progress photo"],
-      announcements: ["New challenge starts Monday!", "Congratulations to last week's winners"]
+      announcements: ["New challenge starts Monday!", "Congratulations to last week's winners"],
+      image: "/api/placeholder/800/400"
     },
     3: {
       name: "Book Club",
       description: "Monthly book discussions",
       tasks: ["Read chapters 1-5", "Post discussion questions", "Vote on next book"],
-      announcements: ["Meeting this Thursday at 7PM", "New book selections posted"]
+      announcements: ["Meeting this Thursday at 7PM", "New book selections posted"],
+      image: "/api/placeholder/800/400"
     }
   };
 
-  //  room selection
+  //room selection
   const selectRoom = (roomId) => {
     setCurrentRoom(roomId);
     setView("roomContent");
   };
 
-  //  leaderboard for current room
+  //leaderboard for current room
   const showLeaderboard = () => {
     if (currentRoom) {
       setView("leaderboard");
     }
   };
 
-  // Create room view
+  //create room view
   const showCreateRoomForm = () => {
     setView("createRoom");
+    //Reset image preview
+    setImagePreview(null);
   };
 
-  // Handle create room form input changes
+  //andle creae room form input change
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setNewRoomData({
@@ -93,17 +102,38 @@ export default function Rooms() {
     });
   };
 
-  // Handle room creation form submission
+  // Handle image upload
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+
+      // For demo purposes, i'll use a local URL, but in a real app, i would get a URL back from the server
+      const imageUrl = URL.createObjectURL(file);
+      setImagePreview(imageUrl);
+      setNewRoomData({
+        ...newRoomData,
+        image: file // in real app, this would be a URL after upload
+      });
+    }
+  };
+
+  // handle room creation form submission
   const handleCreateRoom = (e) => {
     e.preventDefault();
     
     // Create a new room with a unique ID
     const newId = Math.max(...[...enrolledRooms, ...publicRooms].map(room => room.id)) + 1;
+    
+    // In a real app, i would upload the image first and get a URL back
+    // For demo purposes, we decided to use a placeholder image or the local preview
+    const imageUrl = imagePreview || "/api/placeholder/300/200";
+    
     const newRoom = {
       id: newId,
       name: newRoomData.name,
       category: newRoomData.category,
-      memberCount: 1 // Starting with just the creator
+      memberCount: 1, // Starting with just the creator
+      image: imageUrl
     };
     
     // Add room content
@@ -111,7 +141,8 @@ export default function Rooms() {
       name: newRoomData.name,
       description: newRoomData.description,
       tasks: [],
-      announcements: ["Welcome to the new room!"]
+      announcements: ["Welcome to the new room!"],
+      image: imageUrl
     };
     
     // Initialize leaderboard for the new room
@@ -119,44 +150,55 @@ export default function Rooms() {
       { userId: "currentUser", username: "You", points: 100, streak: 1, hours: 0, rank: 1 }
     ];
     
-    // Update state
+    // Update state- fix here: Always add to enrolled rooms (since user created it)
+    // conditionally add to public rooms only if it's marked as public
+    setEnrolledRooms([...enrolledRooms, newRoom]);
+    
     if (newRoomData.isPublic) {
       setPublicRooms([...publicRooms, newRoom]);
-    } else {
-      setEnrolledRooms([...enrolledRooms, newRoom]);
     }
     
-    // Update room content
-    setNewRoomData(prev => ({ ...prev, [newId]: newRoomContentData }));
+    // update room content with the new room
+    setRoomContent(prev => ({ ...prev, [newId]: newRoomContentData }));
     
-    // Initialize leaderboard
+    // initialize leaderboard
     setLeaderboardData(prev => ({ ...prev, [newId]: newLeaderboard }));
     
-    // Reset form and go back to rooms view
+    // reset form and go back to rooms view
     setNewRoomData({
       name: "",
       description: "",
       category: "Education",
-      isPublic: true
+      isPublic: true,
+      image: null
     });
     
+    // cear image preview
+    setImagePreview(null);
+    
     setView("myRooms");
+  };
+
+  // Funct to update the room content state
+  const setRoomContent = (updatedContent) => {
+    Object.keys(updatedContent).forEach(roomId => {
+      roomContent[roomId] = updatedContent[roomId];
+    });
   };
 
   // Join a public room
   const joinRoom = (roomId) => {
     const roomToJoin = publicRooms.find(room => room.id === roomId);
     if (roomToJoin) {
-      // Update room with increased member count
+      //update room with increased member count
       const updatedRoom = { ...roomToJoin, memberCount: roomToJoin.memberCount + 1 };
       
-      // Add to enrolled rooms
+      // add to enrolled rooms
       setEnrolledRooms([...enrolledRooms, updatedRoom]);
       
-      // Remove from public rooms
+      //remove from public rooms
       setPublicRooms(publicRooms.filter(room => room.id !== roomId));
-      
-      // If the room doesn't have a leaderboard entry yet, add one
+      //if the room doesn't have a leaderboard entry yet, add one
       if (!leaderboardData[roomId]) {
         const newMemberData = { 
           userId: "currentUser", 
@@ -175,12 +217,50 @@ export default function Rooms() {
     }
   };
 
+  // add CSS for mobile responsiveness
+  useEffect(() => {
+    // add media query styles to document head
+    const style = document.createElement('style');
+    style.innerHTML = `
+      @media (max-width: 768px) {
+        .rooms-nav-buttons {
+          flex-direction: column;
+          width: 100%;
+        }
+        .rooms-nav-buttons button {
+          margin-bottom: 8px;
+          width: 100%;
+        }
+        .mobile-full-width {
+          width: 100%;
+        }
+        .table-container {
+          overflow-x: auto;
+        }
+        .stats-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      @media (max-width: 480px) {
+        .stats-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+    
+    // Cleanup function
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+
   return (
     <div className="rooms-container p-4">
-      {/* Navigation Bar */}
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Rooms</h1>
-        <div className="flex space-x-3">
+      {/* Navigation Bar for mobile*/}
+      <div className="flex flex-col md:flex-row justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold mb-4 md:mb-0">Rooms</h1>
+        <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-3 w-full md:w-auto rooms-nav-buttons">
           <button 
             onClick={() => setView("myRooms")}
             className={`px-4 py-2 rounded ${view === "myRooms" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
@@ -202,7 +282,7 @@ export default function Rooms() {
         </div>
       </div>
 
-      {/* My Rooms View */}
+      {/* My Rooms*/}
       {view === "myRooms" && (
         <div>
           <h2 className="text-xl font-semibold mb-4">My Enrolled Rooms</h2>
@@ -214,12 +294,21 @@ export default function Rooms() {
               {enrolledRooms.map(room => (
                 <div 
                   key={room.id} 
-                  className="border rounded p-4 cursor-pointer hover:bg-gray-50"
+                  className="border rounded overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer mobile-full-width"
                   onClick={() => selectRoom(room.id)}
                 >
-                  <h3 className="font-semibold text-lg">{room.name}</h3>
-                  <p className="text-gray-600">Category: {room.category}</p>
-                  <p className="text-gray-600">Members: {room.memberCount}</p>
+                  <div className="h-40 overflow-hidden">
+                    <img 
+                      src={room.image || "/api/placeholder/300/200"} 
+                      alt={room.name} 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-semibold text-lg">{room.name}</h3>
+                    <p className="text-gray-600">Category: {room.category}</p>
+                    <p className="text-gray-600">Members: {room.memberCount}</p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -227,32 +316,44 @@ export default function Rooms() {
         </div>
       )}
 
-      {/* Public Rooms View */}
+      {/* public rooms*/}
       {view === "publicRooms" && (
         <div>
           <h2 className="text-xl font-semibold mb-4">Public Rooms</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {publicRooms.map(room => (
-              <div key={room.id} className="border rounded p-4">
-                <h3 className="font-semibold text-lg">{room.name}</h3>
-                <p className="text-gray-600">Category: {room.category}</p>
-                <p className="text-gray-600">Members: {room.memberCount}</p>
-                <button 
-                  onClick={() => joinRoom(room.id)}
-                  className="mt-2 px-3 py-1 bg-blue-500 text-white rounded text-sm"
-                >
-                  Join Room
-                </button>
+              <div key={room.id} className="border rounded overflow-hidden shadow-sm mobile-full-width">
+                <div className="h-40 overflow-hidden">
+                  <img 
+                    src={room.image || "/api/placeholder/300/200"} 
+                    alt={room.name} 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="p-4">
+                  <h3 className="font-semibold text-lg">{room.name}</h3>
+                  <p className="text-gray-600">Category: {room.category}</p>
+                  <p className="text-gray-600">Members: {room.memberCount}</p>
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation(); // prevent triggering parent's onClick
+                      joinRoom(room.id);
+                    }}
+                    className="mt-2 px-3 py-1 bg-blue-500 text-white rounded text-sm"
+                  >
+                    Join Room
+                  </button>
+                </div>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      {/*Create Room View*/}
+      {/* create oom view */}
       {view === "createRoom" && (
-        <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
+        <div className="max-w-md mx-auto bg-white p-4 md:p-6 rounded-lg shadow-md">
           <div className="mb-4">
             <button 
               onClick={() => setView("myRooms")}
@@ -297,6 +398,46 @@ export default function Rooms() {
               ></textarea>
             </div>
             
+            {/* img upload section */}
+            <div className="mb-4">
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="roomImage">
+                Room Image
+              </label>
+              <div className="flex flex-wrap items-center">
+                <input
+                  id="roomImage"
+                  name="image"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
+                <label 
+                  htmlFor="roomImage" 
+                  className="cursor-pointer bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline mb-2 md:mb-0"
+                >
+                  Choose Image
+                </label>
+                <span className="ml-0 md:ml-3 text-sm text-gray-600 w-full md:w-auto">
+                  {newRoomData.image ? newRoomData.image.name : "No file chosen"}
+                </span>
+              </div>
+              
+              {/* img preview */}
+              {imagePreview && (
+                <div className="mt-3">
+                  <p className="text-sm text-gray-700 mb-1">Preview:</p>
+                  <div className="border rounded overflow-hidden h-40">
+                    <img 
+                      src={imagePreview} 
+                      alt="Room preview" 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+            
             <div className="mb-4">
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="roomCategory">
                 Category
@@ -331,17 +472,17 @@ export default function Rooms() {
               </label>
             </div>
             
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-center justify-between">
               <button
                 type="submit"
-                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full sm:w-auto mb-2 sm:mb-0"
               >
                 Create Room
               </button>
               <button
                 type="button"
                 onClick={() => setView("myRooms")}
-                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full sm:w-auto"
               >
                 Cancel
               </button>
@@ -350,35 +491,49 @@ export default function Rooms() {
         </div>
       )}
 
-      {/* Room Content View */}
+      {/* room content  */}
       {view === "roomContent" && currentRoom && (
         <div>
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
             <button 
               onClick={() => setView("myRooms")}
-              className="px-3 py-1 bg-gray-200 rounded"
+              className="px-3 py-1 bg-gray-200 rounded mb-2 sm:mb-0 w-full sm:w-auto"
             >
               ← Back to Rooms
             </button>
             <button 
               onClick={showLeaderboard}
-              className="px-4 py-2 bg-purple-500 text-white rounded"
+              className="px-4 py-2 bg-purple-500 text-white rounded w-full sm:w-auto"
             >
               Leaderboard
             </button>
           </div>
           
-          <h2 className="text-2xl font-bold mb-4">{roomContent[currentRoom]?.name}</h2>
-          <p className="text-gray-600 mb-6">{roomContent[currentRoom]?.description}</p>
+          {/* room Header with img */}
+          <div className="mb-6">
+            <div className="rounded-lg overflow-hidden shadow-md mb-4 h-40 md:h-60">
+              <img 
+                src={roomContent[currentRoom]?.image || "/api/placeholder/800/400"} 
+                alt={roomContent[currentRoom]?.name} 
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <h2 className="text-2xl font-bold">{roomContent[currentRoom]?.name}</h2>
+            <p className="text-gray-600">{roomContent[currentRoom]?.description}</p>
+          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="border rounded p-4">
               <h3 className="font-semibold text-lg mb-2">Tasks</h3>
-              <ul className="list-disc pl-5">
-                {roomContent[currentRoom]?.tasks.map((task, index) => (
-                  <li key={index}>{task}</li>
-                ))}
-              </ul>
+              {roomContent[currentRoom]?.tasks.length === 0 ? (
+                <p className="text-gray-500">No tasks yet. Get started by adding your first task!</p>
+              ) : (
+                <ul className="list-disc pl-5">
+                  {roomContent[currentRoom]?.tasks.map((task, index) => (
+                    <li key={index}>{task}</li>
+                  ))}
+                </ul>
+              )}
             </div>
             <div className="border rounded p-4">
               <h3 className="font-semibold text-lg mb-2">Announcements</h3>
@@ -392,7 +547,7 @@ export default function Rooms() {
         </div>
       )}
 
-      {/* Leaderboard View - Now Per Room */}
+      {/* lederboard View per room*/}
       {view === "leaderboard" && currentRoom && (
         <div>
           <div className="mb-4">
@@ -407,7 +562,7 @@ export default function Rooms() {
           <h2 className="text-2xl font-bold mb-2">{roomContent[currentRoom]?.name} Leaderboard</h2>
           <p className="text-gray-600 mb-6">See how you rank among other members</p>
           
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto table-container">
             <table className="min-w-full border-collapse">
               <thead>
                 <tr className="bg-gray-100">
@@ -434,7 +589,7 @@ export default function Rooms() {
 
           <div className="mt-6 p-4 bg-blue-50 rounded border border-blue-200">
             <h3 className="font-semibold text-lg mb-2">Your Stats</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 stats-grid">
               {leaderboardData[currentRoom]?.map(user => {
                 if (user.userId === "currentUser") {
                   return (
