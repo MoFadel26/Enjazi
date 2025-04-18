@@ -4,6 +4,9 @@ import { CardContent } from 'components/layout/Cards/cardContent';
 import { CalendarDays, CheckSquare, Zap, Repeat } from 'lucide-react';
 import { Button } from 'components/layout/Buttons/button';
 import { Progress } from 'components/layout/Progress/progress';
+
+import PerformanceHeader from 'components/layout/Header/PerformanceHeader';
+
 const friends = [
   { name: 'Ahmed', streak: 12, hours: 32.1, progress: 90, comparison: '+13%', trend: 'up' },
   { name: 'Yusuf', streak: 15, hours: 30.5, progress: 85, comparison: '+7%', trend: 'up' },
@@ -15,6 +18,7 @@ const friends = [
 export default function PerformanceDashboard() {
   return (
     <div className="p-6 space-y-6 bg-[#f8fafc]">
+      <PerformanceHeader/>
       {/* Overview Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
