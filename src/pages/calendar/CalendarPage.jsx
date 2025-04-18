@@ -214,6 +214,125 @@ function taskToEvent (task) {
 }
 
 function CalendarPage() {
+
+	// Initial States
+	const [view, setView] = useState("month");
+	const [event, setEvent] = useState(listOfEvents);
+	const [currentDate, setCurrentDate] = useState(new Date());
+	const [modelOpen, setModalOpen] = useState(false);
+	const [editEvent, setEditEvent] = useState(null);
+
+	//  
+	const hasSeedTasks = useRef(false);
+
+	//
+	useEffect(() => {
+		if(!hasSeedTasks.current) {
+			const taskEvents = listOfTasks.map(taskToEvent);
+			setEvent((prev) => [...prev, ...taskEvents]);
+			hasSeedTasks.current = true;
+		}
+	}, []);
+
+	// *** Navigations ***
+
+	// Going to previous day
+	function goPrev() {
+		 if (view === 'month') {
+		  setCurrentDate((date) => subMonths(date,1));
+		 } else if (view === 'week') {
+			setCurrentDate((date) => addDays(date, -7));
+		 } else {
+			setCurrentDate((date) => addDays(date, -1))
+		 }
+	}
+	
+	// Going next day
+	function goNext () {
+		if (view === 'month') {
+		  setCurrentDate((date) => subMonths(date,1));
+		 } else if (view === 'week') {
+			setCurrentDate((date) => addDays(date, 7));
+		 } else {
+			setCurrentDate((date) => addDays(date, 1))
+		 }
+	}
+
+	// Going to current Date
+	function goToday() {
+		setCurrentDate(new Date());
+	}
+
+	// Getting month days *** Helper ***
+  const getMonthDays = () =>
+    eachDayOfInterval({
+      start: startOfMonth(currentDate),
+      end: endOfMonth(currentDate),
+    });
+  const eventsOn = (date) => event.filter((e) => isSameDay(e.start, date));
+
+	//  ************** Controlling Models ************** 
+	function closeModel() {
+		setEditEvent(null);
+		setModalOpen(false);
+	}
+
+	function openModel(tempEvent) {
+		setEditEvent(tempEvent || null);
+		setModalOpen(true);
+	}
+
+	function handleSave(tempEvent) {
+		if (tempEvent.id) {
+			setEvent((evts) => evts.map((evt) => (evt.id === tempEvent.id ? tempEvent : evt)));
+		} else {
+			tempEvent.id = Date.now().toString();
+			setEvent((evts) => [...evts, tempEvent]);
+		}
+		closeModel();
+	}
+
+	function handleDelete(id) {
+		setEvent((evts) => evts.filter((evt) => evt.id !== id));
+		closeModel();
+	}
+
+	//  ************** View by Months ************** 
+	function MonthView () {
+		return (
+			<div>
+
+			</div>
+		);
+	}
+
+	//  ************** View by Weeks **************
+	function WeekView () {
+		return (
+			<div>
+
+			</div>
+		);
+	}
+
+	//  ************** View by Days **************
+	function TodayView () {
+		return (
+			<div>
+
+			</div>
+		);
+	}
+
+	//  ************** Mobile View (Mobile Month) **************
+	function MobileView () {
+		return (
+			<div>
+
+			</div>
+		);
+	}
+
   return (
 		<div>
 
