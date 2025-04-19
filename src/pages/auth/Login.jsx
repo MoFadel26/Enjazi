@@ -10,6 +10,7 @@ function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    navigate('/dashboard');
   };
 
   return (
@@ -64,8 +65,8 @@ function Login() {
           </button>
         </Link> */}
           <button
-            type="submit"
-            className="w-full py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300 transition duration-200"
+              type="submit"
+              className="w-full py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300 transition duration-200"
           >
             Login
           </button>
