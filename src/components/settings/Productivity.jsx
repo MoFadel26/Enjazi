@@ -1,6 +1,9 @@
 import React, { useState } from "react";
+import { useTheme } from "../../contexts/ThemeContext";
 
 const Productivity = () => {
+  const { isDark } = useTheme();
+  
   // State for productivity settings
   const [settings, setSettings] = useState({
     dailyTasks: 5,
@@ -36,18 +39,18 @@ const Productivity = () => {
   };
 
   return (
-    <div className="bg-white rounded-lg p-6 shadow-sm">
-      <h2 className="text-xl font-semibold text-gray-800">Daily Goals</h2>
-      <p className="text-gray-600 text-sm mb-6">
+    <div className={`${isDark ? 'bg-gray-900 text-white' : 'bg-white'} rounded-lg p-4 md:p-6 shadow-sm`}>
+      <h2 className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-gray-800'}`}>Daily Goals</h2>
+      <p className={`${isDark ? 'text-gray-300' : 'text-gray-600'} text-sm mb-6`}>
         Set your daily productivity targets to track your progress.
       </p>
 
       <form onSubmit={handleSubmit}>
         {/* Daily Goals */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-8">
           {/* Daily Tasks */}
           <div>
-            <label htmlFor="dailyTasks" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="dailyTasks" className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'} mb-1`}>
               Daily Tasks
             </label>
             <input
@@ -58,14 +61,14 @@ const Productivity = () => {
               onChange={handleInputChange}
               min="1"
               max="50"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`w-full px-3 py-2 border ${isDark ? 'bg-gray-800 border-gray-700 text-white' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
             />
-            <p className="text-xs text-gray-500 mt-1">Target number of daily tasks</p>
+            <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'} mt-1`}>Target number of daily tasks</p>
           </div>
 
           {/* Focus Hours */}
           <div>
-            <label htmlFor="focusHours" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="focusHours" className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'} mb-1`}>
               Focus Hours
             </label>
             <input
@@ -76,14 +79,14 @@ const Productivity = () => {
               onChange={handleInputChange}
               min="1"
               max="24"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`w-full px-3 py-2 border ${isDark ? 'bg-gray-800 border-gray-700 text-white' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
             />
-            <p className="text-xs text-gray-500 mt-1">Target hours of deep focus work</p>
+            <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'} mt-1`}>Target hours of deep focus work</p>
           </div>
 
           {/* Pomodoro Sessions */}
           <div>
-            <label htmlFor="pomodoroSessions" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="pomodoroSessions" className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'} mb-1`}>
               Pomodoro Sessions
             </label>
             <input
@@ -94,24 +97,26 @@ const Productivity = () => {
               onChange={handleInputChange}
               min="1"
               max="20"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`w-full px-3 py-2 border ${isDark ? 'bg-gray-800 border-gray-700 text-white' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
             />
-            <p className="text-xs text-gray-500 mt-1">Target pomodoro sessions per day</p>
+            <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'} mt-1`}>Target pomodoro sessions per day</p>
           </div>
         </div>
 
         {/* Week Start Day */}
         <div className="mb-8">
-          <h3 className="text-sm font-medium text-gray-700 mb-3">Week Start Day</h3>
-          <div className="grid grid-cols-7 gap-2">
+          <h3 className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'} mb-3`}>Week Start Day</h3>
+          <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
             {["mon", "tue", "wed", "thu", "fri", "sat", "sun"].map((day) => (
               <button
                 key={day}
                 type="button"
-                className={`py-2 px-4 text-center rounded-md ${
+                className={`py-2 px-2 md:px-4 text-center rounded-md text-sm ${
                   settings.weekStartDay === day
                     ? "bg-blue-500 text-white"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    : isDark 
+                      ? "bg-gray-700 text-gray-300 hover:bg-gray-600" 
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                 }`}
                 onClick={() => handleWeekStartChange(day)}
               >
@@ -123,17 +128,17 @@ const Productivity = () => {
 
         {/* Task Settings */}
         <div className="mb-8">
-          <h3 className="text-sm font-medium text-gray-700 mb-4">Task Settings</h3>
+          <h3 className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'} mb-4`}>Task Settings</h3>
           
           {/* Default Task Duration */}
-          <div className="mb-4">
+          <div className="mb-6">
             <div className="flex justify-between items-center mb-1">
-              <label htmlFor="defaultTaskDuration" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="defaultTaskDuration" className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                 Default Task Duration
               </label>
-              <span className="text-sm text-gray-500">{settings.defaultTaskDuration} minutes</span>
+              <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>{settings.defaultTaskDuration} minutes</span>
             </div>
-            <p className="text-xs text-gray-500 mb-2">Default time allocation for new tasks</p>
+            <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'} mb-2`}>Default time allocation for new tasks</p>
             <input
               type="range"
               id="defaultTaskDuration"
@@ -143,22 +148,22 @@ const Productivity = () => {
               min="5"
               max="120"
               step="5"
-              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+              className={`w-full h-2 ${isDark ? 'bg-gray-700' : 'bg-gray-200'} rounded-lg appearance-none cursor-pointer`}
             />
           </div>
           
           {/* Task Order */}
           <div>
-            <label htmlFor="taskOrder" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="taskOrder" className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'} mb-1`}>
               Task Order
             </label>
-            <p className="text-xs text-gray-500 mb-2">Default sorting for task lists</p>
+            <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'} mb-2`}>Default sorting for task lists</p>
             <select
               id="taskOrder"
               name="taskOrder"
               value={settings.taskOrder}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`w-full px-3 py-2 border ${isDark ? 'bg-gray-800 border-gray-700 text-white' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
             >
               <option value="due-date-asc">Due date (ascending)</option>
               <option value="due-date-desc">Due date (descending)</option>
@@ -171,10 +176,10 @@ const Productivity = () => {
         </div>
 
         {/* Save Button */}
-        <div className="flex justify-end">
+        <div className="flex justify-center sm:justify-end">
           <button
             type="submit"
-            className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded"
+            className="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white py-2 px-6 rounded"
           >
             Save Settings
           </button>

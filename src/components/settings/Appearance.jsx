@@ -31,8 +31,8 @@ const Appearance = ({ onThemeChange }) => {
     
     // Call the parent component's theme change handler
     if (onThemeChange) {
-      onThemeChange(theme);
-    }
+    onThemeChange(theme);
+  }
   };
 
   // Handle accent color change
