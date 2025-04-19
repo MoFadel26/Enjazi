@@ -1,5 +1,5 @@
 import React from "react";
-import {Book, Dumbbell , House, Briefcase, CodeXml, Coffee, ListFilter} from "lucide-react";
+import {Book, Dumbbell , House, Briefcase, CodeXml, Coffee} from "lucide-react";
 
 // ----------------------- ICONS -----------------------
 
