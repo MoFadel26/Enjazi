@@ -1,7 +1,7 @@
 import React from "react";
 import { formatDate } from "./Tasks";
 import {CalendarIcon, CheckIcon, renderCategoryIcon, renderPriority} from "./Icons"
-
+import {Clock} from "lucide-react";
 export function TaskItem({task, onToggleComplete, onOpenEdit}) {
   const handleClick = () => {
     onToggleComplete(task.id);
@@ -26,9 +26,13 @@ export function TaskItem({task, onToggleComplete, onOpenEdit}) {
             </p>
           </div>
           <div className="flex flex-wrap gap-4 items-center text-xs">
-            <span className="gap-2 flex items-center text-gray-400">
+            <span className="gap-1 flex items-center text-gray-400">
               <CalendarIcon></CalendarIcon>
               {formatDate(task.dueDate)}
+            </span>
+
+            <span className="gap-1 flex items-center text-gray-400">
+              <Clock className="w-4 h-4"> </Clock> from {task.startTime} to {task.endTime}
             </span>
 
             {/*Task Icons (Priority & Category)*/}

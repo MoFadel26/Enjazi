@@ -168,21 +168,21 @@ export function renderCategoryIcon(category) {
 export function renderPriority(priorityType) {
   if (priorityType==="Low") {
     return (
-      <span className="inline-flex items-center bg-green-100 text-green-600 text-xs font-semibold px-2 py-1 rounded-full">
+      <span className="inline-flex items-center bg-green-100 text-green-600 text-xs font-semibold px-2 py-1 rounded-full gap-1">
         <LowPriorityIcon />
         Low
       </span>
     );
   } else if (priorityType==="Medium") {
     return (
-      <span className="inline-flex items-center bg-yellow-100 text-yellow-600 text-xs font-semibold px-2 py-1 rounded-full">
+      <span className="inline-flex items-center bg-yellow-100 text-yellow-600 text-xs font-semibold px-2 py-1 rounded-full gap-1">
         <MedPriorityIcon />
         Medium
       </span>
     );
   } else if (priorityType==="High") {
     return (
-      <span className="inline-flex items-center bg-red-100 text-red-600 text-xs font-semibold px-2 py-1 rounded-full">
+      <span className="inline-flex items-center bg-red-100 text-red-600 text-xs font-semibold px-2 py-1 rounded-full gap-1">
         <HighPriorityIcon />
         High
       </span>

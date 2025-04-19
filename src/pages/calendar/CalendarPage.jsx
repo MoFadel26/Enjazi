@@ -28,8 +28,6 @@ import {
   Coffee,
   ListFilter,
   X,
-  Trash2,
-  Check
 } from "lucide-react";
 
 
@@ -77,8 +75,8 @@ const listOfEvents = [
     title: "Team Meeting",
     priority: "High",
     description: "Discuss Q2 goals",
-    start: new Date(2025, 3, 2, 10, 0),
-    end: new Date(2025, 3, 2, 11, 0),
+    startTime: new Date(2025, 3, 2, 10, 0),
+    endTime: new Date(2025, 3, 2, 11, 0),
     colour: "purple",
   },
   {
@@ -86,8 +84,8 @@ const listOfEvents = [
     title: "Product Demo",
     priority: "Medium",
     description: "Show feature set",
-    start: new Date(2025, 3, 7, 9, 30),
-    end: new Date(2025, 3, 7, 10, 30),
+    startTime: new Date(2025, 3, 7, 9, 30),
+    endTime: new Date(2025, 3, 7, 10, 30),
     colour: "blue",
   },
 ];
@@ -148,6 +146,7 @@ export const renderPriority = (priorityType) => {
   return null;
 };
 
+
 // Helper Functions (Utiliies):
 function startofWeek(date) {
 	const tempDate = new Date(date);
@@ -166,8 +165,8 @@ function addDays(date, n) {
 function taskToEvent (task) {
 	const icon = categoryIcons[task.category] || {};
 
-  const start = new Date(`${task.dueDate}T${task.startTime || "09:00"}:00`);
-  const end = new Date(`${task.dueDate}T${task.endTime || "10:00"}:00`);
+  const startTime = new Date(`${task.dueDate}T${task.startTime || "09:00"}:00`);
+  const endTime = new Date(`${task.dueDate}T${task.endTime || "10:00"}:00`);
 
 	// Return the Event
   return {
@@ -175,8 +174,8 @@ function taskToEvent (task) {
     title: task.title,
     description: task.description,
     priority: task.priority,
-    start,
-    end,
+    startTime,
+    endTime,
     colour: icon.colour || priorityColours[task.priority],
     icon: icon.icon,
     isTask: true,
@@ -193,13 +192,13 @@ function EventForm ({event,  onSave, onDelete, onCancel}) {
 
 	// States for dates and times
   const [date, setDate] = useState(
-    event ? format(event.start, "yyyy-MM-dd") : format(new Date(), "yyyy-MM-dd")
+    event ? format(event.startTime, "yyyy-MM-dd") : format(new Date(), "yyyy-MM-dd")
   );
   const [startTime, setStartTime] = useState(
-    event ? format(event.start, "HH:mm") : "09:00"
+    event ? format(event.startTime, "HH:mm") : "09:00"
   );
   const [endTime, setEndTime] = useState(
-    event ? format(event.end, "HH:mm") : "10:00"
+    event ? format(event.endTime, "HH:mm") : "10:00"
   );
 
 	useEffect (() => {
@@ -208,25 +207,34 @@ function EventForm ({event,  onSave, onDelete, onCancel}) {
 		}
 	}, [priority, event]);
 
-	function handleSubmit(ev) {
-		ev.preventDefault();
-		const [startH, startM] = startTime.split(":" ).map(Number);
-    const [endH, endM] = endTime.split(":" ).map(Number);
+  function handleSubmit(ev) {
+    ev.preventDefault();
+  
+    const [startH, startM] = startTime.split(":").map(Number);
+    const [endH, endM] = endTime.split(":").map(Number);
     const [year, month, day] = date.split("-").map(Number);
-
+  
+    const start = new Date(year, month - 1, day, startH, startM);
+    const end = new Date(year, month - 1, day, endH, endM);
+  
+    if (start >= end) {
+      alert("Start time must be before end time.");
+      return;
+    }
+  
     const newEvt = {
       id: event?.id,
       title,
       description,
       priority,
-      start: new Date(year, month - 1, day, startH, startM),
-      end: new Date(year, month - 1, day, endH, endM),
+      startTime: start,
+      endTime: end,
       colour,
     };
-
+  
     onSave(newEvt);
-	}
-
+  }
+  
 	function durationHours() {
     const [sh, sm] = startTime.split(":" ).map(Number);
     const [eh, em] = endTime.split(":" ).map(Number);
@@ -265,13 +273,12 @@ function EventForm ({event,  onSave, onDelete, onCancel}) {
             <select
               value={priority}
               onChange={(e) => setPriority(e.target.value)}
-              className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-transparent px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="rounded-md text-gray-700 text-sm block w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               {Object.keys(priorityColours).map((p) => (
                 <option key={p}>{p}</option>
               ))}
             </select>
-            {renderPriority(priority)}
           </div>
         </div>
 
@@ -285,7 +292,7 @@ function EventForm ({event,  onSave, onDelete, onCancel}) {
             <select
               value={colour}
               onChange={(e) => setColour(e.target.value)}
-              className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-transparent px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="rounded-md text-gray-700 text-sm block w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               {colourOptions.map(({ value, label }) => (
                 <option key={value} value={value}>
@@ -293,7 +300,6 @@ function EventForm ({event,  onSave, onDelete, onCancel}) {
                 </option>
               ))}
             </select>
-            {renderPriority(priority)}
           </div>
         </div>
 
@@ -433,7 +439,7 @@ function CalendarPage() {
       start: startOfMonth(currentDate),
       end: endOfMonth(currentDate),
     });
-  const eventsOn = (date) => event.filter((e) => isSameDay(e.start, date));
+  const eventsOn = (date) => event.filter((e) => isSameDay(e.startTime, date));
 
 	//  ************** Controlling Models ************** 
 	function closeModel() {
@@ -531,7 +537,7 @@ function CalendarPage() {
                       {Icon && <Icon className="w-3 h-3 mr-0.5 opacity-80" />}
                       {renderPriority(ev.priority)}
                       <span className="flex-1 truncate">{ev.title}</span>
-                      <span className="ml-1 opacity-60 whitespace-nowrap">{format(ev.start, "h:mm a")}</span>
+                      <span className="ml-1 opacity-60 whitespace-nowrap">{format(ev.startTime, "h:mm a")}</span>
                     </div>
                   );
                 })}
@@ -578,7 +584,7 @@ function CalendarPage() {
               </div>
               {/* Days - Columns */}
               {days.map((day) => {
-                const ev = event.find((e) => e.start.getHours() === hour && isSameDay(e.start, day));
+                const ev = event.find((e) => e.startTime.getHours() === hour && isSameDay(e.startTime, day));
                 const Icon = ev?.icon;
                 return (
                   <div
@@ -595,7 +601,7 @@ function CalendarPage() {
                         className={`absolute left-1 right-1 top-[1px] p-1 rounded text-xs cursor-pointer flex items-center space-x-1 ${
                           colourStyles[ev.colour] || ev.colour
                         }`}
-                        style={{height:((ev.end - ev.start) / (1000 * 60 * 60)) * H -2,}}
+                        style={{height:((ev.endTime - ev.startTime) / (1000 * 60 * 60)) * H -2,}}
                       >
                         {Icon && <Icon className="w-3 h-3" />}
                         {renderPriority(ev.priority)}
@@ -656,7 +662,7 @@ function CalendarPage() {
               const Icon = tempEvent.icon;
               const sh = tempEvent.start.getHours();
               const sm = tempEvent.start.getMinutes();
-              const duration = (tempEvent.end - tempEvent.start) / 3600000; // hrs
+              const duration = (tempEvent.endTime - tempEvent.startTime) / 3600000; // hrs
               return (
                 <div
                   key={tempEvent.id}
@@ -679,7 +685,7 @@ function CalendarPage() {
                       {tempEvent.title}
                     </div>
                     <div className="text-xs opacity-70">
-                      {format(tempEvent.start, "h:mm a")} – {format(tempEvent.end, "h:mm a")}
+                      {format(tempEvent.startTime, "h:mm a")} – {format(tempEvent.endTime, "h:mm a")}
                     </div>
                   </div>
                 </div>
@@ -778,7 +784,7 @@ function CalendarPage() {
                 {renderPriority(tempEvent.priority)}
                 <span className="truncate flex-1">{tempEvent.title}</span>
                 <span className="ml-2 text-xs opacity-70">
-                  {format(tempEvent.start, "h:mm a")}
+                  {format(tempEvent.startTime, "h:mm a")}
                 </span>
               </div>
             );
@@ -848,7 +854,7 @@ function CalendarPage() {
             {view === 'week' && <WeekView></WeekView>}
             {view === 'day' && <TodayView></TodayView>}
             {/* Small Screens */}
-
+            {view !== 'week' && <MobileView></MobileView>}
           </div>
         </div>
       </div>
