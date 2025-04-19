@@ -22,7 +22,7 @@ function SignUp() {
   const handleSubmit = (e) => {
     e.preventDefault();
     /*Navigate to Login after Signing up*/
-    navigate('/login')
+    navigate('/login');
   };
 
   return (

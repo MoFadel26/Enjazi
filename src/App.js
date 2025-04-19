@@ -2,7 +2,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
-import { AccentColorProvider } from './contexts/AccentColorContext';
 import './styles/darkMode.css';
 import Login from 'pages/auth/Login.jsx';
 import SignUp from 'pages/auth/SignUp.jsx';
@@ -16,8 +15,6 @@ import Calendar from 'pages/calendar/CalendarPage';
 import Performance from 'pages/performance/Performance';
 import Rooms from 'pages/rooms/Rooms';
 import Settings from 'pages/settings/settings';
-import './styles/accentColor.css'; // Import CSS globally
-import './index.css'; // Your other styles
 
 function App() {
   return (
@@ -31,8 +28,10 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/forget" element={<Forget />} />
           <Route path="/tasks" element={<Tasks />} />
-          <Route element={<MainLayout />}>
+          <Route element={<AdminLayout />}>
             <Route path="/admin" element={<Admin />} />
+          </Route>
+          <Route element={<MainLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/calendar" element={<Calendar />} />
             <Route path="/performance" element={<Performance />} />

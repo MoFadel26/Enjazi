@@ -1,13 +1,12 @@
 // components/layout/MainLayout.jsx
-import Header from "components/layout/Header/Header";
-import Sidebar from "components/layout/Sidebar/Sidebar";
+import Header from "components/layout/header/Header";
+import Sidebar from "components/layout/sidebar/Sidebar";
 import { Outlet, useLocation } from "react-router-dom";
 
 const pathToTitle = {
     "/dashboard": "Dashboard",
     "/profile": "Profile",
     "/settings": "Settings",
-    "/admin": "Admin",
     "/tasks": "Tasks",
     "/calendar": "Calendar",
     "/performance": "Performance",
@@ -23,7 +22,7 @@ const pathToTitle = {
         <Sidebar />
   
         <div className="flex flex-col flex-1 overflow-hidden">
-          {/*<Header title={title} />*/}
+          {/*<header title={title} />*/}
   
           <main className="p-4 overflow-auto">
             <Outlet />
@@ -38,8 +37,8 @@ const pathToTitle = {
 //     const title = pathToTitle[location.pathname] || 'Page'
 //     return (
 //         <>
-//             <Header title={title}/>
-//             <Sidebar />
+//             <header title={title}/>
+//             <sidebar />
 //             {/* <main>{children}</main> */}
 //             <main>
 //                 <Outlet />

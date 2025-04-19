@@ -1,4 +1,4 @@
-// src/components/layout/Sidebar/Sidebar.jsx
+// src/components/layout/sidebar/sidebar.jsx
 import { Link, useLocation } from "react-router-dom"
 import { LayoutDashboard, CheckSquare, Calendar, BarChart2, Users, Settings, HelpCircle, Menu, X } from "lucide-react"
 import { useState } from "react"
@@ -58,7 +58,7 @@ export default function Sidebar() {
         {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
       </button>
 
-      {/* Sidebar */}
+      {/* sidebar */}
       <div
         className={`
           fixed md:static top-0 left-0 h-full w-64 

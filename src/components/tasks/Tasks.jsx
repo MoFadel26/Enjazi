@@ -4,7 +4,7 @@ import TaskModal from "./EditAddTask";
 import View from "./Views";
 import TopBar from "./TopBar";
 import Categories from "./Categories";
-import Sidebar from "components/layout/Sidebar/Sidebar";
+import Sidebar from "components/layout/sidebar/Sidebar";
 
 
 const listOfTasks = [
@@ -189,7 +189,7 @@ export function Tasks() {
 
         <div className="flex flex-col w-full min-h-screen bg-[#f8fafc] font-inter">
           <div className="flex-1 flex w-full flex-wrap sm:mx-auto md:mx-auto lg:mx-0">
-            {/* Desktop Sidebar */}
+            {/* Desktop sidebar */}
             <div>
               <View
                 selectedView={selectedView}

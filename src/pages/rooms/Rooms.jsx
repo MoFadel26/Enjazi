@@ -649,7 +649,7 @@ export default function Rooms() {
 
           </div>
 
-          {/* room Header with img */}
+          {/* room header with img */}
           <div className="mb-6">
             <div className="rounded-lg overflow-hidden shadow-md mb-4 h-40 md:h-60">
               <img

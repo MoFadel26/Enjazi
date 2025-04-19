@@ -562,7 +562,7 @@ function CalendarPage() {
           className="min-w-[900px] grid grid-cols-[60px_repeat(7,1fr)]"
           style={{ height: "100%" }}
         >
-          {/* Header */}
+          {/* header */}
           <div className="border-r border-b" />
           {days.map((d) => (
             <div
@@ -627,7 +627,7 @@ function CalendarPage() {
 
     return (
       <div className="flex-1 overflow-x-auto">
-        {/* Header */}
+        {/* header */}
         <div className="sticky top-0 z-20 bg-white p-4 border-b flex items-center justify-between">
           <h3 className="text-lg font-semibold">
             {format(currentDate, "EEEE, MMM d")}
@@ -800,7 +800,7 @@ function CalendarPage() {
   return (
     <div className="flex flex-col h-screen bg-gray-50 overflow-auto border rounded">
       <div className="flex flex-col flex-1 max-w-7xl w-full mx-auto bg-white shadow">
-        {/* Header of Calendar*/}
+        {/* header of Calendar*/}
         <div className="flex justify-between items-center border-b shrink-0 bg-white sticky top-0 px-4 z-30 md:px-6 py-3 border-b">
           {/* Left Side */}
           <div className="md:flex items-center hidden space-x-3">
