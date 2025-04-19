@@ -3,7 +3,6 @@ import React from "react";
 
 import {
   format,
-  addMonths,
   subMonths,
   startOfMonth,
   endOfMonth,
@@ -20,7 +19,6 @@ import { useRef } from "react";
 import {  
   Plus,
   Book,
-  Search,
 	ChevronLeft,
   ChevronRight,
   Dumbbell,
@@ -29,6 +27,7 @@ import {
   CodeXml,
   Coffee,
   ListFilter,
+  X,
 } from "lucide-react";
 
 
@@ -76,8 +75,8 @@ const listOfEvents = [
     title: "Team Meeting",
     priority: "High",
     description: "Discuss Q2 goals",
-    start: new Date(2025, 3, 2, 10, 0),
-    end: new Date(2025, 3, 2, 11, 0),
+    startTime: new Date(2025, 3, 2, 10, 0),
+    endTime: new Date(2025, 3, 2, 11, 0),
     colour: "purple",
   },
   {
@@ -85,8 +84,8 @@ const listOfEvents = [
     title: "Product Demo",
     priority: "Medium",
     description: "Show feature set",
-    start: new Date(2025, 3, 7, 9, 30),
-    end: new Date(2025, 3, 7, 10, 30),
+    startTime: new Date(2025, 3, 7, 9, 30),
+    endTime: new Date(2025, 3, 7, 10, 30),
     colour: "blue",
   },
 ];
@@ -131,51 +130,22 @@ const colourOptions = Object.keys(colourStyles).map((key) => ({
 }));
 
 // Dots (Proiorites):
-function dot(className) {
-	return (<span className={`inline-block w-2 h-2 rounded-full mr-1 ${className}`}/>);
-}
 
-function LowPriorityIcon() {
-	return (
-		<dot className="bg-green-500" />
-	);
-}
+const Dot = ({ className = '' }) => (
+  <span className={`inline-block w-2 h-2 rounded-full mr-1 ${className}`} />
+);
 
-function MedPriorityIcon() {
-	return (
-		<dot className="bg-yellow-500" />
-	);
-}
+const LowPriorityIcon   = () => <Dot className="bg-green-500" />;
+const MedPriorityIcon   = () => <Dot className="bg-yellow-500" />;
+const HighPriorityIcon  = () => <Dot className="bg-red-500" />;
 
-function HighPriorityIcon() {
-	return (
-		<dot className="bg-red-500" />
-	);
-}
-
-
-export function renderPriority(priorityType) {
-  if (priorityType === "Low") {
-    return (
-      <span className="inline-flex items-center text-xs font-semibold">
-        <LowPriorityIcon />
-      </span>
-    );
-  } else if (priorityType === "Medium") {
-    return (
-      <span className="inline-flex items-center text-xs font-semibold">
-        <MedPriorityIcon />
-      </span>
-    );
-  } else if (priorityType === "High") {
-    return (
-      <span className="inline-flex items-center text-xs font-semibold">
-        <HighPriorityIcon />
-      </span>
-    );
-  }
+export const renderPriority = (priorityType) => {
+  if (priorityType === 'Low')    return <LowPriorityIcon />;
+  if (priorityType === 'Medium') return <MedPriorityIcon />;
+  if (priorityType === 'High')   return <HighPriorityIcon />;
   return null;
-}
+};
+
 
 // Helper Functions (Utiliies):
 function startofWeek(date) {
@@ -195,8 +165,8 @@ function addDays(date, n) {
 function taskToEvent (task) {
 	const icon = categoryIcons[task.category] || {};
 
-  const start = new Date(`${task.dueDate}T${task.startTime || "09:00"}:00`);
-  const end = new Date(`${task.dueDate}T${task.endTime || "10:00"}:00`);
+  const startTime = new Date(`${task.dueDate}T${task.startTime || "09:00"}:00`);
+  const endTime = new Date(`${task.dueDate}T${task.endTime || "10:00"}:00`);
 
 	// Return the Event
   return {
@@ -204,8 +174,8 @@ function taskToEvent (task) {
     title: task.title,
     description: task.description,
     priority: task.priority,
-    start,
-    end,
+    startTime,
+    endTime,
     colour: icon.colour || priorityColours[task.priority],
     icon: icon.icon,
     isTask: true,
@@ -215,20 +185,20 @@ function taskToEvent (task) {
 
 
 function EventForm ({event,  onSave, onDelete, onCancel}) {
-	const [title, setTitle]= useState(event?. title || "");
+	const [title, setTitle]= useState(event?.title || "");
 	const [description, setDiscription] = useState(event?.description || "");
   const [priority, setPriority] = useState(event?.priority || "Low");
 	const [colour, setColour] = useState(event?.colour || priorityColours[priority]);
 
 	// States for dates and times
   const [date, setDate] = useState(
-    event ? format(event.start, "yyyy-MM-dd") : format(new Date(), "yyyy-MM-dd")
+    event ? format(event.startTime, "yyyy-MM-dd") : format(new Date(), "yyyy-MM-dd")
   );
   const [startTime, setStartTime] = useState(
-    event ? format(event.start, "HH:mm") : "09:00"
+    event ? format(event.startTime, "HH:mm") : "09:00"
   );
   const [endTime, setEndTime] = useState(
-    event ? format(event.end, "HH:mm") : "10:00"
+    event ? format(event.endTime, "HH:mm") : "10:00"
   );
 
 	useEffect (() => {
@@ -237,25 +207,34 @@ function EventForm ({event,  onSave, onDelete, onCancel}) {
 		}
 	}, [priority, event]);
 
-	function handleSubmit(ev) {
-		ev.preventDefault();
-		const [startH, startM] = startTime.split(":" ).map(Number);
-    const [endH, endM] = endTime.split(":" ).map(Number);
+  function handleSubmit(ev) {
+    ev.preventDefault();
+  
+    const [startH, startM] = startTime.split(":").map(Number);
+    const [endH, endM] = endTime.split(":").map(Number);
     const [year, month, day] = date.split("-").map(Number);
-
+  
+    const start = new Date(year, month - 1, day, startH, startM);
+    const end = new Date(year, month - 1, day, endH, endM);
+  
+    if (start >= end) {
+      alert("Start time must be before end time.");
+      return;
+    }
+  
     const newEvt = {
       id: event?.id,
       title,
       description,
       priority,
-      start: new Date(year, month - 1, day, startH, startM),
-      end: new Date(year, month - 1, day, endH, endM),
+      startTime: start,
+      endTime: end,
       colour,
     };
-
+  
     onSave(newEvt);
-	}
-
+  }
+  
 	function durationHours() {
     const [sh, sm] = startTime.split(":" ).map(Number);
     const [eh, em] = endTime.split(":" ).map(Number);
@@ -264,58 +243,114 @@ function EventForm ({event,  onSave, onDelete, onCancel}) {
 	}
 
 	return (
-		<div>
-			<form className="space-4" onSubmit={handleSubmit}>
-				<input
-					required
-					value={title}
-					onChange={(e) => setTitle(e.target.value)}
-					placeholder="Event title"
-					className="w-full p-2 border rounded"
-				/>
+		<div  className="relative max-w-md mx-auto shadow-xl rounded-xl border-t-8">
 
-				<div className="flex space-x-2 items-center">
-					<label className="text-sm font-medium w-24">Priority</label>
-					<select
-						value={priority}
-						onChange={(event) => setPriority(event.target.value)}
-						className="flex-1 p-2 border rounded"
-					>
-						{Object.keys(priorityColours).map((priority) => (
-							<option key={priority}>{priority}</option>
-						))}
-					</select>
-					{renderPriority(priority)}
+      <header className="px-6 py-4 flex items-center justify-between">
+        <h2 className="font-semibold text-lg truncate">{event ? "Edit Event" : "Create Event"}</h2>
+        <button onClick={onCancel} className="p-1 rounded-full hover:bg-slate-200 hover:bg-gray-400">
+          <X className="w-4 h-4" />
+        </button>
+      </header>
+      
+			<form className="space-y-4 p-6" onSubmit={handleSubmit}>
+        <div className="grid gap-2">
+          <labe className="text-sm font-medium"l>Title <span className="text-red-500">*</span></labe>
+          <input
+            required
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Event title"
+            className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-transparent px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
+          />
+        </div>
+
+        {/* Priority Selection */}
+        <div className="grid gap-2">
+          <label className="text-sm font-medium">
+            Priority
+          </label>
+          <div className="flex items-center gap-2">
+            <select
+              value={priority}
+              onChange={(e) => setPriority(e.target.value)}
+              className="rounded-md text-gray-700 text-sm block w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              {Object.keys(priorityColours).map((p) => (
+                <option key={p}>{p}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+
+        {/* Color Selection */}
+        <div className="grid gap-2">
+          <label className="text-sm font-medium">
+            Color
+          </label>
+          <div className="flex items-center gap-2">
+            <select
+              value={colour}
+              onChange={(e) => setColour(e.target.value)}
+              className="rounded-md text-gray-700 text-sm block w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              {colourOptions.map(({ value, label }) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+				<div className="flex flex-col gap-4">
+					<div className="flex flex-col gap-2">
+            <label className="text-sm font-medium">
+              Date
+            </label>
+            <input
+              type="date"
+              required
+              value={date}
+              onChange={(event) => setDate(event.target.value)}
+              className="rounded-lg border border-slate-300 dark:border-slate-600 bg-transparent px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
+            />
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-4 flex-1">
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium">
+                Start
+              </label>
+              <input
+                type="time"
+                required
+                value={startTime}
+                onChange={(event) => setStartTime(event.target.value)}
+                className="rounded-lg border border-slate-300 dark:border-slate-600 bg-transparent px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium">
+                End
+              </label>
+              <input
+                type="time"
+                required
+                value={endTime}
+                onChange={(event) => setEndTime(event.target.value)}
+                className="rounded-lg border border-slate-300 dark:border-slate-600 bg-transparent px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
+              />
+            </div>
+          </div>
 				</div>
 
-				<div className="flex space-x-2">
-					<input
-						type="date"
-						required
-						value={date}
-						onChange={(event) => setDate(event.target.value)}
-						className="flex-1 p-2 border rounded"
-					/>
-					<input
-						type="time"
-						required
-						value={startTime}
-						onChange={(event) => setStartTime(event.target.value)}
-						className="w-24 p-2 border rounded"
-					/>
-					<input
-						type="time"
-						required
-						value={endTime}
-						onChange={(event) => setEndTime(event.target.value)}
-						className="w-24 p-2 border rounded"
-					/>
-				</div>
 				<textarea 
 					value={description}
 					onChange={(event) => setDiscription(event.target.value)}
 					placeholder="Description (optional)"
-					className="w-full p-3 border rounded"
+					className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-transparent px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
 					rows={3}
 				/>
 
@@ -385,7 +420,7 @@ function CalendarPage() {
 	// Going next day
 	function goNext () {
 		if (view === 'month') {
-		  setCurrentDate((date) => subMonths(date,1));
+		  setCurrentDate((date) => subMonths(date,-1));
 		 } else if (view === 'week') {
 			setCurrentDate((date) => addDays(date, 7));
 		 } else {
@@ -404,7 +439,7 @@ function CalendarPage() {
       start: startOfMonth(currentDate),
       end: endOfMonth(currentDate),
     });
-  const eventsOn = (date) => event.filter((e) => isSameDay(e.start, date));
+  const eventsOn = (date) => event.filter((e) => isSameDay(e.startTime, date));
 
 	//  ************** Controlling Models ************** 
 	function closeModel() {
@@ -434,29 +469,232 @@ function CalendarPage() {
 
 	//  ************** View by Months ************** 
 	function MonthView () {
+		const days=getMonthDays();
+		const blanks = Array.from({length: startOfMonth(currentDate).getDay()})
 		return (
-			<div>
-
-			</div>
+      <div className="hidden md:grid flex-1 grid-cols-7 auto-rows-[120px] border-t border-l border-gray-200 select-none">
+        {/* weekday header */}
+        {[
+          "Sun",
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat",
+        ].map((d) => (
+          <div
+            key={d}
+            className="bg-white py-2 text-center text-sm font-medium text-gray-500 border-r border-b border-gray-200"
+          >
+            {d}
+          </div>
+        ))}
+        {blanks.map((_, i) => (
+          <div key={i} className="border-r border-b border-gray-200 bg-white" />
+        ))}
+        {days.map((day) => {
+          const inMonth = isSameMonth(day, currentDate);
+          const todaysEvents = eventsOn(day);
+          const isToday = isSameDay(day, new Date());
+          return (
+            <div
+              key={day.toISOString()}
+              onClick={() => {
+                setCurrentDate(day);
+                setView("day");
+              }}
+              className={`p-1 overflow-hidden border-r border-b border-gray-200 bg-white cursor-pointer hover:bg-gray-50 ${
+                inMonth ? "" : "opacity-50"
+              }`}
+            >
+              <div className="flex items-center justify-between mb-0.5">
+                <span
+                  className={`text-xs font-semibold ${
+                    isToday ? "text-purple-600" : ""
+                  }`}
+                >
+                  {format(day, "d")}
+                </span>
+                {todaysEvents.length > 0 && (
+                  <span className="ml-1 inline-block rounded-full bg-purple-600 text-white text-[10px] w-4 h-4 leading-4 text-center">
+                    {todaysEvents.length}
+                  </span>
+                )}
+              </div>
+              <div className="space-y-0.5">
+                {todaysEvents.slice(0, 3).map((ev) => {
+                  const Icon = ev.icon;
+                  return (
+                    <div
+                      key={ev.id}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openModel(ev);
+                      }}
+                      className={`truncate text-[11px] px-1.5 py-0.5 rounded flex items-center ${colourStyles[ev.colour] || ev.colour}`}
+                    >
+                      {Icon && <Icon className="w-3 h-3 mr-0.5 opacity-80" />}
+                      {renderPriority(ev.priority)}
+                      <span className="flex-1 truncate">{ev.title}</span>
+                      <span className="ml-1 opacity-60 whitespace-nowrap">{format(ev.startTime, "h:mm a")}</span>
+                    </div>
+                  );
+                })}
+                {todaysEvents.length > 3 && (<div className="text-[10px] italic text-gray-500">+{todaysEvents.length - 3} more</div>)}
+              </div>
+            </div>
+          );
+        })}
+      </div>
 		);
 	}
 
 	//  ************** View by Weeks **************
 	function WeekView () {
-		return (
-			<div>
+    const startDay = startofWeek(currentDate);
+    const days = Array.from({length:7}, (_,y) => addDays(startDay, y));
+		const hours = Array.from({length:24}, (_,y) => y);
+    const H = 56; // --> Cell Height
+    return (
+      <div className="hidden md:block flex-1 overflow-x-auto">
+        <div
+          className="min-w-[900px] grid grid-cols-[60px_repeat(7,1fr)]"
+          style={{ height: "100%" }}
+        >
+          {/* Header */}
+          <div className="border-r border-b" />
+          {days.map((d) => (
+            <div
+              key={d}
+              className="border-b p-2 text-center font-medium sticky -top-px bg-white z-10"
+            >
+              {format(d, "EEE d")}
+            </div>
+          ))}
+          {/* Hour - Rows */}
+          {hours.map((hour) => (
+            <React.Fragment key={hour}>
+              {/* time */}
+              <div
+                className="border-r px-2 text-xs text-gray-500"
+                style={{ height: H}}
+              >
+                {hour % 12 || 12} {hour < 12 ? "AM" : "PM"}
+              </div>
+              {/* Days - Columns */}
+              {days.map((day) => {
+                const ev = event.find((e) => e.startTime.getHours() === hour && isSameDay(e.startTime, day));
+                const Icon = ev?.icon;
+                return (
+                  <div
+                    key={`${day}-${hour}`}
+                    className="relative border-t"
+                    style={{ height: H }}
+                  >
+                    {ev && (
+                      <div
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openModel(ev);
+                        }}
+                        className={`absolute left-1 right-1 top-[1px] p-1 rounded text-xs cursor-pointer flex items-center space-x-1 ${
+                          colourStyles[ev.colour] || ev.colour
+                        }`}
+                        style={{height:((ev.endTime - ev.startTime) / (1000 * 60 * 60)) * H -2,}}
+                      >
+                        {Icon && <Icon className="w-3 h-3" />}
+                        {renderPriority(ev.priority)}
+                        <span className="truncate">{ev.title}</span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </React.Fragment>
+          ))}
+        </div>
+      </div>
 
-			</div>
 		);
 	}
 
 	//  ************** View by Days **************
 	function TodayView () {
-		return (
-			<div>
+    const hours = Array.from({ length: 24 }, (_, i) => i);
+    const H = 56; // --> Cell Height
+    const todaysEvents = eventsOn(currentDate);
 
-			</div>
-		);
+    return (
+      <div className="flex-1 overflow-x-auto">
+        {/* Header */}
+        <div className="sticky top-0 z-20 bg-white p-4 border-b flex items-center justify-between">
+          <h3 className="text-lg font-semibold">
+            {format(currentDate, "EEEE, MMM d")}
+          </h3>
+        </div>
+        {/* Timeline - Grid*/}
+        <div
+          className="min-w-[400px] grid grid-cols-[60px_1fr]"
+          style={{ height: "calc(100% - 56px)" }}
+        >
+          <div>
+            {hours.map((hour) => (
+              <div
+                key={hour}
+                className="border-t px-2 text-xs text-gray-500"
+                style={{ height: H }}
+              >
+                {hour % 12 || 12} {hour < 12 ? "AM" : "PM"}
+              </div>
+            ))}
+          </div>
+          {/* event canvas */}
+          <div className="relative">
+            {hours.map((_, i) => (
+              <div
+                key={i}
+                className="border-t absolute left-0 right-0"
+                style={{ top: i * H, height: 0 }}
+              />
+            ))}
+            {todaysEvents.map((tempEvent) => {
+              const Icon = tempEvent.icon;
+              const sh = tempEvent.start.getHours();
+              const sm = tempEvent.start.getMinutes();
+              const duration = (tempEvent.endTime - tempEvent.startTime) / 3600000; // hrs
+              return (
+                <div
+                  key={tempEvent.id}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openModel(tempEvent);
+                  }}
+                  className={`absolute left-2 right-2 p-2 rounded shadow text-sm cursor-pointer flex items-start space-x-1 ${
+                    colourStyles[tempEvent.colour] || tempEvent.colour
+                  }`}
+                  style={{
+                    top: sh * H + (sm / 60) * H,
+                    height: duration * H - 4,
+                  }}
+                >
+                  {Icon && <Icon className="w-4 h-4" />}
+                  {renderPriority(tempEvent.priority)}
+                  <div className="flex-1">
+                    <div className="font-medium leading-tight truncate">
+                      {tempEvent.title}
+                    </div>
+                    <div className="text-xs opacity-70">
+                      {format(tempEvent.startTime, "h:mm a")} – {format(tempEvent.endTime, "h:mm a")}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
 	}
 
 	//  ************** Mobile View (Mobile Month) **************
@@ -532,21 +770,21 @@ function CalendarPage() {
           <div className="font-medium">
             Events on {format(currentDate, "MMM d, yyyy")}
           </div>
-          {eventsOn(currentDate).map((ev) => {
-            const Icon = ev.icon;
+          {eventsOn(currentDate).map((tempEvent) => {
+            const Icon = tempEvent.icon;
             return (
               <div
-                key={ev.id}
-                onClick={() => openModel(ev)}
+                key={tempEvent.id}
+                onClick={() => openModel(tempEvent)}
                 className={`p-2 text-sm rounded cursor-pointer flex items-center space-x-1 ${
-                  colourStyles[ev.colour] || ev.colour
+                  colourStyles[tempEvent.colour] || tempEvent.colour
                 }`}
               >
                 {Icon && <Icon className="w-3 h-3" />}
-                {renderPriority(ev.priority)}
-                <span className="truncate flex-1">{ev.title}</span>
+                {renderPriority(tempEvent.priority)}
+                <span className="truncate flex-1">{tempEvent.title}</span>
                 <span className="ml-2 text-xs opacity-70">
-                  {format(ev.start, "h:mm a")}
+                  {format(tempEvent.startTime, "h:mm a")}
                 </span>
               </div>
             );
@@ -560,8 +798,80 @@ function CalendarPage() {
 	}
 
   return (
-		<div>
+    <div className="flex flex-col h-screen bg-gray-50 overflow-auto border rounded">
+      <div className="flex flex-col flex-1 max-w-7xl w-full mx-auto bg-white shadow">
+        {/* Header of Calendar*/}
+        <div className="flex justify-between items-center border-b shrink-0 bg-white sticky top-0 px-4 z-30 md:px-6 py-3 border-b">
+          {/* Left Side */}
+          <div className="md:flex items-center hidden space-x-3">
+            <button className="p-2 hover:bg-gray-100 rounded-full" onClick={goPrevious}>
+              <ChevronLeft className="w-5 h-5"></ChevronLeft>
+            </button>
+            <button className="px-3 py-1 rounded bg-gray-100" onClick={goToday}>
+              Today
+            </button>
+            <button className="p-2 hover:bg-gray-100 rounded-full" onClick={goNext}>
+              <ChevronRight className="w-5 h-5"></ChevronRight>
+            </button>
+            <h2 className="ml-4 text-lg font-semibold">
+              {format(currentDate, "MMMM yyyy")}
+            </h2>
+          </div>
+          
+          {/* Right Side */}
+          <div className="flex items-center space-x-2">
+            {/* Switch (View) */}
+            <div className="hidden md:flex space-x-2">
+              {
+                [
+                  {value: "month", label: "Month"},
+                  {value: "week", label: "Week"},
+                  {value: "day", label: "Day"}
+                ].map(({value, label}) => (
+                  <button 
+                    key={value} onClick={()=>setView(value)} 
+                    className={`px-3 py-1 rounded-md text-sm transition ${view === value ? "bg-red-100 text-red-700" : "text-gray-600 hover:bg-gray-100"}`}
+                  >{label}</button>
+                ))
+              }
+            </div>
 
+            {/* Add Event */}
+            <button
+              onClick={() => openModel()}
+              className="hidden md:flex items-center px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-md"
+            >
+            <Plus className="w-4 h-4 mr-1" /> Add event
+            </button>
+          </div>
+        </div>
+        {/* Body of Calendar*/}
+        <div>
+          <div className="flex flex-col flex-1">
+            {/* Large Screens */}
+
+            {view === 'month' && <MonthView></MonthView>}
+            {view === 'week' && <WeekView></WeekView>}
+            {view === 'day' && <TodayView></TodayView>}
+            {/* Small Screens */}
+            {view !== 'week' && <MobileView></MobileView>}
+          </div>
+        </div>
+      </div>
+
+      {/* Open Model*/}
+      {modelOpen && (
+        <div className="bg-black flex items-center justify-center bg-opacity-30 fixed inset-0 backdrop-blur-sm z-50 transition-opacity">
+          <div className="bg-white max-w-md rounded-lg shadow-lg">
+            <EventForm
+              event={editEvent}
+              onSave={handleSave}
+              onDelete={handleDelete}
+              onCancel={closeModel}
+            />
+          </div>
+        </div>
+      )}
 		</div>
 	);
 }

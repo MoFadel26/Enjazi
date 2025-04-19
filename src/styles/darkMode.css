@@ -1,0 +1,87 @@
+/* src/styles/darkMode.css */
+/* Base styles */
+.dark body {
+    @apply bg-gray-900 text-white;
+  }
+  
+  /* Target all direct children of main content areas */
+.dark > div > div > div,
+.dark main > div,
+.dark [role="main"] > div {
+  @apply bg-gray-800 !important;
+}
+  
+.dark div[class*="card"],
+.dark div[class*="box"],
+.dark div[class*="panel"],
+
+.dark div[style*="background-color: white"],
+.dark div[style*="background-color: #fff"],
+.dark div[style*="background: white"],
+.dark div[style*="background: #fff"] {
+  @apply bg-gray-800 !important;
+}
+  /* Headings */
+  .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6, .dark p {
+    @apply text-white;
+  }
+  
+  /* Backgrounds */
+  .dark .bg-white {
+    @apply bg-gray-900;
+  }
+  
+  .dark .bg-gray-50 {
+    @apply bg-gray-800;
+  }
+  
+  .dark .bg-gray-100 {
+    @apply bg-gray-700;
+  }
+  
+  /* Text colors */
+  .dark .text-gray-800 {
+    @apply text-white;
+  }
+  
+  .dark .text-gray-700 {
+    @apply text-gray-200;
+  }
+  
+  .dark .text-gray-600 {
+    @apply text-gray-300;
+  }
+  
+  .dark .text-gray-500 {
+    @apply text-gray-400;
+  }
+  
+  /* Borders */
+  .dark .border-gray-200 {
+    @apply border-gray-700;
+  }
+  
+  .dark .border-gray-300 {
+    @apply border-gray-600;
+  }
+  
+  /* Inputs */
+  .dark input, .dark textarea, .dark select {
+    @apply bg-gray-800 border-gray-700 text-white;
+  }
+  
+  /* Cards */
+  .dark .card {
+    @apply bg-gray-800 border-gray-700;
+  }
+  
+  /* Buttons */
+  .dark .btn-secondary {
+    @apply bg-gray-700 hover:bg-gray-600 text-white;
+  }
+  
+
+
+
+
+  /* Add more global dark mode styles as needed */

@@ -1,4 +1,5 @@
 import React from "react";
+import {Book, Dumbbell , House, Briefcase, CodeXml, Coffee} from "lucide-react";
 
 // ----------------------- ICONS -----------------------
 
@@ -94,44 +95,6 @@ export function HighPriorityIcon () {
   );
 }
 
-export function WorkIcon () {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M10.6663 13.3335V2.66683C10.6663 2.31321 10.5259 1.97407 10.2758 1.72402C10.0258 1.47397 9.68663 1.3335 9.33301 1.3335H6.66634C6.31272 1.3335 5.97358 1.47397 5.72353 1.72402C5.47348 1.97407 5.33301 2.31321 5.33301 2.66683V13.3335" stroke="#3B82F6" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M13.333 4H2.66634C1.92996 4 1.33301 4.59695 1.33301 5.33333V12C1.33301 12.7364 1.92996 13.3333 2.66634 13.3333H13.333C14.0694 13.3333 14.6663 12.7364 14.6663 12V5.33333C14.6663 4.59695 14.0694 4 13.333 4Z" stroke="#3B82F6" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-  );
-}
-
-export function PersonalIcon () {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M10 14V8.66667C10 8.48986 9.92976 8.32029 9.80474 8.19526C9.67971 8.07024 9.51014 8 9.33333 8H6.66667C6.48986 8 6.32029 8.07024 6.19526 8.19526C6.07024 8.32029 6 8.48986 6 8.66667V14" stroke="#A855F7" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M2 6.66648C1.99995 6.47253 2.04222 6.2809 2.12386 6.10496C2.20549 5.92902 2.32453 5.77301 2.47267 5.64782L7.13933 1.64848C7.37999 1.44509 7.6849 1.3335 8 1.3335C8.3151 1.3335 8.62001 1.44509 8.86067 1.64848L13.5273 5.64782C13.6755 5.77301 13.7945 5.92902 13.8761 6.10496C13.9578 6.2809 14 6.47253 14 6.66648V12.6665C14 13.0201 13.8595 13.3592 13.6095 13.6093C13.3594 13.8593 13.0203 13.9998 12.6667 13.9998H3.33333C2.97971 13.9998 2.64057 13.8593 2.39052 13.6093C2.14048 13.3592 2 13.0201 2 12.6665V6.66648Z" stroke="#A855F7" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-  );
-}
-
-export function HealthIcon () {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M9.60039 9.5999L6.40039 6.3999" stroke="#22C55E" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M12.4383 14.3231C12.1882 14.5732 11.8491 14.7137 11.4955 14.7138C11.1419 14.7139 10.8027 14.5734 10.5526 14.3234C10.3025 14.0734 10.162 13.7343 10.1619 13.3807C10.1618 13.027 10.3022 12.6879 10.5523 12.4378L9.37426 13.6164C9.12416 13.8665 8.78495 14.007 8.43126 14.007C8.07757 14.007 7.73836 13.8665 7.48826 13.6164C7.23816 13.3663 7.09766 13.0271 7.09766 12.6734C7.09766 12.3197 7.23816 11.9805 7.48826 11.7304L11.7309 7.48777C11.981 7.23767 12.3202 7.09717 12.6739 7.09717C13.0276 7.09717 13.3668 7.23767 13.6169 7.48777C13.867 7.73787 14.0075 8.07708 14.0075 8.43077C14.0075 8.78446 13.867 9.12367 13.6169 9.37377L12.4383 10.5518C12.6884 10.3018 13.0275 10.1613 13.3812 10.1614C13.7348 10.1615 14.0739 10.302 14.3239 10.5521C14.5739 10.8022 14.7144 11.1414 14.7143 11.495C14.7142 11.8486 14.5737 12.1878 14.3236 12.4378L12.4383 14.3231Z" stroke="#22C55E" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M14.3337 14.3332L13.4004 13.3999" stroke="#22C55E" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M2.60033 2.59984L1.66699 1.6665" stroke="#22C55E" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M4.2695 8.51217C4.0194 8.76227 3.68019 8.90277 3.3265 8.90277C2.97281 8.90277 2.6336 8.76227 2.3835 8.51217C2.1334 8.26207 1.9929 7.92286 1.9929 7.56917C1.9929 7.21547 2.1334 6.87627 2.3835 6.62617L3.56217 5.44817C3.43833 5.57196 3.29132 5.67015 3.12954 5.73713C2.96776 5.80411 2.79437 5.83857 2.61926 5.83853C2.26563 5.83847 1.92651 5.69793 1.6765 5.44783C1.55271 5.324 1.45452 5.17699 1.38754 5.01521C1.32056 4.85342 1.2861 4.68003 1.28613 4.50493C1.2862 4.1513 1.42673 3.81218 1.67683 3.56217L3.56217 1.67683C3.81218 1.42673 4.1513 1.2862 4.50493 1.28613C4.68003 1.2861 4.85342 1.32056 5.01521 1.38754C5.17699 1.45452 5.324 1.55271 5.44783 1.6765C5.57167 1.80029 5.66991 1.94727 5.73695 2.10902C5.80398 2.27078 5.8385 2.44416 5.83853 2.61926C5.83857 2.79437 5.80411 2.96776 5.73713 3.12954C5.67015 3.29132 5.57196 3.43833 5.44817 3.56217L6.62617 2.3835C6.87627 2.1334 7.21547 1.9929 7.56917 1.9929C7.92286 1.9929 8.26207 2.1334 8.51217 2.3835C8.76227 2.6336 8.90277 2.97281 8.90277 3.3265C8.90277 3.68019 8.76227 4.0194 8.51217 4.2695L4.2695 8.51217Z" stroke="#22C55E" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-  );
-}
-
-export function EducationIcon () {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M2.66699 13.0002V3.00016C2.66699 2.55814 2.84259 2.13421 3.15515 1.82165C3.46771 1.50909 3.89163 1.3335 4.33366 1.3335H12.667C12.8438 1.3335 13.0134 1.40373 13.1384 1.52876C13.2634 1.65378 13.3337 1.82335 13.3337 2.00016V14.0002C13.3337 14.177 13.2634 14.3465 13.1384 14.4716C13.0134 14.5966 12.8438 14.6668 12.667 14.6668H4.33366C3.89163 14.6668 3.46771 14.4912 3.15515 14.1787C2.84259 13.8661 2.66699 13.4422 2.66699 13.0002ZM2.66699 13.0002C2.66699 12.5581 2.84259 12.1342 3.15515 11.8217C3.46771 11.5091 3.89163 11.3335 4.33366 11.3335H13.3337" stroke="#F59E0B" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-  );
-}
-
 export function CalendarIcon () {
   return (
     <svg
@@ -154,13 +117,17 @@ export function CalendarIcon () {
 
 export function renderCategoryIcon(category) {
   if (category==="Work") {
-      return <WorkIcon />
+    return <Briefcase className="w-4 h-4 text-[#3366FF]" />
   } else if (category==="Personal") {
-      return <PersonalIcon />
+    return <House className="w-4 h-4 text-[#FF5EE7]" />
   } else if (category==="Health") {
-      return <HealthIcon />
+    return <Dumbbell className="w-4 h-4 text-[#FF5E5E]" />
   } else if (category==="Education") {
-      return <EducationIcon />
+    return <Book className="w-4 h-4 text-[#00B894]" />
+  } else if (category==="Code") {
+    return <CodeXml className="w-4 h-4 text-[#9B59B6]" />
+  } else if (category==="Social") {
+    return <Coffee className="w-4 h-4 text-[#FFB700]" />
   }
   else return null;
 }
@@ -168,21 +135,21 @@ export function renderCategoryIcon(category) {
 export function renderPriority(priorityType) {
   if (priorityType==="Low") {
     return (
-      <span className="inline-flex items-center bg-green-100 text-green-600 text-xs font-semibold px-2 py-1 rounded-full">
+      <span className="inline-flex items-center bg-green-100 text-green-600 text-xs font-semibold px-2 py-1 rounded-full gap-1">
         <LowPriorityIcon />
         Low
       </span>
     );
   } else if (priorityType==="Medium") {
     return (
-      <span className="inline-flex items-center bg-yellow-100 text-yellow-600 text-xs font-semibold px-2 py-1 rounded-full">
+      <span className="inline-flex items-center bg-yellow-100 text-yellow-600 text-xs font-semibold px-2 py-1 rounded-full gap-1">
         <MedPriorityIcon />
         Medium
       </span>
     );
   } else if (priorityType==="High") {
     return (
-      <span className="inline-flex items-center bg-red-100 text-red-600 text-xs font-semibold px-2 py-1 rounded-full">
+      <span className="inline-flex items-center bg-red-100 text-red-600 text-xs font-semibold px-2 py-1 rounded-full gap-1">
         <HighPriorityIcon />
         High
       </span>

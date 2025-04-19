@@ -1,10 +1,13 @@
+// src/components/layout/Sidebar/Sidebar.jsx
 import { Link, useLocation } from "react-router-dom"
 import { LayoutDashboard, CheckSquare, Calendar, BarChart2, Users, Settings, HelpCircle, Menu, X } from "lucide-react"
 import { useState } from "react"
+import { useTheme } from "../../../contexts/ThemeContext" // Add this import
 
 export default function Sidebar() {
   const location = useLocation()
   const [isOpen, setIsOpen] = useState(false)
+  const { isDark } = useTheme() // Add this line
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen)
@@ -46,24 +49,34 @@ export default function Sidebar() {
   return (
     <>
       {/* Mobile toggle button */}
-      <button className="md:hidden fixed top-4 left-4 z-50 bg-white p-2 rounded-md shadow-md" onClick={toggleSidebar}>
+      <button 
+        className={`md:hidden fixed top-4 left-4 z-50 ${
+          isDark ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'
+        } p-2 rounded-md shadow-md`} 
+        onClick={toggleSidebar}
+      >
         {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
       </button>
 
       {/* Sidebar */}
       <div
         className={`
-          fixed md:static top-0 left-0 h-full w-64 bg-white border-r border-[#e2e8f0] shadow-lg md:shadow-none
+          fixed md:static top-0 left-0 h-full w-64 
+          ${isDark 
+            ? 'bg-gray-900 border-r border-gray-700 text-white' 
+            : 'bg-white border-r border-[#e2e8f0] text-gray-800'
+          } 
+          shadow-lg md:shadow-none
           transform transition-transform duration-300 ease-in-out z-40
           ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
         `}
       >
         <div className="h-full flex flex-col">
-          <div className="p-7 border-b border-[#e2e8f0] flex items-center">
+          <div className={`p-7 ${isDark ? 'border-b border-gray-700' : 'border-b border-[#e2e8f0]'} flex items-center`}>
             <div className="bg-[#f97316] text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
               <span className="font-bold">E</span>
             </div>
-            <Link to="/dashboard" className="text-[#0f172a] text-xl font-bold">
+            <Link to="/dashboard" className={`${isDark ? 'text-white' : 'text-[#0f172a]'} text-xl font-bold`}>
               Enjazi
             </Link>
           </div>
@@ -81,8 +94,12 @@ export default function Sidebar() {
                         flex items-center px-4 py-3 rounded-md transition-colors
                         ${
                           isActive
-                            ? "bg-[#f0f9ff] text-[#07b0ed]"
-                            : "text-[#64748b] hover:bg-[#f8fafc] hover:text-[#0f172a]"
+                            ? isDark 
+                              ? "bg-gray-800 text-[#07b0ed]" 
+                              : "bg-[#f0f9ff] text-[#07b0ed]"
+                            : isDark 
+                              ? "text-gray-300 hover:bg-gray-800 hover:text-white" 
+                              : "text-[#64748b] hover:bg-[#f8fafc] hover:text-[#0f172a]"
                         }
                       `}
                     >
@@ -95,10 +112,16 @@ export default function Sidebar() {
             </ul>
           </nav>
 
-          <div className="p-4 border-t border-[#e2e8f0]">
+          <div className={`p-4 ${isDark ? 'border-t border-gray-700' : 'border-t border-[#e2e8f0]'}`}>
             <Link
               to="/help"
-              className="flex items-center px-4 py-3 text-[#64748b] hover:bg-[#f8fafc] hover:text-[#0f172a] rounded-md transition-colors"
+              className={`
+                flex items-center px-4 py-3 rounded-md transition-colors
+                ${isDark 
+                  ? "text-gray-300 hover:bg-gray-800 hover:text-white" 
+                  : "text-[#64748b] hover:bg-[#f8fafc] hover:text-[#0f172a]"
+                }
+              `}
             >
               <HelpCircle className="w-5 h-5" />
               <span className="ml-3">Help desk</span>
