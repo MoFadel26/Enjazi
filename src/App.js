@@ -9,12 +9,16 @@ import LandingPage from 'pages/App.jsx';
 import Forget from 'pages/auth/Forget';
 import Dashboard from 'pages/dashboard/Dashboard';
 import MainLayout from 'components/layout/MainLayout';
-import Admin from 'pages/admin/admin';
+import Admin from 'pages/admin/Admin';
 import Tasks from 'pages/tasks/TaskPage.jsx';
 import Calendar from 'pages/calendar/CalendarPage';
 import Performance from 'pages/performance/Performance';
 import Rooms from 'pages/rooms/Rooms';
 import Settings from 'pages/settings/settings';
+import {AccentColorProvider} from "./contexts/AccentColorContext";
+import AdminLayout from "./components/admin/layout/AdminLayout";
+import UsersPage from "./pages/admin/users/Users";
+import RoomsPage from "./pages/admin/rooms/Rooms";
 
 function App() {
   return (
@@ -29,7 +33,8 @@ function App() {
           <Route path="/forget" element={<Forget />} />
           <Route path="/tasks" element={<Tasks />} />
           <Route element={<AdminLayout />}>
-            <Route path="/admin" element={<Admin />} />
+            <Route path="/admin/users" element={<UsersPage />} />
+            <Route path="/admin/rooms" element={<RoomsPage />} />
           </Route>
           <Route element={<MainLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />

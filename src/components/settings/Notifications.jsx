@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 const Notifications = () => {
-  // State for notification settings
+  // State for notification roles
   const [emailSettings, setEmailSettings] = useState({
     dailyDigest: true,
     weeklySummary: true,
@@ -58,12 +58,12 @@ const Notifications = () => {
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Notification settings saved:", {
+    console.log("Notification roles saved:", {
       emailSettings,
       browserSettings,
       quietHours,
     });
-    // Add logic to save settings
+    // Add logic to save roles
   };
 
   return (

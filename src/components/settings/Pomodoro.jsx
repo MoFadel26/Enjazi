@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 const Pomodoro = () => {
-  // State for pomodoro settings
+  // State for pomodoro roles
   const [settings, setSettings] = useState({
     focusDuration: 25,
     shortBreakDuration: 5,
@@ -40,8 +40,8 @@ const Pomodoro = () => {
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Pomodoro settings saved:", settings);
-    // Add logic to save settings
+    console.log("Pomodoro roles saved:", settings);
+    // Add logic to save roles
   };
 
   // Test sound function

@@ -1,4 +1,4 @@
-// src/pages/settings/settings.jsx
+// src/pages/roles/roles.jsx
 import React, { useState } from "react";
 import { FaUser, FaPalette, FaClock, FaChartLine, FaBell, FaLink, FaBars } from "react-icons/fa";
 import { useTheme } from "../../contexts/ThemeContext";

@@ -1,4 +1,4 @@
-// src/components/settings/Appearance.jsx
+// src/components/roles/Appearance.jsx
 import React, { useState, useEffect } from "react";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useAccentColor } from "../../contexts/AccentColorContext";
@@ -9,7 +9,7 @@ const Appearance = ({ onThemeChange }) => {
   const { isDark } = useTheme();
   const { accentColor, setAccentColor } = useAccentColor();
   
-  // State for appearance settings
+  // State for appearance roles
   const [settings, setSettings] = useState({
     colorTheme: isDark ? "dark" : "light", 
     accentColor: accentColor, 
@@ -66,10 +66,10 @@ const Appearance = ({ onThemeChange }) => {
     });
   };
 
-  // Handle save settings
+  // Handle save roles
   const handleSave = () => {
-    // Here you would typically save settings to a backend or localStorage
-    console.log("Saving settings:", settings);
+    // Here you would typically save roles to a backend or localStorage
+    console.log("Saving roles:", settings);
     // You could also show a success message
   };
 

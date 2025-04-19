@@ -1,19 +1,8 @@
 import {Outlet, useLocation} from "react-router-dom";
 import {AdminSidebar} from "./AdminSideBar";
 
-const pathToTitle = {
-    "/dashboard": "Dashboard",
-    "/profile": "Profile",
-    "/settings": "Settings",
-    "/tasks": "Tasks",
-    "/calendar": "Calendar",
-    "/performance": "Performance",
-    "/rooms": "Rooms",
-};
-
 export default function AdminLayout() {
     const location = useLocation();
-    const title = pathToTitle[location.pathname] || "Page";
 
     return (
         <div className="flex h-screen bg-background">

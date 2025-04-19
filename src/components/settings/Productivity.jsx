@@ -4,7 +4,7 @@ import { useTheme } from "../../contexts/ThemeContext";
 const Productivity = () => {
   const { isDark } = useTheme();
   
-  // State for productivity settings
+  // State for productivity roles
   const [settings, setSettings] = useState({
     dailyTasks: 5,
     focusHours: 4,
@@ -34,8 +34,8 @@ const Productivity = () => {
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Productivity settings saved:", settings);
-    // Add logic to save settings
+    console.log("Productivity roles saved:", settings);
+    // Add logic to save roles
   };
 
   return (
@@ -126,7 +126,7 @@ const Productivity = () => {
           </div>
         </div>
 
-        {/* Task Settings */}
+        {/* Task roles */}
         <div className="mb-8">
           <h3 className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'} mb-4`}>Task Settings</h3>
           
