@@ -3,6 +3,9 @@ import React, { useState, useEffect } from "react";
 export default function Rooms() {
   const [view, setView] = useState("myRooms"); // myRooms, roomContent, leaderboard, publicRooms, createRoom
   const [currentRoom, setCurrentRoom] = useState(null);
+  const [roomMessages, setRoomMessages] = useState({});
+  const [newMessage, setNewMessage] = useState("");
+
   const [newRoomData, setNewRoomData] = useState({
     name: "",
     description: "",
@@ -101,6 +104,24 @@ export default function Rooms() {
       [name]: type === 'checkbox' ? checked : value
     });
   };
+  const sendMessage = () => {
+    if (!newMessage.trim()) return;
+
+    const messageObj = {
+      userId: "currentUser",
+      username: "You",
+      content: newMessage,
+      timestamp: new Date().toLocaleTimeString()
+    };
+
+    setRoomMessages(prev => ({
+      ...prev,
+      [currentRoom]: [...(prev[currentRoom] || []), messageObj]
+    }));
+
+    setNewMessage("");
+  };
+
 
   // Handle image upload
   const handleImageUpload = (e) => {
@@ -216,6 +237,24 @@ export default function Rooms() {
       }
     }
   };
+
+  const leaveRoom = () => {
+    if (!currentRoom) return;
+
+    // Remove the room from enrolledRooms
+    const updatedEnrolled = enrolledRooms.filter(room => room.id !== currentRoom);
+
+    // If the room was public, optionally add it back to publicRooms
+    const leavingRoom = enrolledRooms.find(room => room.id === currentRoom);
+    if (leavingRoom && newRoomData.isPublic) {
+      setPublicRooms([...publicRooms, leavingRoom]);
+    }
+
+    setEnrolledRooms(updatedEnrolled);
+    setCurrentRoom(null);
+    setView("myRooms");
+  };
+
 
   // add CSS for mobile responsiveness
   useEffect(() => {
@@ -512,6 +551,13 @@ export default function Rooms() {
             >
               Leaderboard
             </button>
+            <button
+              onClick={leaveRoom}
+              className="px-4 py-2 bg-red-500 text-white rounded w-full sm:w-auto mt-2 sm:mt-0"
+            >
+              Leave Room
+            </button>
+
           </div>
 
           {/* room Header with img */}
@@ -547,6 +593,33 @@ export default function Rooms() {
                   <li key={index}>{announcement}</li>
                 ))}
               </ul>
+            </div>
+          </div>
+          <div className="border rounded p-4 mt-6">
+            <h3 className="font-semibold text-lg mb-2">Text Chat</h3>
+            <div className="h-40 overflow-y-auto border p-2 mb-3 bg-gray-50 rounded">
+              {(roomMessages[currentRoom] || []).map((msg, idx) => (
+                <div key={idx} className="mb-1">
+                  <span className="font-semibold text-sm">{msg.username}</span>: {msg.content}
+                  <span className="text-xs text-gray-500 ml-2">{msg.timestamp}</span>
+                </div>
+              ))}
+            </div>
+            <div className="flex">
+              <input
+                type="text"
+                className="flex-grow border rounded-l px-3 py-1 focus:outline-none"
+                placeholder="Type your message..."
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+              />
+              <button
+                onClick={sendMessage}
+                className="bg-blue-500 text-white px-4 py-1 rounded-r"
+              >
+                Send
+              </button>
             </div>
           </div>
         </div>
