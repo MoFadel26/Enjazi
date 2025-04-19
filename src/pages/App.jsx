@@ -29,9 +29,6 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <Link to="/settings" className="text-white hover:text-blue-100 transition">
-              Settings
-            </Link>
             <Link to="/login" className="text-white hover:text-blue-100 transition">
               Login
             </Link>

@@ -21,10 +21,10 @@ export default function Rooms() {
     { id: 5, name: "Language Exchange", memberCount: 38, category: "Education", image: "/api/placeholder/300/200" },
     { id: 6, name: "Mindfulness Group", memberCount: 19, category: "Wellness", image: "/api/placeholder/300/200" }
   ]);
-  
+
   // for image preview in create room form
   const [imagePreview, setImagePreview] = useState(null);
-  
+
   // per-room leaderboard data
   const [leaderboardData, setLeaderboardData] = useState({
     1: [
@@ -47,7 +47,7 @@ export default function Rooms() {
       { userId: "currentUser", username: "You", points: 510, streak: 4, hours: 22, rank: 4 }
     ]
   });
-  
+
   //  oom content for demo
   const roomContent = {
     1: {
@@ -120,14 +120,14 @@ export default function Rooms() {
   // handle room creation form submission
   const handleCreateRoom = (e) => {
     e.preventDefault();
-    
+
     // Create a new room with a unique ID
     const newId = Math.max(...[...enrolledRooms, ...publicRooms].map(room => room.id)) + 1;
-    
+
     // In a real app, i would upload the image first and get a URL back
     // For demo purposes, we decided to use a placeholder image or the local preview
     const imageUrl = imagePreview || "/api/placeholder/300/200";
-    
+
     const newRoom = {
       id: newId,
       name: newRoomData.name,
@@ -135,7 +135,7 @@ export default function Rooms() {
       memberCount: 1, // Starting with just the creator
       image: imageUrl
     };
-    
+
     // Add room content
     const newRoomContentData = {
       name: newRoomData.name,
@@ -144,26 +144,26 @@ export default function Rooms() {
       announcements: ["Welcome to the new room!"],
       image: imageUrl
     };
-    
+
     // Initialize leaderboard for the new room
     const newLeaderboard = [
       { userId: "currentUser", username: "You", points: 100, streak: 1, hours: 0, rank: 1 }
     ];
-    
+
     // Update state- fix here: Always add to enrolled rooms (since user created it)
     // conditionally add to public rooms only if it's marked as public
     setEnrolledRooms([...enrolledRooms, newRoom]);
-    
+
     if (newRoomData.isPublic) {
       setPublicRooms([...publicRooms, newRoom]);
     }
-    
+
     // update room content with the new room
     setRoomContent(prev => ({ ...prev, [newId]: newRoomContentData }));
-    
+
     // initialize leaderboard
     setLeaderboardData(prev => ({ ...prev, [newId]: newLeaderboard }));
-    
+
     // reset form and go back to rooms view
     setNewRoomData({
       name: "",
@@ -172,10 +172,10 @@ export default function Rooms() {
       isPublic: true,
       image: null
     });
-    
+
     // cear image preview
     setImagePreview(null);
-    
+
     setView("myRooms");
   };
 
@@ -192,23 +192,23 @@ export default function Rooms() {
     if (roomToJoin) {
       //update room with increased member count
       const updatedRoom = { ...roomToJoin, memberCount: roomToJoin.memberCount + 1 };
-      
+
       // add to enrolled rooms
       setEnrolledRooms([...enrolledRooms, updatedRoom]);
-      
+
       //remove from public rooms
       setPublicRooms(publicRooms.filter(room => room.id !== roomId));
       //if the room doesn't have a leaderboard entry yet, add one
       if (!leaderboardData[roomId]) {
-        const newMemberData = { 
-          userId: "currentUser", 
-          username: "You", 
-          points: 0, 
-          streak: 0, 
-          hours: 0, 
-          rank: 1 
+        const newMemberData = {
+          userId: "currentUser",
+          username: "You",
+          points: 0,
+          streak: 0,
+          hours: 0,
+          rank: 1
         };
-        
+
         setLeaderboardData(prev => ({
           ...prev,
           [roomId]: [newMemberData]
@@ -248,7 +248,7 @@ export default function Rooms() {
       }
     `;
     document.head.appendChild(style);
-    
+
     // Cleanup function
     return () => {
       document.head.removeChild(style);
@@ -256,51 +256,56 @@ export default function Rooms() {
   }, []);
 
   return (
-    <div className="rooms-container p-4">
+    <div className="rooms-container p-4 pt-28 md:pt-32"> {/*last padding for adjusted mobile view, maybe unneeded but leave it for now*/}
       {/* Navigation Bar for mobile*/}
-      <div className="flex flex-col md:flex-row justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold mb-4 md:mb-0">Rooms</h1>
-        <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-3 w-full md:w-auto rooms-nav-buttons">
-          <button 
-            onClick={() => setView("myRooms")}
-            className={`px-4 py-2 rounded ${view === "myRooms" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
-          >
-            My Rooms
-          </button>
-          <button 
-            onClick={() => setView("publicRooms")}
-            className={`px-4 py-2 rounded ${view === "publicRooms" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
-          >
-            Public Rooms
-          </button>
-          <button 
-            onClick={showCreateRoomForm}
-            className="px-4 py-2 bg-green-500 text-white rounded"
-          >
-            Create Room
-          </button>
+      {/* Full-width gray border background */}
+      <div className="fixed top-0 left-0 w-full bg-white border-b border-[#e2e8f0] z-10">
+        <div className="ml-64 p-4 md:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <h1 className="text-2xl font-bold text-[#0f172a]">Rooms</h1>
+          <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-3 w-full md:w-auto rooms-nav-buttons">
+            <button
+              onClick={() => setView("myRooms")}
+              className={`px-4 py-2 rounded ${view === "myRooms" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+            >
+              My Rooms
+            </button>
+            <button
+              onClick={() => setView("publicRooms")}
+              className={`px-4 py-2 rounded ${view === "publicRooms" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+            >
+              Public Rooms
+            </button>
+            <button
+              onClick={showCreateRoomForm}
+              className="px-4 py-2 bg-green-500 text-white rounded"
+            >
+              Create Room
+            </button>
+          </div>
         </div>
       </div>
+
+
 
       {/* My Rooms*/}
       {view === "myRooms" && (
         <div>
           <h2 className="text-xl font-semibold mb-4">My Enrolled Rooms</h2>
-          
+
           {enrolledRooms.length === 0 ? (
             <p className="text-gray-500">You haven't joined any rooms yet. Check out the public rooms!</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {enrolledRooms.map(room => (
-                <div 
-                  key={room.id} 
+                <div
+                  key={room.id}
                   className="border rounded overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer mobile-full-width"
                   onClick={() => selectRoom(room.id)}
                 >
                   <div className="h-40 overflow-hidden">
-                    <img 
-                      src={room.image || "/api/placeholder/300/200"} 
-                      alt={room.name} 
+                    <img
+                      src={room.image || "/api/placeholder/300/200"}
+                      alt={room.name}
                       className="w-full h-full object-cover"
                     />
                   </div>
@@ -320,14 +325,14 @@ export default function Rooms() {
       {view === "publicRooms" && (
         <div>
           <h2 className="text-xl font-semibold mb-4">Public Rooms</h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {publicRooms.map(room => (
               <div key={room.id} className="border rounded overflow-hidden shadow-sm mobile-full-width">
                 <div className="h-40 overflow-hidden">
-                  <img 
-                    src={room.image || "/api/placeholder/300/200"} 
-                    alt={room.name} 
+                  <img
+                    src={room.image || "/api/placeholder/300/200"}
+                    alt={room.name}
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -335,7 +340,7 @@ export default function Rooms() {
                   <h3 className="font-semibold text-lg">{room.name}</h3>
                   <p className="text-gray-600">Category: {room.category}</p>
                   <p className="text-gray-600">Members: {room.memberCount}</p>
-                  <button 
+                  <button
                     onClick={(e) => {
                       e.stopPropagation(); // prevent triggering parent's onClick
                       joinRoom(room.id);
@@ -355,16 +360,16 @@ export default function Rooms() {
       {view === "createRoom" && (
         <div className="max-w-md mx-auto bg-white p-4 md:p-6 rounded-lg shadow-md">
           <div className="mb-4">
-            <button 
+            <button
               onClick={() => setView("myRooms")}
               className="px-3 py-1 bg-gray-200 rounded"
             >
               ← Back to Rooms
             </button>
           </div>
-          
+
           <h2 className="text-2xl font-bold mb-6">Create a New Room</h2>
-          
+
           <form onSubmit={handleCreateRoom}>
             <div className="mb-4">
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="roomName">
@@ -381,7 +386,7 @@ export default function Rooms() {
                 required
               />
             </div>
-            
+
             <div className="mb-4">
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="roomDescription">
                 Description
@@ -397,7 +402,7 @@ export default function Rooms() {
                 required
               ></textarea>
             </div>
-            
+
             {/* img upload section */}
             <div className="mb-4">
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="roomImage">
@@ -412,8 +417,8 @@ export default function Rooms() {
                   onChange={handleImageUpload}
                   className="hidden"
                 />
-                <label 
-                  htmlFor="roomImage" 
+                <label
+                  htmlFor="roomImage"
                   className="cursor-pointer bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline mb-2 md:mb-0"
                 >
                   Choose Image
@@ -422,22 +427,22 @@ export default function Rooms() {
                   {newRoomData.image ? newRoomData.image.name : "No file chosen"}
                 </span>
               </div>
-              
+
               {/* img preview */}
               {imagePreview && (
                 <div className="mt-3">
                   <p className="text-sm text-gray-700 mb-1">Preview:</p>
                   <div className="border rounded overflow-hidden h-40">
-                    <img 
-                      src={imagePreview} 
-                      alt="Room preview" 
+                    <img
+                      src={imagePreview}
+                      alt="Room preview"
                       className="w-full h-full object-cover"
                     />
                   </div>
                 </div>
               )}
             </div>
-            
+
             <div className="mb-4">
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="roomCategory">
                 Category
@@ -458,7 +463,7 @@ export default function Rooms() {
                 <option value="Other">Other</option>
               </select>
             </div>
-            
+
             <div className="mb-6">
               <label className="flex items-center">
                 <input
@@ -471,7 +476,7 @@ export default function Rooms() {
                 <span className="text-gray-700 text-sm">Make this room public</span>
               </label>
             </div>
-            
+
             <div className="flex flex-col sm:flex-row items-center justify-between">
               <button
                 type="submit"
@@ -495,33 +500,33 @@ export default function Rooms() {
       {view === "roomContent" && currentRoom && (
         <div>
           <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
-            <button 
+            <button
               onClick={() => setView("myRooms")}
               className="px-3 py-1 bg-gray-200 rounded mb-2 sm:mb-0 w-full sm:w-auto"
             >
               ← Back to Rooms
             </button>
-            <button 
+            <button
               onClick={showLeaderboard}
               className="px-4 py-2 bg-purple-500 text-white rounded w-full sm:w-auto"
             >
               Leaderboard
             </button>
           </div>
-          
+
           {/* room Header with img */}
           <div className="mb-6">
             <div className="rounded-lg overflow-hidden shadow-md mb-4 h-40 md:h-60">
-              <img 
-                src={roomContent[currentRoom]?.image || "/api/placeholder/800/400"} 
-                alt={roomContent[currentRoom]?.name} 
+              <img
+                src={roomContent[currentRoom]?.image || "/api/placeholder/800/400"}
+                alt={roomContent[currentRoom]?.name}
                 className="w-full h-full object-cover"
               />
             </div>
             <h2 className="text-2xl font-bold">{roomContent[currentRoom]?.name}</h2>
             <p className="text-gray-600">{roomContent[currentRoom]?.description}</p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="border rounded p-4">
               <h3 className="font-semibold text-lg mb-2">Tasks</h3>
@@ -551,17 +556,17 @@ export default function Rooms() {
       {view === "leaderboard" && currentRoom && (
         <div>
           <div className="mb-4">
-            <button 
+            <button
               onClick={() => setView("roomContent")}
               className="px-3 py-1 bg-gray-200 rounded"
             >
               ← Back to Room
             </button>
           </div>
-          
+
           <h2 className="text-2xl font-bold mb-2">{roomContent[currentRoom]?.name} Leaderboard</h2>
           <p className="text-gray-600 mb-6">See how you rank among other members</p>
-          
+
           <div className="overflow-x-auto table-container">
             <table className="min-w-full border-collapse">
               <thead>
