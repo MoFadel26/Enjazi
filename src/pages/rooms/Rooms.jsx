@@ -5,6 +5,9 @@ export default function Rooms() {
   const [currentRoom, setCurrentRoom] = useState(null);
   const [roomMessages, setRoomMessages] = useState({});
   const [newMessage, setNewMessage] = useState("");
+  const [editedName, setEditedName] = useState("");
+  const [editedDescription, setEditedDescription] = useState("");
+
 
   const [newRoomData, setNewRoomData] = useState({
     name: "",
@@ -79,6 +82,8 @@ export default function Rooms() {
   //room selection
   const selectRoom = (roomId) => {
     setCurrentRoom(roomId);
+    setEditedName(roomContent[roomId]?.name || "");
+    setEditedDescription(roomContent[roomId]?.description || "");
     setView("roomContent");
   };
 
@@ -92,7 +97,7 @@ export default function Rooms() {
   //create room view
   const showCreateRoomForm = () => {
     setView("createRoom");
-    //Reset image preview
+    //Reset img preview
     setImagePreview(null);
   };
 
@@ -237,6 +242,13 @@ export default function Rooms() {
       }
     }
   };
+
+  <button
+    onClick={() => setView("editRoom")}
+    className="px-4 py-2 bg-yellow-500 text-white rounded w-full sm:w-auto mt-2 sm:mt-0">
+    Edit Room
+  </button>
+
 
   const leaveRoom = () => {
     if (!currentRoom) return;
@@ -535,6 +547,82 @@ export default function Rooms() {
         </div>
       )}
 
+      {view === "editRoom" && currentRoom && (
+        <div className="max-w-md mx-auto bg-white p-4 md:p-6 rounded-lg shadow-md">
+          <div className="mb-4">
+            <button
+              onClick={() => setView("roomContent")}
+              className="px-3 py-1 bg-gray-200 rounded"
+            >
+              ← Back to Room
+            </button>
+          </div>
+
+          <h2 className="text-2xl font-bold mb-6">Edit Room Details</h2>
+
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+
+              const updatedContent = {
+                ...roomContent,
+                [currentRoom]: {
+                  ...roomContent[currentRoom],
+                  name: editedName,
+                  description: editedDescription
+                }
+              };
+
+              setRoomContent(updatedContent);
+              setView("roomContent");
+            }}
+          >
+            <div className="mb-4">
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Room Name
+              </label>
+              <input
+                type="text"
+                value={editedName}
+                onChange={(e) => setEditedName(e.target.value)}
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                required
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Description
+              </label>
+              <textarea
+                value={editedDescription}
+                onChange={(e) => setEditedDescription(e.target.value)}
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                rows="3"
+                required
+              ></textarea>
+            </div>
+
+            <div className="flex justify-between">
+              <button
+                type="submit"
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              >
+                Save Changes
+              </button>
+              <button
+                type="button"
+                onClick={() => setView("roomContent")}
+                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+
       {/* room content  */}
       {view === "roomContent" && currentRoom && (
         <div>
@@ -551,6 +639,7 @@ export default function Rooms() {
             >
               Leaderboard
             </button>
+            <button onClick={() => setView("editRoom")} className="px-4 py-2 bg-yellow-500 text-white rounded w-full sm:w-auto mt-2 sm:mt-0">Edit Room</button>
             <button
               onClick={leaveRoom}
               className="px-4 py-2 bg-red-500 text-white rounded w-full sm:w-auto mt-2 sm:mt-0"
@@ -619,6 +708,29 @@ export default function Rooms() {
                 className="bg-blue-500 text-white px-4 py-1 rounded-r"
               >
                 Send
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {view === "roomContent" && currentRoom && (
+        <div>
+          {/* existing content... */}
+
+          {/* Voice Chat Section - for display only */}
+          <div className="border rounded p-4 mt-6">
+            <h3 className="font-semibold text-lg mb-2">Voice Channel</h3>
+            <div className="bg-gray-100 p-4 rounded shadow-sm">
+              <p className="text-gray-700">🎧 General Voice Room</p>
+              <div className="flex items-center space-x-3 mt-2">
+                <div className="w-10 h-10 bg-blue-300 rounded-full flex items-center justify-center text-white font-bold">Y</div>
+                <div className="w-10 h-10 bg-green-400 rounded-full flex items-center justify-center text-white font-bold">A</div>
+                <div className="w-10 h-10 bg-purple-400 rounded-full flex items-center justify-center text-white font-bold">S</div>
+              </div>
+              <p className="text-xs text-gray-500 mt-2">3 members connected</p>
+              <button className="mt-3 bg-gray-300 hover:bg-gray-400 text-gray-800 py-1 px-3 rounded">
+                🔇 Mute
               </button>
             </div>
           </div>
