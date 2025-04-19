@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { FaUser, FaPalette, FaClock, FaChartLine, FaBell, FaLink, FaBars } from "react-icons/fa";
 import { useTheme } from "../../contexts/ThemeContext";
+// No need to import accent color CSS here since it's global now
 
 // Import your components
 import Profile from '../../components/settings/Profile';
@@ -77,7 +78,7 @@ export default function Settings() {
                                 key={tab.id}
                                 className={`flex items-center whitespace-nowrap px-4 py-3 border-b-2 ${
                                     activeTab === tab.id 
-                                    ? "border-blue-500 text-blue-500" 
+                                    ? "border-accent text-accent" // Using accent color classes
                                     : `border-transparent ${isDark ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'}`
                                 }`}
                                 onClick={() => {

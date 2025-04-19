@@ -1,0 +1,208 @@
+/* src/styles/accentColor.css */
+:root {
+    --accent-color: #00A3FF;
+    --accent-color-50: #E6F5FF;
+    --accent-color-100: #CCE9FF;
+    --accent-color-200: #99D3FF;
+    --accent-color-300: #66BDFF;
+    --accent-color-400: #33A7FF;
+    --accent-color-500: #00A3FF; /* Main accent color */
+    --accent-color-600: #0082CC;
+    --accent-color-700: #006199;
+    --accent-color-800: #004166;
+    --accent-color-900: #002033;
+  }
+  
+  /* Override all Tailwind blue color classes */
+  /* Background colors */
+  .bg-blue-50 { background-color: var(--accent-color-50) !important; }
+  .bg-blue-100 { background-color: var(--accent-color-100) !important; }
+  .bg-blue-200 { background-color: var(--accent-color-200) !important; }
+  .bg-blue-300 { background-color: var(--accent-color-300) !important; }
+  .bg-blue-400 { background-color: var(--accent-color-400) !important; }
+  .bg-blue-500 { background-color: var(--accent-color-500) !important; }
+  .bg-blue-600 { background-color: var(--accent-color-600) !important; }
+  .bg-blue-700 { background-color: var(--accent-color-700) !important; }
+  .bg-blue-800 { background-color: var(--accent-color-800) !important; }
+  .bg-blue-900 { background-color: var(--accent-color-900) !important; }
+  
+  /* Text colors */
+  .text-blue-50 { color: var(--accent-color-50) !important; }
+  .text-blue-100 { color: var(--accent-color-100) !important; }
+  .text-blue-200 { color: var(--accent-color-200) !important; }
+  .text-blue-300 { color: var(--accent-color-300) !important; }
+  .text-blue-400 { color: var(--accent-color-400) !important; }
+  .text-blue-500 { color: var(--accent-color-500) !important; }
+  .text-blue-600 { color: var(--accent-color-600) !important; }
+  .text-blue-700 { color: var(--accent-color-700) !important; }
+  .text-blue-800 { color: var(--accent-color-800) !important; }
+  .text-blue-900 { color: var(--accent-color-900) !important; }
+  
+  /* Border colors */
+  .border-blue-50 { border-color: var(--accent-color-50) !important; }
+  .border-blue-100 { border-color: var(--accent-color-100) !important; }
+  .border-blue-200 { border-color: var(--accent-color-200) !important; }
+  .border-blue-300 { border-color: var(--accent-color-300) !important; }
+  .border-blue-400 { border-color: var(--accent-color-400) !important; }
+  .border-blue-500 { border-color: var(--accent-color-500) !important; }
+  .border-blue-600 { border-color: var(--accent-color-600) !important; }
+  .border-blue-700 { border-color: var(--accent-color-700) !important; }
+  .border-blue-800 { border-color: var(--accent-color-800) !important; }
+  .border-blue-900 { border-color: var(--accent-color-900) !important; }
+  
+  /* Ring colors */
+  .ring-blue-50 { --tw-ring-color: var(--accent-color-50) !important; }
+  .ring-blue-100 { --tw-ring-color: var(--accent-color-100) !important; }
+  .ring-blue-200 { --tw-ring-color: var(--accent-color-200) !important; }
+  .ring-blue-300 { --tw-ring-color: var(--accent-color-300) !important; }
+  .ring-blue-400 { --tw-ring-color: var(--accent-color-400) !important; }
+  .ring-blue-500 { --tw-ring-color: var(--accent-color-500) !important; }
+  .ring-blue-600 { --tw-ring-color: var(--accent-color-600) !important; }
+  .ring-blue-700 { --tw-ring-color: var(--accent-color-700) !important; }
+  .ring-blue-800 { --tw-ring-color: var(--accent-color-800) !important; }
+  .ring-blue-900 { --tw-ring-color: var(--accent-color-900) !important; }
+  
+  /* Hover states */
+  .hover\:bg-blue-50:hover { background-color: var(--accent-color-50) !important; }
+  .hover\:bg-blue-100:hover { background-color: var(--accent-color-100) !important; }
+  .hover\:bg-blue-200:hover { background-color: var(--accent-color-200) !important; }
+  .hover\:bg-blue-300:hover { background-color: var(--accent-color-300) !important; }
+  .hover\:bg-blue-400:hover { background-color: var(--accent-color-400) !important; }
+  .hover\:bg-blue-500:hover { background-color: var(--accent-color-500) !important; }
+  .hover\:bg-blue-600:hover { background-color: var(--accent-color-600) !important; }
+  .hover\:bg-blue-700:hover { background-color: var(--accent-color-700) !important; }
+  .hover\:bg-blue-800:hover { background-color: var(--accent-color-800) !important; }
+  .hover\:bg-blue-900:hover { background-color: var(--accent-color-900) !important; }
+  
+  .hover\:text-blue-50:hover { color: var(--accent-color-50) !important; }
+  .hover\:text-blue-100:hover { color: var(--accent-color-100) !important; }
+  .hover\:text-blue-200:hover { color: var(--accent-color-200) !important; }
+  .hover\:text-blue-300:hover { color: var(--accent-color-300) !important; }
+  .hover\:text-blue-400:hover { color: var(--accent-color-400) !important; }
+  .hover\:text-blue-500:hover { color: var(--accent-color-500) !important; }
+  .hover\:text-blue-600:hover { color: var(--accent-color-600) !important; }
+  .hover\:text-blue-700:hover { color: var(--accent-color-700) !important; }
+  .hover\:text-blue-800:hover { color: var(--accent-color-800) !important; }
+  .hover\:text-blue-900:hover { color: var(--accent-color-900) !important; }
+  
+  .hover\:border-blue-50:hover { border-color: var(--accent-color-50) !important; }
+  .hover\:border-blue-100:hover { border-color: var(--accent-color-100) !important; }
+  .hover\:border-blue-200:hover { border-color: var(--accent-color-200) !important; }
+  .hover\:border-blue-300:hover { border-color: var(--accent-color-300) !important; }
+  .hover\:border-blue-400:hover { border-color: var(--accent-color-400) !important; }
+  .hover\:border-blue-500:hover { border-color: var(--accent-color-500) !important; }
+  .hover\:border-blue-600:hover { border-color: var(--accent-color-600) !important; }
+  .hover\:border-blue-700:hover { border-color: var(--accent-color-700) !important; }
+  .hover\:border-blue-800:hover { border-color: var(--accent-color-800) !important; }
+  .hover\:border-blue-900:hover { border-color: var(--accent-color-900) !important; }
+  
+  /* Focus states */
+  .focus\:bg-blue-50:focus { background-color: var(--accent-color-50) !important; }
+  .focus\:bg-blue-100:focus { background-color: var(--accent-color-100) !important; }
+  .focus\:bg-blue-200:focus { background-color: var(--accent-color-200) !important; }
+  .focus\:bg-blue-300:focus { background-color: var(--accent-color-300) !important; }
+  .focus\:bg-blue-400:focus { background-color: var(--accent-color-400) !important; }
+  .focus\:bg-blue-500:focus { background-color: var(--accent-color-500) !important; }
+  .focus\:bg-blue-600:focus { background-color: var(--accent-color-600) !important; }
+  .focus\:bg-blue-700:focus { background-color: var(--accent-color-700) !important; }
+  .focus\:bg-blue-800:focus { background-color: var(--accent-color-800) !important; }
+  .focus\:bg-blue-900:focus { background-color: var(--accent-color-900) !important; }
+  
+  .focus\:text-blue-50:focus { color: var(--accent-color-50) !important; }
+  .focus\:text-blue-100:focus { color: var(--accent-color-100) !important; }
+  .focus\:text-blue-200:focus { color: var(--accent-color-200) !important; }
+  .focus\:text-blue-300:focus { color: var(--accent-color-300) !important; }
+  .focus\:text-blue-400:focus { color: var(--accent-color-400) !important; }
+  .focus\:text-blue-500:focus { color: var(--accent-color-500) !important; }
+  .focus\:text-blue-600:focus { color: var(--accent-color-600) !important; }
+  .focus\:text-blue-700:focus { color: var(--accent-color-700) !important; }
+  .focus\:text-blue-800:focus { color: var(--accent-color-800) !important; }
+  .focus\:text-blue-900:focus { color: var(--accent-color-900) !important; }
+  
+  .focus\:border-blue-50:focus { border-color: var(--accent-color-50) !important; }
+  .focus\:border-blue-100:focus { border-color: var(--accent-color-100) !important; }
+  .focus\:border-blue-200:focus { border-color: var(--accent-color-200) !important; }
+  .focus\:border-blue-300:focus { border-color: var(--accent-color-300) !important; }
+  .focus\:border-blue-400:focus { border-color: var(--accent-color-400) !important; }
+  .focus\:border-blue-500:focus { border-color: var(--accent-color-500) !important; }
+  .focus\:border-blue-600:focus { border-color: var(--accent-color-600) !important; }
+  .focus\:border-blue-700:focus { border-color: var(--accent-color-700) !important; }
+  .focus\:border-blue-800:focus { border-color: var(--accent-color-800) !important; }
+  .focus\:border-blue-900:focus { border-color: var(--accent-color-900) !important; }
+  
+  .focus\:ring-blue-50:focus { --tw-ring-color: var(--accent-color-50) !important; }
+  .focus\:ring-blue-100:focus { --tw-ring-color: var(--accent-color-100) !important; }
+  .focus\:ring-blue-200:focus { --tw-ring-color: var(--accent-color-200) !important; }
+  .focus\:ring-blue-300:focus { --tw-ring-color: var(--accent-color-300) !important; }
+  .focus\:ring-blue-400:focus { --tw-ring-color: var(--accent-color-400) !important; }
+  .focus\:ring-blue-500:focus { --tw-ring-color: var(--accent-color-500) !important; }
+  .focus\:ring-blue-600:focus { --tw-ring-color: var(--accent-color-600) !important; }
+  .focus\:ring-blue-700:focus { --tw-ring-color: var(--accent-color-700) !important; }
+  .focus\:ring-blue-800:focus { --tw-ring-color: var(--accent-color-800) !important; }
+  .focus\:ring-blue-900:focus { --tw-ring-color: var(--accent-color-900) !important; }
+  
+  /* Active states */
+  .active\:bg-blue-50:active { background-color: var(--accent-color-50) !important; }
+  .active\:bg-blue-100:active { background-color: var(--accent-color-100) !important; }
+  .active\:bg-blue-200:active { background-color: var(--accent-color-200) !important; }
+  .active\:bg-blue-300:active { background-color: var(--accent-color-300) !important; }
+  .active\:bg-blue-400:active { background-color: var(--accent-color-400) !important; }
+  .active\:bg-blue-500:active { background-color: var(--accent-color-500) !important; }
+  .active\:bg-blue-600:active { background-color: var(--accent-color-600) !important; }
+  .active\:bg-blue-700:active { background-color: var(--accent-color-700) !important; }
+  .active\:bg-blue-800:active { background-color: var(--accent-color-800) !important; }
+  .active\:bg-blue-900:active { background-color: var(--accent-color-900) !important; }
+  
+  /* Custom accent classes for convenience */
+  .accent-bg { background-color: var(--accent-color-500) !important; }
+  .accent-text { color: var(--accent-color-500) !important; }
+  .accent-border { border-color: var(--accent-color-500) !important; }
+  .accent-ring { --tw-ring-color: var(--accent-color-500) !important; }
+  
+  .accent-bg-light { background-color: var(--accent-color-400) !important; }
+  .accent-bg-lighter { background-color: var(--accent-color-300) !important; }
+  .accent-bg-lightest { background-color: var(--accent-color-100) !important; }
+  
+  .accent-bg-dark { background-color: var(--accent-color-600) !important; }
+  .accent-bg-darker { background-color: var(--accent-color-700) !important; }
+  .accent-bg-darkest { background-color: var(--accent-color-900) !important; }
+  
+  .accent-hover:hover { background-color: var(--accent-color-500) !important; color: white !important; }
+  .accent-hover-light:hover { background-color: var(--accent-color-400) !important; }
+  .accent-hover-dark:hover { background-color: var(--accent-color-600) !important; }
+  
+  .btn-accent {
+    background-color: var(--accent-color-500);
+    color: white;
+    transition: background-color 0.2s;
+  }
+  
+  .btn-accent:hover {
+    background-color: var(--accent-color-600);
+  }
+  
+  .btn-accent:active {
+    background-color: var(--accent-color-700);
+  }
+  
+  .btn-accent-outline {
+    background-color: transparent;
+    border: 1px solid var(--accent-color-500);
+    color: var(--accent-color-500);
+    transition: all 0.2s;
+  }
+  
+  .btn-accent-outline:hover {
+    background-color: var(--accent-color-500);
+    color: white;
+  }
+  
+  /* For green buttons in your UI */
+  .btn-green {
+    background-color: #34C759;
+    color: white;
+  }
+  
+  .btn-green:hover {
+    background-color: #2EB350;
+  }

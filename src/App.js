@@ -2,6 +2,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { AccentColorProvider } from './contexts/AccentColorContext';
 import './styles/darkMode.css';
 import Login from 'pages/auth/Login.jsx';
 import SignUp from 'pages/auth/SignUp.jsx';
@@ -15,10 +16,14 @@ import Calendar from 'pages/calendar/CalendarPage';
 import Performance from 'pages/performance/Performance';
 import Rooms from 'pages/rooms/Rooms';
 import Settings from 'pages/settings/settings';
+import './styles/accentColor.css'; // Import CSS globally
+import './index.css'; // Your other styles
 
 function App() {
   return (
+    <React.StrictMode>
     <ThemeProvider>
+      <AccentColorProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<LandingPage />} />
@@ -36,7 +41,9 @@ function App() {
           </Route>
         </Routes>
       </BrowserRouter>
+      </AccentColorProvider>
     </ThemeProvider>
+    </React.StrictMode>
   );
 }
 

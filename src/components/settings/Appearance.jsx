@@ -1,26 +1,30 @@
 // src/components/settings/Appearance.jsx
 import React, { useState, useEffect } from "react";
 import { useTheme } from "../../contexts/ThemeContext";
+import { useAccentColor } from "../../contexts/AccentColorContext";
+import "../../styles/accentColor.css";
 
 const Appearance = ({ onThemeChange }) => {
-  // Use the theme context
+  // Use the theme and accent color contexts
   const { isDark } = useTheme();
+  const { accentColor, setAccentColor } = useAccentColor();
   
   // State for appearance settings
   const [settings, setSettings] = useState({
     colorTheme: isDark ? "dark" : "light", 
-    accentColor: "#00A3FF", 
+    accentColor: accentColor, 
     fontSize: "medium", 
     animation: "enable", 
   });
 
-  // Update local state when isDark changes
+  // Update local state when isDark or accentColor changes
   useEffect(() => {
     setSettings(prev => ({
       ...prev,
-      colorTheme: isDark ? "dark" : "light"
+      colorTheme: isDark ? "dark" : "light",
+      accentColor: accentColor
     }));
-  }, [isDark]);
+  }, [isDark, accentColor]);
 
   // Handle theme selection
   const handleThemeChange = (theme) => {
@@ -31,8 +35,8 @@ const Appearance = ({ onThemeChange }) => {
     
     // Call the parent component's theme change handler
     if (onThemeChange) {
-    onThemeChange(theme);
-  }
+      onThemeChange(theme);
+    }
   };
 
   // Handle accent color change
@@ -41,6 +45,9 @@ const Appearance = ({ onThemeChange }) => {
       ...settings,
       accentColor: color,
     });
+    
+    // Update the accent color in the context
+    setAccentColor(color);
   };
 
   // Handle font size change
@@ -66,8 +73,17 @@ const Appearance = ({ onThemeChange }) => {
     // You could also show a success message
   };
 
+  // Available accent colors
+  const accentColors = [
+    { hex: "#00A3FF", name: "Blue" },
+    { hex: "#FF3B30", name: "Red" },
+    { hex: "#34C759", name: "Green" },
+    { hex: "#AF52DE", name: "Purple" },
+    { hex: "#FF9500", name: "Orange" }
+  ];
+
   return (
-    <div className={`${isDark ? 'bg-gray-900 text-white' : 'bg-white'} rounded-lg p-6 shadow-sm`}>
+    <div className={`${isDark ? 'bg-gray-900 text-white' : 'bg-white'} rounded-lg p-4 md:p-6 shadow-sm`}>
       <h2 className="text-xl font-semibold mb-2">Theme Preferences</h2>
       <p className={`${isDark ? 'text-gray-300' : 'text-gray-600'} text-sm mb-6`}>
         Choose your preferred theme and appearance settings.
@@ -80,7 +96,7 @@ const Appearance = ({ onThemeChange }) => {
           <button
             className={`flex items-center justify-center py-2 px-4 rounded-md ${
               settings.colorTheme === "light"
-                ? "bg-blue-500 text-white"
+                ? "accent-bg text-white"
                 : isDark ? "bg-gray-700 text-gray-300 hover:bg-gray-600" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
             onClick={() => handleThemeChange("light")}
@@ -93,7 +109,7 @@ const Appearance = ({ onThemeChange }) => {
           <button
             className={`flex items-center justify-center py-2 px-4 rounded-md ${
               settings.colorTheme === "dark"
-                ? "bg-blue-500 text-white"
+                ? "accent-bg text-white"
                 : isDark ? "bg-gray-700 text-gray-300 hover:bg-gray-600" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
             onClick={() => handleThemeChange("dark")}
@@ -110,17 +126,31 @@ const Appearance = ({ onThemeChange }) => {
       <div className="mb-6">
         <h3 className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'} mb-3`}>Accent Color</h3>
         <div className="grid grid-cols-5 gap-3">
-          {["#00A3FF", "#FF3B30", "#34C759", "#AF52DE", "#FF9500"].map((color) => (
-            <button
-              key={color}
-              className={`w-10 h-10 rounded-full ${
-                settings.accentColor === color ? "ring-2 ring-offset-2 ring-gray-400" : ""
-              }`}
-              style={{ backgroundColor: color }}
-              onClick={() => handleAccentColorChange(color)}
-              aria-label={`Select ${color} as accent color`}
-            />
+          {accentColors.map((color) => (
+            <div key={color.hex} className="flex flex-col items-center">
+              <button
+                className={`w-10 h-10 rounded-full ${
+                  settings.accentColor === color.hex ? "ring-2 ring-offset-2 ring-accent" : ""
+                }`}
+                style={{ backgroundColor: color.hex }}
+                onClick={() => handleAccentColorChange(color.hex)}
+                aria-label={`Select ${color.name} as accent color`}
+              />
+              <span className={`text-xs mt-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                {color.name}
+              </span>
+            </div>
           ))}
+        </div>
+        <div className="mt-4">
+          <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'} mb-2`}>
+            Preview with current accent color:
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <button className="accent-bg text-white px-3 py-1 rounded-md">Button</button>
+            <div className="accent-text font-medium">Text</div>
+            <div className="border-2 accent-border px-3 py-1 rounded-md">Border</div>
+          </div>
         </div>
       </div>
 
@@ -133,7 +163,7 @@ const Appearance = ({ onThemeChange }) => {
               key={size}
               className={`py-2 px-4 rounded-md ${
                 settings.fontSize === size
-                  ? "bg-blue-500 text-white"
+                  ? "accent-bg text-white"
                   : isDark ? "bg-gray-700 text-gray-300 hover:bg-gray-600" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
               onClick={() => handleFontSizeChange(size)}
@@ -151,7 +181,7 @@ const Appearance = ({ onThemeChange }) => {
           <button
             className={`py-2 px-4 rounded-md ${
               settings.animation === "enable"
-                ? "bg-blue-500 text-white"
+                ? "accent-bg text-white"
                 : isDark ? "bg-gray-700 text-gray-300 hover:bg-gray-600" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
             onClick={() => handleAnimationChange("enable")}
@@ -161,7 +191,7 @@ const Appearance = ({ onThemeChange }) => {
           <button
             className={`py-2 px-4 rounded-md ${
               settings.animation === "disable"
-                ? "bg-blue-500 text-white"
+                ? "accent-bg text-white"
                 : isDark ? "bg-gray-700 text-gray-300 hover:bg-gray-600" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
             onClick={() => handleAnimationChange("disable")}
@@ -173,7 +203,7 @@ const Appearance = ({ onThemeChange }) => {
 
       {/* Save Button */}
       <button
-        className="w-full py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white rounded-md transition duration-200"
+        className="w-full py-2 px-4 btn-accent rounded-md transition duration-200"
         onClick={handleSave}
       >
         Save Changes
