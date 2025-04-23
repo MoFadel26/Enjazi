@@ -9,6 +9,7 @@ import {
   eachDayOfInterval,
   isSameMonth,
   isSameDay,
+  
 } from "date-fns";
 
 import {useState} from "react";
@@ -660,8 +661,8 @@ function CalendarPage() {
             ))}
             {todaysEvents.map((tempEvent) => {
               const Icon = tempEvent.icon;
-              const sh = tempEvent.start.getHours();
-              const sm = tempEvent.start.getMinutes();
+              const sh = tempEvent.startTime.getHours();
+              const sm = tempEvent.startTime.getMinutes();
               const duration = (tempEvent.endTime - tempEvent.startTime) / 3600000; // hrs
               return (
                 <div
