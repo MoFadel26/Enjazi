@@ -66,7 +66,59 @@ async function signup (req, res) {
   }
 };
 
-function login(_req, res)  { res.json({ msg: "login"  }); }
+async function login(req, res) {
+  try {
+    const { email, password } = req.body;
+
+    // 1) Ensure both fields are present
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ error: 'Please provide both email and password.' });
+    }
+
+    // 2) Find the user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      // (we don't reveal whether it was email or password that was wrong)
+      return res
+        .status(401)
+        .json({ error: 'Invalid credentials.' });
+    }
+
+    // 3) Compare password hashes
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
+      return res
+        .status(401)
+        .json({ error: 'Invalid credentials.' });
+    }
+
+    // 4) Generate JWT and set it as an HTTP-only cookie
+    generateTokenAndSetCookie(user._id, res);
+
+    // 5) Return the same user payload (match your signup response)
+    return res.json({
+      id         : user._id,
+      username   : user.username,
+      email      : user.email,
+      role       : user.role,
+      settings   : user.settings,
+      leaderboard: user.leaderboard,
+      rooms      : user.rooms,
+      tasks      : user.tasks,
+      events     : user.events,
+      createdAt  : user.createdAt
+    });
+
+  } catch (err) {
+    console.error('Error in login controller:', err);
+    return res
+      .status(500)
+      .json({ error: 'Internal Server Error' });
+  }
+}
+
 function logout(_req, res) { res.json({ msg: "logout" }); }
 
 module.exports = { signup, login, logout };

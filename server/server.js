@@ -2,6 +2,7 @@
 const dotenv = require("dotenv");
 dotenv.config({ path: "./.env" });
 const express = require("express");
+const tasksRoutes = require('./routes/tasksRoutes');
 const cors = require("cors");
 //  server start here
 const app = express();
@@ -13,6 +14,10 @@ const authRoutes = require("./routes/authRoutes.js")
 // Connect MongoDB from config folder:
 const connectMongoDB = require("./config/db.js")
 const PORT = process.env.PORT || 5000;
+// server.js
+const cookieParser = require('cookie-parser');
+
+app.use(cookieParser());
 
 
 app.get("/", (req, res) => {
@@ -21,6 +26,10 @@ app.get("/", (req, res) => {
 
 app.use(express.json()); // to parse req.body
 app.use("/api/auth", authRoutes);
+
+// …
+app.use('/api/tasks', tasksRoutes);
+
 
 // Start the server
 (async () => {

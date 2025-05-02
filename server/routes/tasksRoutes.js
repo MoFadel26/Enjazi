@@ -1,12 +1,10 @@
-const router = require('express').Router({ mergeParams: true });
-const ctrl   = require('../controllers/task.controller');
+const express = require('express');
+const taskController = require("../controllers/taskControler");
 
-router.route('/')
-  .get(ctrl.getTasks)     // GET /api/users/:uid/tasks
-  .post(ctrl.addTask);    // POST (create)
 
-router.route('/:tid')
-  .put(ctrl.updateTask)   // PUT /api/users/:uid/tasks/:tid
-  .delete(ctrl.deleteTask);
+const router = express.Router();
+
+// POST /api/tasks
+router.post('/', taskController.createTask);
 
 module.exports = router;

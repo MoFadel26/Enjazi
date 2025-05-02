@@ -3,7 +3,7 @@ const { Schema } = mongoose;
 const taskSchema = new Schema(
   {
     title:       { type: String,  required: true,  default: '' },
-    description: { type: String,  required: true,  default: '' },
+    description: { type: String,  default: '' },
     priority:    { type: String,  enum: ['High','Medium','Low'], required: true, default: 'Medium' },
     category:    { type: String,  required: true,  default: 'Work' },
     dueDate:     { type: Date,    required: true,  default: () => new Date() },
@@ -11,7 +11,7 @@ const taskSchema = new Schema(
     endTime:     { type: String,  required: true,  default: '10:00' },
     completed:   { type: Boolean, default: false },
   },
-  { _id: false }
+  // { _id: false }
 );
 
 const eventSchema = new Schema(
@@ -173,7 +173,11 @@ const userSchema = new Schema(
 
     role:     { type: String, enum: ['admin','user'], default: 'user' },
 
-    tasks:      { type: [taskSchema],  default: [] },
+    tasks: [ {
+      type: Schema.Types.ObjectId,
+      ref:  'Task',
+      default: []
+    } ],
     events:     { type: [eventSchema], default: [] },
     rooms:      { type: [roomSchema],  default: [] },
 
