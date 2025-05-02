@@ -8,6 +8,8 @@ const app = express();
 // Enable all CORS requests
 app.use(cors());
 
+const authRoutes = require("./routes/authRoutes.js")
+
 // Connect MongoDB from config folder:
 const connectMongoDB = require("./config/db.js")
 const PORT = process.env.PORT || 5000;
@@ -16,6 +18,9 @@ const PORT = process.env.PORT || 5000;
 app.get("/", (req, res) => {
   res.send("Hello from Express!");
 });
+
+app.use(express.json()); // to parse req.body
+app.use("/api/auth", authRoutes);
 
 // Start the server
 (async () => {
