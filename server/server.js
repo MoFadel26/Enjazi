@@ -42,5 +42,3 @@ app.use('/api/tasks', tasksRoutes);
     process.exit(1);
   }
 })();
-
-
