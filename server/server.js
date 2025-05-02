@@ -1,47 +1,32 @@
+// Import all needed libraries:
 const dotenv = require("dotenv");
 dotenv.config({ path: "./.env" });
 const express = require("express");
-
-
-
-// connecting to the database
-const mongoose = require('mongoose');
-const DB = process.env.DATABASE.replace(
-  "<password>",
-  process.env.DATABASE_PASSWORD
-);
-
-mongoose
-  .connect(DB, {
-    useNewUrlParser: true,
-    // useCreateIndex: true,
-    // useFindAndModify: false,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log('DB connection successful!'));
-
-
-
-
-
-//  server start here 
+const cors = require("cors");
+//  server start here
 const app = express();
+// Enable all CORS requests
+app.use(cors());
 
-// app.use(express.json({ limit: "10kb" }));
-// app.use(express.urlencoded({ extended: true, limit: "10kb" }));
+// Connect MongoDB from config folder:
+const connectMongoDB = require("./config/db.js")
+const PORT = process.env.PORT || 5000;
+
 
 app.get("/", (req, res) => {
   res.send("Hello from Express!");
 });
 
-const server = app.listen(process.env.PORT, () => {
-  console.log("listening.. port :", process.env.PORT);
-});
-// handle the REJECTION Error golbly and exit the app
-process.on("unhandledRejection", (err) => {
-  console.log("UNHANDLED REJECTION! Shutting down...");
-  console.log(err.name, err.message);
-  server.close(() => {
+// Start the server
+(async () => {
+  try {
+    await connectMongoDB();
+    app.listen(PORT, () =>
+      console.log(`API listening on port ${PORT}`));
+  } catch (err) {
+    console.error("Failed to start server:", err);
     process.exit(1);
-  });
-});
+  }
+})();
+
+
