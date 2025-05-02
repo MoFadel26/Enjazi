@@ -55,17 +55,7 @@ async function signup (req, res) {
       generateTokenAndSetCookie(createdUser._id, res);
       await createdUser.save(); // Send it to Database
       res.status(201).json({
-        id        : createdUser._id,
-        username  : createdUser.username,
-        email     : createdUser.email,
-        role      : createdUser.role,
-        /* ─ optional embedded docs ─ */
-        settings  : createdUser.settings,
-        leaderboard: createdUser.leaderboard,
-        rooms     : createdUser.rooms,
-        tasks     : createdUser.tasks,
-        events    : createdUser.events,
-        createdAt : createdUser.createdAt
+        data: createdUser
       });
     } else {
       res.status(400).json({ error: "Invalid user data" });

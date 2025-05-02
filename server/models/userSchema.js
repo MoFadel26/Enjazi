@@ -50,8 +50,7 @@ const roomSchema = new Schema(
 
 const leaderboardSchema = new Schema(
   {
-    userId:   { type: String, required: true, default: '' },
-    username: { type: String, required: true, default: '' },
+    // username: { type: String, required: true, default: '' },
     points:   { type: Number, default: 0 },
     streak:   { type: Number, default: 0 },
     hours:    { type: Number, default: 0 },
@@ -168,7 +167,6 @@ const settingsSchema = new Schema(
 
 const userSchema = new Schema(
   {
-    userID:   { type: String, required: true, unique: true, default: '' },
     username: { type: String, required: true, unique: true, default: '' },
     email:    { type: String, required: true, unique: true, default: '' },
     password: { type: String, required: true, default: '' },
