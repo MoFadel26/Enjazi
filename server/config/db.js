@@ -5,8 +5,8 @@ const connectMongoDB = async () => {
               "<password>", process.env.DATABASE_PASSWORD);
 
   await mongoose.connect(DB, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
+    // useNewUrlParser: true,
+    // useUnifiedTopology: true,
   });
   console.log("MongoDB connection successful");
 };
