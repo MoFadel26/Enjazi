@@ -119,6 +119,26 @@ async function login(req, res) {
   }
 }
 
-function logout(_req, res) { res.json({ msg: "logout" }); }
+async function logout(req, res) { 
+  try {
+    res.cookie("jwt", "", {maxAge:0});
+    return res.status(200).json({ message: 'Logged out successfully' });
 
-module.exports = { signup, login, logout };
+  } catch (error) {
+    console.error('Error in logout controller →', error.message);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+async function getMe(req, res) { 
+  try {
+    const user = await User.findById(req.user._id);
+    res.status(200).json(user);
+  } catch (error) {
+    console.error('Error in getMe controller →', error.message);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+ 
+
+module.exports = { signup, login, logout , getMe};

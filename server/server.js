@@ -17,6 +17,7 @@ const authRoutes = require("./routes/authRoutes.js")
 const connectMongoDB = require("./config/db.js")
 const PORT = process.env.PORT || 5000;
 // server.js
+
 const cookieParser = require('cookie-parser');
 
 app.use(cookieParser());
