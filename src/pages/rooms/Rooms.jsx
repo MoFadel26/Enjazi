@@ -16,17 +16,10 @@ export default function Rooms() {
     isPublic: true,
     image: null
   });
-  const [enrolledRooms, setEnrolledRooms] = useState([
-    //example
-    { id: 1, name: "Study Group", memberCount: 24, category: "Education", image: "/api/placeholder/300/200" },
-    { id: 2, name: "Fitness Challenge", memberCount: 16, category: "Health", image: "/api/placeholder/300/200" },
-    { id: 3, name: "Book Club", memberCount: 8, category: "Hobbies", image: "/api/placeholder/300/200" }
-  ]);
-  const [publicRooms, setPublicRooms] = useState([
-    { id: 4, name: "Coding Bootcamp", memberCount: 56, category: "Technology", image: "/api/placeholder/300/200" },
-    { id: 5, name: "Language Exchange", memberCount: 38, category: "Education", image: "/api/placeholder/300/200" },
-    { id: 6, name: "Mindfulness Group", memberCount: 19, category: "Wellness", image: "/api/placeholder/300/200" }
-  ]);
+
+  const [enrolledRooms, setEnrolledRooms] = useState([]);
+  const [publicRooms, setPublicRooms] = useState([]);
+
 
   // for image preview in create room form
   const [imagePreview, setImagePreview] = useState(null);
@@ -53,6 +46,46 @@ export default function Rooms() {
       { userId: "currentUser", username: "You", points: 510, streak: 4, hours: 22, rank: 4 }
     ]
   });
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function fetchEnrolledRooms() {
+      try {
+        const res = await fetch("http://localhost:5000/api/rooms/enrolled", {
+          method: "GET",
+          credentials: "include",
+          signal: controller.signal
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Could not load enrolled rooms");
+        setEnrolledRooms(data);
+      } catch (err) {
+        if (err.name !== "AbortError") console.error("Enrolled rooms error:", err);
+      }
+    }
+
+    async function fetchPublicRooms() {
+      try {
+        const res = await fetch("http://localhost:5000/api/rooms/public", {
+          method: "GET",
+          credentials: "include",
+          signal: controller.signal
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Could not load public rooms");
+        setPublicRooms(data);
+      } catch (err) {
+        if (err.name !== "AbortError") console.error("Public rooms error:", err);
+      }
+    }
+
+    fetchEnrolledRooms();
+    fetchPublicRooms();
+    return () => controller.abort();
+  }, []);
+
 
   //  oom content for demo
   const roomContent = {
@@ -144,66 +177,35 @@ export default function Rooms() {
   };
 
   // handle room creation form submission
-  const handleCreateRoom = (e) => {
+  const handleCreateRoom = async (e) => {
     e.preventDefault();
 
-    // Create a new room with a unique ID
-    const newId = Math.max(...[...enrolledRooms, ...publicRooms].map(room => room.id)) + 1;
+    try {
+      const payload = {
+        title: newRoomData.name,
+        description: newRoomData.description,
+        isPublic: newRoomData.isPublic
+      };
 
-    // In a real app, i would upload the image first and get a URL back
-    // For demo purposes, we decided to use a placeholder image or the local preview
-    const imageUrl = imagePreview || "/api/placeholder/300/200";
+      const res = await fetch("http://localhost:5000/api/rooms", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
 
-    const newRoom = {
-      id: newId,
-      name: newRoomData.name,
-      category: newRoomData.category,
-      memberCount: 1, // Starting with just the creator
-      image: imageUrl
-    };
+      const room = await res.json();
+      if (!res.ok) throw new Error(room.error || "Room creation failed");
 
-    // Add room content
-    const newRoomContentData = {
-      name: newRoomData.name,
-      description: newRoomData.description,
-      tasks: [],
-      announcements: ["Welcome to the new room!"],
-      image: imageUrl
-    };
-
-    // Initialize leaderboard for the new room
-    const newLeaderboard = [
-      { userId: "currentUser", username: "You", points: 100, streak: 1, hours: 0, rank: 1 }
-    ];
-
-    // Update state- fix here: Always add to enrolled rooms (since user created it)
-    // conditionally add to public rooms only if it's marked as public
-    setEnrolledRooms([...enrolledRooms, newRoom]);
-
-    if (newRoomData.isPublic) {
-      setPublicRooms([...publicRooms, newRoom]);
+      setEnrolledRooms(prev => [...prev, room]);
+      if (room.isPublic) setPublicRooms(prev => [...prev, room]);
+      setView("myRooms");
+    } catch (err) {
+      console.error("Create room error:", err);
+      alert(err.message);
     }
-
-    // update room content with the new room
-    setRoomContent(prev => ({ ...prev, [newId]: newRoomContentData }));
-
-    // initialize leaderboard
-    setLeaderboardData(prev => ({ ...prev, [newId]: newLeaderboard }));
-
-    // reset form and go back to rooms view
-    setNewRoomData({
-      name: "",
-      description: "",
-      category: "Education",
-      isPublic: true,
-      image: null
-    });
-
-    // cear image preview
-    setImagePreview(null);
-
-    setView("myRooms");
   };
+
 
   // Funct to update the room content state
   const setRoomContent = (updatedContent) => {
@@ -213,35 +215,23 @@ export default function Rooms() {
   };
 
   // Join a public room
-  const joinRoom = (roomId) => {
-    const roomToJoin = publicRooms.find(room => room.id === roomId);
-    if (roomToJoin) {
-      //update room with increased member count
-      const updatedRoom = { ...roomToJoin, memberCount: roomToJoin.memberCount + 1 };
+  const joinRoom = async (roomId) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/rooms/${roomId}/join`, {
+        method: "PATCH",
+        credentials: "include"
+      });
 
-      // add to enrolled rooms
-      setEnrolledRooms([...enrolledRooms, updatedRoom]);
-
-      //remove from public rooms
-      setPublicRooms(publicRooms.filter(room => room.id !== roomId));
-      //if the room doesn't have a leaderboard entry yet, add one
-      if (!leaderboardData[roomId]) {
-        const newMemberData = {
-          userId: "currentUser",
-          username: "You",
-          points: 0,
-          streak: 0,
-          hours: 0,
-          rank: 1
-        };
-
-        setLeaderboardData(prev => ({
-          ...prev,
-          [roomId]: [newMemberData]
-        }));
-      }
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to join room");
+      setEnrolledRooms(prev => [...prev, data]);
+      setPublicRooms(prev => prev.filter(room => room._id !== roomId));
+    } catch (err) {
+      console.error("Join room error:", err);
+      alert(err.message);
     }
   };
+
 
   <button
     onClick={() => setView("editRoom")}
@@ -250,22 +240,28 @@ export default function Rooms() {
   </button>
 
 
-  const leaveRoom = () => {
+  const leaveRoom = async () => {
     if (!currentRoom) return;
+    try {
+      const res = await fetch(`http://localhost:5000/api/rooms/${currentRoom}/leave`, {
+        method: "PATCH",
+        credentials: "include"
+      });
 
-    // Remove the room from enrolledRooms
-    const updatedEnrolled = enrolledRooms.filter(room => room.id !== currentRoom);
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to leave room");
+      }
 
-    // If the room was public, optionally add it back to publicRooms
-    const leavingRoom = enrolledRooms.find(room => room.id === currentRoom);
-    if (leavingRoom && newRoomData.isPublic) {
-      setPublicRooms([...publicRooms, leavingRoom]);
+      setEnrolledRooms(prev => prev.filter(r => r._id !== currentRoom));
+      setView("myRooms");
+      setCurrentRoom(null);
+    } catch (err) {
+      console.error("Leave room error:", err);
+      alert(err.message);
     }
-
-    setEnrolledRooms(updatedEnrolled);
-    setCurrentRoom(null);
-    setView("myRooms");
   };
+
 
 
   // add CSS for mobile responsiveness
@@ -349,9 +345,9 @@ export default function Rooms() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {enrolledRooms.map(room => (
                 <div
-                  key={room.id}
+                  key={room._id}
                   className="border rounded overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer mobile-full-width"
-                  onClick={() => selectRoom(room.id)}
+                  onClick={() => selectRoom(room._id)}
                 >
                   <div className="h-40 overflow-hidden">
                     <img
@@ -361,7 +357,7 @@ export default function Rooms() {
                     />
                   </div>
                   <div className="p-4">
-                    <h3 className="font-semibold text-lg">{room.name}</h3>
+                    <h3 className="font-semibold text-lg">{room.title || room.name}</h3>
                     <p className="text-gray-600">Category: {room.category}</p>
                     <p className="text-gray-600">Members: {room.memberCount}</p>
                   </div>
@@ -379,7 +375,7 @@ export default function Rooms() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {publicRooms.map(room => (
-              <div key={room.id} className="border rounded overflow-hidden shadow-sm mobile-full-width">
+              <div key={room._id} className="border rounded overflow-hidden shadow-sm mobile-full-width">
                 <div className="h-40 overflow-hidden">
                   <img
                     src={room.image || "/api/placeholder/300/200"}
@@ -388,7 +384,8 @@ export default function Rooms() {
                   />
                 </div>
                 <div className="p-4">
-                  <h3 className="font-semibold text-lg">{room.name}</h3>
+                  <h3 className="font-semibold text-lg">{room.title || room.name}</h3>
+
                   <p className="text-gray-600">Category: {room.category}</p>
                   <p className="text-gray-600">Members: {room.memberCount}</p>
                   <button
