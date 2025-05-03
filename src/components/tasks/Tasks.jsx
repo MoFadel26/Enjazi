@@ -7,44 +7,6 @@ import Categories from "./Categories";
 import Sidebar from "components/layout/sidebar/Sidebar";
 
 
-// const listOfTasks = [
-//   {
-//     id: 1,
-//     title: "Task 1",
-//     description: "This is a description for Task 1",
-//     priority: "High",
-//     category: "Education",
-//     dueDate: "2025-04-03",
-//     startTime: "09:00",
-//     endTime: "10:00",
-//     completed: true,
-//   },
-//   {
-//     id: 2,
-//     title: "Task 2",
-//     description: "This is a description for Task 2",
-//     priority: "Medium",
-//     category: "Personal",
-//     dueDate: "2025-04-12",
-//     startTime: "09:00",
-//     endTime: "10:00",
-//     completed: false,
-//   },
-//   {
-//     id: 3,
-//     title: "Task 3",
-//     description: "This is a description for Task 3",
-//     priority: "Medium",
-//     category: "Education",
-//     dueDate: "2025-04-15",
-//     startTime: "09:00",
-//     endTime: "10:00",
-//     completed: false,
-//   },
-// ];
-
-// ----------------------- Helper Functions -----------------------
-
 // Function helps us to accept date string and convert it into localized
 export function formatDate(dateString) {
   if (!dateString) return "";

@@ -23,8 +23,8 @@ app.use(cookieParser());
 // Enable all CORS requests
 app.use(
   cors({
-    origin: "http://localhost:3000", // ← frontend’s origin
-    credentials: true,               // ← allow cookies / auth headers
+    origin: "http://localhost:3000", //frontend's origin
+    credentials: true,  //allow cookies / auth headers
     methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })

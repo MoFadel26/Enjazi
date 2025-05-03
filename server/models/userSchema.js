@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
-const roomSchema = require('./roomSchema');
 const leaderboardSchema = require('./leaderboardSchema');
 const settingsSchema = require('./settingsSchema');
 
@@ -37,7 +36,11 @@ const userSchema = new Schema(
       ref:  'Event',
       default: []
     } ],
-    rooms:      { type: [roomSchema],  default: [] },
+    name: String,
+    rooms: [{
+      type: Schema.Types.ObjectId,
+      ref: 'Room'
+    }],
 
     leaderboard:{ type: leaderboardSchema, default: () => ({}) },
     settings:   { type: settingsSchema,    default: () => ({}) },

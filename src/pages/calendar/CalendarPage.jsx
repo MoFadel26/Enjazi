@@ -393,7 +393,7 @@ function CalendarPage() {
 	const [modelOpen, setModalOpen] = useState(false);
 	const [editEvent, setEditEvent] = useState(null);
 
-	//  
+	// 
 	const hasSeedTasks = useRef(false);
 
 	//
