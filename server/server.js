@@ -50,6 +50,10 @@ app.use('/api/events', eventsRoutes);
 app.use('/api/settings', settingsRoutes);//Z edit
 
 app.use('/api/password', passwordRoutes);// Z edit
+
+const roomRoutes    = require('./routes/roomRoutes');
+app.use('/api/rooms', roomRoutes);
+
 // Start the server
 (async () => {
   try {

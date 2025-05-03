@@ -11,7 +11,6 @@ const roomSchema = new Schema({
   },
   description: {
     type: String,
-    required: true,
     default: ''
   },
   tasks: [{
