@@ -5,6 +5,8 @@ import UpcomingSchedule from "components/dashboard/UpcomingSchedule"
 import FocusStats from "components/dashboard/FocusStats";
 
 export default function Dashboard(){
+    // http://localhost:5000/api/users/me
+
     return (
         <>
             <div className="flex flex-col w-full min-h-screen bg-[#f8fafc] font-inter">

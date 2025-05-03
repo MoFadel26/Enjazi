@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TaskList from "./TaskList";
 import TaskModal from "./EditAddTask";
 import View from "./Views";
@@ -7,41 +7,41 @@ import Categories from "./Categories";
 import Sidebar from "components/layout/sidebar/Sidebar";
 
 
-const listOfTasks = [
-  {
-    id: 1,
-    title: "Task 1",
-    description: "This is a description for Task 1",
-    priority: "High",
-    category: "Education",
-    dueDate: "2025-04-03",
-    startTime: "09:00",
-    endTime: "10:00",
-    completed: true,
-  },
-  {
-    id: 2,
-    title: "Task 2",
-    description: "This is a description for Task 2",
-    priority: "Medium",
-    category: "Personal",
-    dueDate: "2025-04-12",
-    startTime: "09:00",
-    endTime: "10:00",
-    completed: false,
-  },
-  {
-    id: 3,
-    title: "Task 3",
-    description: "This is a description for Task 3",
-    priority: "Medium",
-    category: "Education",
-    dueDate: "2025-04-15",
-    startTime: "09:00",
-    endTime: "10:00",
-    completed: false,
-  },
-];
+// const listOfTasks = [
+//   {
+//     id: 1,
+//     title: "Task 1",
+//     description: "This is a description for Task 1",
+//     priority: "High",
+//     category: "Education",
+//     dueDate: "2025-04-03",
+//     startTime: "09:00",
+//     endTime: "10:00",
+//     completed: true,
+//   },
+//   {
+//     id: 2,
+//     title: "Task 2",
+//     description: "This is a description for Task 2",
+//     priority: "Medium",
+//     category: "Personal",
+//     dueDate: "2025-04-12",
+//     startTime: "09:00",
+//     endTime: "10:00",
+//     completed: false,
+//   },
+//   {
+//     id: 3,
+//     title: "Task 3",
+//     description: "This is a description for Task 3",
+//     priority: "Medium",
+//     category: "Education",
+//     dueDate: "2025-04-15",
+//     startTime: "09:00",
+//     endTime: "10:00",
+//     completed: false,
+//   },
+// ];
 
 // ----------------------- Helper Functions -----------------------
 
@@ -78,7 +78,10 @@ export function Tasks() {
   // ### Main States
   
   // Set initial state (list of tasks)
-  const [tasks, setTasks] = useState(listOfTasks);
+  const [tasks,   setTasks]   = useState([]);   // fetched from API
+  const [loading, setLoading] = useState(true);
+  const [error,   setError]   = useState(null);
+
   
   // Set initial state (Selected View, Priority and Category)
   const [selectedView, setSelectedView] = useState("all");
@@ -91,6 +94,37 @@ export function Tasks() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editData, setEditData] = useState(null);
+
+  useEffect(() => {
+    const ac = new AbortController();          // abort on unmount
+  
+    (async () => {
+      try {
+        const res = await fetch(
+          'http://localhost:5000/api/users/me',
+          {
+            method: 'GET',                     // explicit but optional
+            credentials: 'include',            // send the cookie / token
+            signal: ac.signal                  // for cleanup
+          }
+        );
+  
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Could not load tasks');
+  
+        const tasks = Array.isArray(data.tasks) ? data.tasks : [];
+        const normalized = tasks.map(t => ({ ...t, id: t._id })).reverse();
+        setTasks(normalized);
+      } catch (err) {
+        if (err.name !== 'AbortError') setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  
+    return () => ac.abort();                   // cleanup
+  }, []);
+  
 
   // ### Operations
 
@@ -112,7 +146,6 @@ export function Tasks() {
   };
 
   // Model Handlers
-
   const openEditModal = (task) => {
     setEditData(task);
     setIsModalOpen(true);
@@ -174,6 +207,21 @@ export function Tasks() {
   };
 
   const filteredTasks = filterTasks();
+
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <p className="text-slate-500">Loading tasks…</p>
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <p className="text-red-600">Error: {error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen">

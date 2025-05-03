@@ -8,9 +8,28 @@ function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    navigate('/dashboard');
+    console.log(email,password);
+    const res = await fetch("http://localhost:5000/api/auth/login", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',          //  ←  must be here
+      body: JSON.stringify({ email, password })
+    });
+    
+  
+    // Parse the server's response (assumes JSON)
+    const data = await res.json();
+  
+    if (!res.ok) {
+      // The request reached the server, but the server responded with an error status
+      console.error(data.error || "Login failed");
+      throw new Error(data.error || "Login failed");
+    }
+  
+    console.log("Logged in!", data);
+    navigate('/dashboard');          // success payload
   };
 
   return (
@@ -69,10 +88,6 @@ function Login() {
           <Link to="/signup" className="text-blue-600 hover:underline">
             Sign Up
           </Link>
-        </div>
-
-        <div className="mt-4 text-center text-sm text-gray-600">
-          <p>Forget Password? <span onClick={() => navigate('/Forget')} className="text-blue-600 hover:underline cursor-pointer" > Send a code </span></p>
         </div>
       </div>
     </div>

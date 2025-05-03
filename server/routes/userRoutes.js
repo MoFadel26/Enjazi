@@ -8,7 +8,7 @@ const {
 } = require('../controllers/userController');
 
 const { protectRoute } = require('../middleware/protectRoute');
-const isAdmin          = require('../middleware/isAdmin');
+const isAdmin = require('../middleware/isAdmin');
 
 const router = express.Router();
 

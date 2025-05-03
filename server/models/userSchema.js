@@ -7,7 +7,7 @@ const settingsSchema = require('./settingsSchema');
 const userSchema = new Schema(
   {
     username: { type: String, required: true, unique: true, default: '' },
-    email:    { type: String, required: true, unique: true, default: '' },
+    email: { type: String, required: true, unique: true, default: '' },
     password: { type: String, required: true, default: '' },
 
     role:     { type: String, enum: ['admin','user'], default: 'user' },

@@ -9,7 +9,7 @@ const stripPassword = doc => doc ? { ...doc.toObject(), password: undefined } : 
 // Users Endpoint
 exports.getMe = async (req, res) => {
   try {
-    const me = await User.findById(req.user._id).select('-password');
+    const me = await User.findById(req.user._id).select('-password').populate("tasks");
     if (!me) return res.status(404).json({ error: 'User not found' });
     res.json(me);
   } catch (err) {
@@ -49,7 +49,7 @@ exports.updateMe = async (req, res) => {
     res.json(stripPassword(saved));
 
   } catch (err) {
-    console.error('updateMe →', err);
+    console.error('updateMe: ', err);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
@@ -60,7 +60,7 @@ exports.getAllUsers = async (_req, res) => {
     const users = await User.find().select('-password');
     res.json(users);
   } catch (err) {
-    console.error('getAllUsers →', err);
+    console.error('getAllUsers: ', err);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
@@ -87,7 +87,7 @@ exports.adminUpdateUser = async (req, res) => {
 
     res.json(updated);
   } catch (err) {
-    console.error('adminUpdateUser →', err);
+    console.error('adminUpdateUser: ', err);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };

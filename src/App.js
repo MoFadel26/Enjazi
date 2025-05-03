@@ -6,7 +6,6 @@ import './styles/darkMode.css';
 import Login from 'pages/auth/Login.jsx';
 import SignUp from 'pages/auth/SignUp.jsx';
 import LandingPage from 'pages/App.jsx';
-import Forget from 'pages/auth/Forget';
 import Dashboard from 'pages/dashboard/Dashboard';
 import MainLayout from 'components/layout/MainLayout';
 import Admin from 'pages/admin/Admin';
@@ -30,7 +29,6 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
-          <Route path="/forget" element={<Forget />} />
           <Route path="/tasks" element={<Tasks />} />
           <Route element={<AdminLayout />}>
             <Route path="/admin/users" element={<UsersPage />} />
