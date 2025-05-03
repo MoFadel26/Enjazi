@@ -133,6 +133,12 @@ export function Tasks() {
     closeModal();
   }
 
+  function handleDelete(id) {
+		setTasks((tsks) => tsks.filter((tsk) => tsk.id !== id));
+    closeModal();
+	}
+
+
   // Filtering
   const filterTasks = () => {
     let filtered = [...tasks];
@@ -228,6 +234,7 @@ export function Tasks() {
               onClose={closeModal}
               onSubmit={handleModalSubmit}
               data={editData}
+              onDelete={handleDelete}
             />
           </div>
         </div>

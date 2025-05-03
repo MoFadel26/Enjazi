@@ -5,7 +5,7 @@ import {
   X,
 } from "lucide-react";
 
-export function TaskModal({data, onSubmit, isOpen, onClose}) {
+export function TaskModal({data, onSubmit, isOpen, onClose, onDelete }) {
   const [title, setTitle] = useState(data?.title ||  "");
   const [description, setDescription] = useState(data?.description || "");
   const [category, setCategory] = useState(data?.category || "Work");
@@ -178,11 +178,25 @@ export function TaskModal({data, onSubmit, isOpen, onClose}) {
 
             {/*Add or Edit the task*/}
             <div className="flex justify-center space-x-3 pt-2">
+              {data?.id && (
+                <button
+                  type="button"
+                  onClick={() => onDelete(data.id)}
+                  className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white
+                            text-sm font-medium rounded-md focus:outline-none
+                            focus:ring-2 focus:ring-red-400"
+                >
+                  Delete
+                </button>
+              )}
+
               <button
                 type="submit"
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white
+                          text-sm font-medium rounded-md focus:outline-none
+                          focus:ring-2 focus:ring-blue-400"
               >
-                {data?.id ? "Update Task" : "Add Task"}
+                {data?.id ? 'Update Task' : 'Add Task'}
               </button>
             </div>
           </form>

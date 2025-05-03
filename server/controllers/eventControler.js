@@ -1,5 +1,5 @@
-const jwt      = require('jsonwebtoken');
-const User     = require('../models/userSchema');
+const jwt = require('jsonwebtoken');
+const User = require('../models/userSchema');
 const Event = require('../models/eventSchema');
 const mongoose = require('mongoose');
 
