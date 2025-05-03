@@ -1,6 +1,14 @@
 // controllers/changePasswordController.js
 const User = require('../models/userSchema');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs'); // Note: using bcryptjs to match your signup controller
+
+// Password validation regexes (same as in signup)
+const PASS_REGEXES = {
+  lower: /[a-z]/,
+  upper: /[A-Z]/,
+  digit: /\d/,
+  special: /[!@#$%^&*(),.?":{}|<>]/
+};
 
 // Change password
 exports.changePassword = async (req, res) => {
@@ -23,8 +31,23 @@ exports.changePassword = async (req, res) => {
       });
     }
     
+    // Validate password strength (same rules as signup)
+    const validPw =
+      newPassword.length >= 8 &&
+      PASS_REGEXES.lower.test(newPassword) &&
+      PASS_REGEXES.upper.test(newPassword) &&
+      PASS_REGEXES.digit.test(newPassword) &&
+      PASS_REGEXES.special.test(newPassword);
+
+    if (!validPw) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Password must be ≥ 8 chars and include lowercase, uppercase, number and special character'
+      });
+    }
+    
     // Get user with password
-    const user = await User.findById(req.user._id).select('+password');
+    const user = await User.findById(req.user._id);
     
     if (!user) {
       return res.status(404).json({
@@ -42,9 +65,8 @@ exports.changePassword = async (req, res) => {
       });
     }
     
-    // Hash new password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    // Hash new password (using bcryptjs with salt 10 to match signup)
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
     
     // Update password
     user.password = hashedPassword;

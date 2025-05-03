@@ -1,21 +1,24 @@
 // routes/settingsRoutes.js
 const express = require('express');
-const { protectRoute } = require('../middleware/protectRoute');
 const router = express.Router();
+const { protectRoute } = require('../middleware/protectRoute');
 
-// Import the controller
+// Import controller functions
 const {
   getSettings,
+  updateProfile,
   updateAppearance,
   updatePomodoro,
   updateProductivity,
   updateNotifications,
-  updateIntegrations,
-  updateProfile  // Add this
+  updateIntegrations
 } = require('../controllers/settingsController');
 
-// GET /api/settings - Get all settings for the logged-in user
+// GET /api/settings - Get all user settings
 router.get('/', protectRoute, getSettings);
+
+// PATCH /api/settings/profile - Update profile settings
+router.patch('/profile', protectRoute, updateProfile);
 
 // PATCH /api/settings/appearance - Update appearance settings
 router.patch('/appearance', protectRoute, updateAppearance);
@@ -31,8 +34,5 @@ router.patch('/notifications', protectRoute, updateNotifications);
 
 // PATCH /api/settings/integrations - Update integration settings
 router.patch('/integrations', protectRoute, updateIntegrations);
-
-// PATCH /api/settings/profile - Update profile settings
-router.patch('/profile', protectRoute, updateProfile);  // Add this
 
 module.exports = router;
