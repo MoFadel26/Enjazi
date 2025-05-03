@@ -2,14 +2,13 @@
 const dotenv = require("dotenv");
 dotenv.config({ path: "./.env" });
 const express = require("express");
+
+const userRoutes = require('./routes/userRoutes');
 const tasksRoutes = require('./routes/tasksRoutes');
 const eventsRoutes = require('./routes/eventsRoutes');
-
 const cors = require("cors");
 //  server start here
 const app = express();
-// Enable all CORS requests
-app.use(cors());
 
 const authRoutes = require("./routes/authRoutes.js")
 
@@ -21,6 +20,8 @@ const PORT = process.env.PORT || 5000;
 const cookieParser = require('cookie-parser');
 
 app.use(cookieParser());
+// Enable all CORS requests
+app.use(cors());
 
 
 app.get("/", (req, res) => {
@@ -30,6 +31,7 @@ app.get("/", (req, res) => {
 app.use(express.json()); // to parse req.body
 // Authorization (login & signup)
 app.use("/api/auth", authRoutes);
+app.use('/api/users', userRoutes);
 
 // Tasks
 app.use('/api/tasks', tasksRoutes);
