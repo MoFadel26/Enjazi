@@ -20,25 +20,28 @@ function SignUp() {
   const checkHasLongEnough = password.length >= 8;
 
   const handleSubmit = async (e) => {
-    e.preventDefault();             // stop the form’s normal redirect
-  
+    e.preventDefault();
+    
     try {
-      const res = await fetch('http://localhost:5000/api/auth/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+      const res = await fetch("http://localhost:5000/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ username, email, password }),
       });
-  
+
       const data = await res.json();
-  
-      if (!res.ok) throw new Error(data.error || 'Sign‑up failed');
-  
-      console.log('Signed‑up', data);
-      navigate('/dashboard');       // or navigate('/login')
+
+      if (!res.ok) {
+        alert(data.error || "Sign-up failed!");  // Show error if the sign-up fails
+        throw new Error(data.error || "Sign-up failed");
+      }
+
+      console.log("Signed up successfully!", data);
+      navigate("/dashboard"); // navigate to the dashboard or any other page on success
     } catch (err) {
-      console.error(err);
-      alert(err.message);
+      alert(err.message || "An error occurred during sign-up");  // Show unexpected errors
+      console.error("Error during sign-up:", err);
     }
   };
 
