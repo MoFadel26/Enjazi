@@ -2,7 +2,7 @@
 const dotenv = require("dotenv");
 dotenv.config({ path: "./.env" });
 const express = require("express");
-
+const settingsRoutes = require('./routes/settingsRoutes');
 const userRoutes = require('./routes/userRoutes');
 const tasksRoutes = require('./routes/tasksRoutes');
 const eventsRoutes = require('./routes/eventsRoutes');
@@ -45,7 +45,8 @@ app.use('/api/tasks', tasksRoutes);
 
 // Events
 app.use('/api/events', eventsRoutes);
-
+// Settings
+app.use('/api/settings', settingsRoutes);
 // Start the server
 (async () => {
   try {
