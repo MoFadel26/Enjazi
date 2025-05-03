@@ -1,14 +1,21 @@
+// models/MessageSchema.js
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-const messageSchema = new Schema(
-  {
-    userId:    { type: String, required: true, default: '' },
-    username:  { type: String, required: true, default: '' },
-    content:   { type: String, required: true, default: '' },
-    timestamp: { type: String, required: true, default: () => new Date().toISOString() },
+const messageSchema = new Schema({
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
   },
-  { _id: false }
-);
+  content: {
+    type: String,
+    required: true
+  },
+  timestamp: {
+    type: Date,
+    default: Date.now
+  }
+});
 
-module.exports = messageSchema; 
+module.exports = messageSchema;
