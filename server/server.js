@@ -7,6 +7,7 @@ const userRoutes = require('./routes/userRoutes');
 const tasksRoutes = require('./routes/tasksRoutes');
 const eventsRoutes = require('./routes/eventsRoutes');
 const cors = require("cors");
+const passwordRoutes = require('./routes/passwordRoutes');// Z edit
 //  server start here
 const app = express();
 
@@ -46,7 +47,9 @@ app.use('/api/tasks', tasksRoutes);
 // Events
 app.use('/api/events', eventsRoutes);
 // Settings
-app.use('/api/settings', settingsRoutes);
+app.use('/api/settings', settingsRoutes);//Z edit
+
+app.use('/api/password', passwordRoutes);// Z edit
 // Start the server
 (async () => {
   try {
