@@ -38,35 +38,6 @@ Enjazi is a productivity platform designed to help users develop sustainable wor
    npm start
    ```
 
-## Deployment with Vercel
-
-### Prerequisites
-- A [Vercel](https://vercel.com) account
-- [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) database
-
-### Steps
-
-1. Fork or clone this repository to your GitHub account.
-
-2. Set up your MongoDB Atlas database and obtain the connection string.
-
-3. Connect your GitHub repository to Vercel:
-   - Go to [Vercel Dashboard](https://vercel.com/dashboard)
-   - Click "New Project"
-   - Import your GitHub repository
-   - Configure project settings
-
-4. Set up the following environment variables in Vercel:
-   - `MONGODB_URI`: Your MongoDB connection string
-   - `JWT_SECRET`: A secure string for JWT token signing
-   - `FRONTEND_URL`: The URL of your deployed frontend
-
-5. Deploy the project:
-   - Click "Deploy"
-   - Vercel will automatically deploy your project based on the configuration in `vercel.json`
-
-6. After deployment, you can access your application at the provided Vercel URL.
-
 ## Contributing
 
 We welcome contributions! Follow these steps:

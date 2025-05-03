@@ -48,7 +48,19 @@ app.use('/api/password', passwordRoutes);
 // Connect to MongoDB
 connectMongoDB().catch(err => console.error("Failed to connect to MongoDB:", err));
 
-// Export the Express API as a serverless function handler
-module.exports = (req, res) => {
+// For Vercel serverless deployment
+const handler = (req, res) => {
+  // Set CORS headers for all requests
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  
+  // Handle preflight OPTIONS request
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  
   return app(req, res);
-}; 
+};
+
+module.exports = handler; 
