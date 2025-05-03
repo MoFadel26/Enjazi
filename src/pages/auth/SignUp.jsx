@@ -34,7 +34,7 @@ function SignUp() {
   
       if (!res.ok) throw new Error(data.error || 'Sign‑up failed');
   
-      console.log('Signed‑up ✔️', data);
+      console.log('Signed‑up', data);
       navigate('/dashboard');       // or navigate('/login')
     } catch (err) {
       console.error(err);

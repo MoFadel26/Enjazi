@@ -105,7 +105,7 @@ function addDays(date, n) {
 // Convert from Task to Event to display it into calendar
 function taskToEvent (task) {
   const iconConf = categoryIcons[task.category] || {};
-  const day = (task.dueDate || new Date()).toString().slice(0, 10);   // 👉 2025-05-04
+  const day = (task.dueDate || new Date()).toString().slice(0, 10);
 
   // --- 2. merge with the clock ------------------------------------
   const start = new Date(`${day}T${task.startTime || '09:00'}`);
@@ -355,8 +355,6 @@ useEffect(() => {
 
       const me = await res.json();
       if (!res.ok) throw new Error(me.error || 'Could not load user data');
-
-      /* -------- 2. Normalise EVENTS --------------------------- */
       const events1 = (me.events || []).map(e => ({
         ...e,
         id       : e._id,
@@ -364,15 +362,11 @@ useEffect(() => {
         endTime  : new Date(e.endTime)
       }));
       
-
-      /* -------- 3. Convert TASKS → calendar‑events ------------- */
       const taskEvents = (me.tasks || []).map(t =>
         taskToEvent({ ...t, id: t._id || t.id })
       );
       console.log([...events1, ...taskEvents]);
       
-
-      /* -------- 4. Merge & push to state ---------------------- */
       setEvents([...events1, ...taskEvents]);
     } catch (err) {
       if (err.name !== 'AbortError') console.error(err);
