@@ -11,28 +11,26 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");          // clear previous error
     try {
       const res = await fetch("http://localhost:5000/api/auth/login", {
-        method:      "POST",
-        credentials: "include",
-        headers:     { "Content-Type": "application/json" },
-        body:        JSON.stringify({ email, password }),
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',  // Required for cookie handling
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        // either a 4xx or 5xx
-        setError(data.error || data.message || "Login failed");
-        return;
+        alert(data.error || "Login failed!"); // Show error message to the user
+        throw new Error(data.error || "Login failed");
       }
 
-      // success
-      navigate("/dashboard");
+      console.log("Logged in successfully!", data);
+      navigate('/dashboard');
     } catch (err) {
-      // network error, parsing error, etc.
-      setError(err.message || "Something went wrong");
+      alert(err.message || "An error occurred during login");  // Show any unexpected errors
+      console.error("Error during login:", err);
     }
   };
 
