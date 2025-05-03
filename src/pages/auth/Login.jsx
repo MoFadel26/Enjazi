@@ -7,29 +7,33 @@ function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError]       = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(email,password);
-    const res = await fetch("http://localhost:5000/api/auth/login", {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',          //  ←  must be here
-      body: JSON.stringify({ email, password })
-    });
-    
-  
-    // Parse the server's response (assumes JSON)
-    const data = await res.json();
-  
-    if (!res.ok) {
-      // The request reached the server, but the server responded with an error status
-      console.error(data.error || "Login failed");
-      throw new Error(data.error || "Login failed");
+    setError("");          // clear previous error
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/login", {
+        method:      "POST",
+        credentials: "include",
+        headers:     { "Content-Type": "application/json" },
+        body:        JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        // either a 4xx or 5xx
+        setError(data.error || data.message || "Login failed");
+        return;
+      }
+
+      // success
+      navigate("/dashboard");
+    } catch (err) {
+      // network error, parsing error, etc.
+      setError(err.message || "Something went wrong");
     }
-  
-    console.log("Logged in!", data);
-    navigate('/dashboard');          // success payload
   };
 
   return (
