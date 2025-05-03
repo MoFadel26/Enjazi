@@ -8,9 +8,8 @@ const eventSchema = new Schema(
     description: { type: String,  required: true, default: '' },
     startTime:   { type: Date,    required: true, default: () => new Date() },
     endTime:     { type: Date,    required: true, default: () => new Date() },
-    colour:      { type: String,  enum: ['red','blue','green','purple','yellow'], default: 'blue' },
+    colour:      { type: String,  enum: ['red','blue','green','purple','yellow','orange','pink','gray','indigo','teal'], default: 'blue' },
   },
-  { _id: false }
 );
 
-module.exports = eventSchema; 
+module.exports = mongoose.model('Event', eventSchema);

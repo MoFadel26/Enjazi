@@ -3,6 +3,8 @@ const dotenv = require("dotenv");
 dotenv.config({ path: "./.env" });
 const express = require("express");
 const tasksRoutes = require('./routes/tasksRoutes');
+const eventsRoutes = require('./routes/eventsRoutes');
+
 const cors = require("cors");
 //  server start here
 const app = express();
@@ -25,11 +27,14 @@ app.get("/", (req, res) => {
 });
 
 app.use(express.json()); // to parse req.body
+// Authorization (login & signup)
 app.use("/api/auth", authRoutes);
 
-// …
+// Tasks
 app.use('/api/tasks', tasksRoutes);
 
+// Events
+app.use('/api/events', eventsRoutes);
 
 // Start the server
 (async () => {

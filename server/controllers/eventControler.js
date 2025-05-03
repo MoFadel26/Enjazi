@@ -1,9 +1,9 @@
 const jwt      = require('jsonwebtoken');
 const User     = require('../models/userSchema');
-const Task     = require('../models/taskSchema');
+const Event = require('../models/eventSchema');
 const mongoose = require('mongoose');
 
-exports.createTask = async function createTask(req, res) {
+exports.createEvent = async function createEvent(req, res) {
   try {
     // Grab the token (from cookie or Authorization header)
     const token =
@@ -29,32 +29,30 @@ exports.createTask = async function createTask(req, res) {
       return res.status(400).json({ error: 'Bad user ID in token' });
     }
 
-    // Create the Task
-    const taskData = {
+    // Create the Event
+    const eventData = {
       title:       req.body.title,
       description: req.body.description,
       priority:    req.body.priority,
-      category:    req.body.category,
-      dueDate:     req.body.dueDate,
       startTime:   req.body.startTime,
       endTime:     req.body.endTime,
-      completed:   req.body.completed      || false,
+      colour:   req.body.completed   || 'blue',
     };
 
-    const newTask = await Task.create(taskData);
+    const newEvent = await Event.create(eventData);
 
-    // Push the Task._id onto the User.tasks array
+    // Push the Event._id onto the User.event array
     await User.findByIdAndUpdate(
       userId,
-      { $push: { tasks: newTask._id } },
+      { $push: { events: eventData._id } },
       { new: true }      // return the updated user (optional)
     );
 
     // Return the created task
-    return res.status(201).json(newTask);
+    return res.status(201).json(newEvent);
 
   } catch(err) {
-    console.error('Error in createTask:', err);
+    console.error('Error in createEvent:', err);
     return res.status(500).json({ error: 'Server error' });
   }
 };
