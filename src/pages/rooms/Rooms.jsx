@@ -391,7 +391,7 @@ export default function Rooms() {
                   <button
                     onClick={(e) => {
                       e.stopPropagation(); // prevent triggering parent's onClick
-                      joinRoom(room.id);
+                      joinRoom(room._id);
                     }}
                     className="mt-2 px-3 py-1 bg-blue-500 text-white rounded text-sm"
                   >
