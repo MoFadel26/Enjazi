@@ -9,7 +9,7 @@ const stripPassword = doc => doc ? { ...doc.toObject(), password: undefined } : 
 // Users Endpoint
 exports.getMe = async (req, res) => {
   try {
-    const me = await User.findById(req.user._id).select('-password').populate("tasks");
+    const me = await User.findById(req.user._id).select('-password').populate("tasks").populate("events");
     if (!me) return res.status(404).json({ error: 'User not found' });
     res.json(me);
   } catch (err) {

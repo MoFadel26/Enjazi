@@ -32,68 +32,8 @@ import {
 } from "lucide-react";
 
 
-// List of Tasks (initial tasks for trying)
-const listOfTasks = [
-  {
-    id: 1,
-    title: "Task 1",
-    description: "This is a description for Task 1",
-    priority: "High",
-    category: "Education",
-    dueDate: "2025-04-03",
-    startTime: "09:00",
-    endTime: "10:00",
-    completed: true,
-  },
-  {
-    id: 2,
-    title: "Task 2",
-    description: "This is a description for Task 2",
-    priority: "Medium",
-    category: "Personal",
-    dueDate: "2025-04-12",
-    startTime: "09:00",
-    endTime: "10:00",
-    completed: false,
-  },
-  {
-    id: 3,
-    title: "Task 3",
-    description: "This is a description for Task 3",
-    priority: "Medium",
-    category: "Education",
-    dueDate: "2025-04-15",
-    startTime: "09:00",
-    endTime: "10:00",
-    completed: false,
-  },
-];
-
-// List of Events (initial events for trying)
-const listOfEvents = [
-  {
-    id: "1",
-    title: "Team Meeting",
-    priority: "High",
-    description: "Discuss Q2 goals",
-    startTime: new Date(2025, 3, 2, 10, 0),
-    endTime: new Date(2025, 3, 2, 11, 0),
-    colour: "purple",
-  },
-  {
-    id: "2",
-    title: "Product Demo",
-    priority: "Medium",
-    description: "Show feature set",
-    startTime: new Date(2025, 3, 7, 9, 30),
-    endTime: new Date(2025, 3, 7, 10, 30),
-    colour: "blue",
-  },
-];
-
 
 // Category Icons setup
-
 const categoryIcons = {
   Education: { icon: Book, colour: "blue" },
   Personal: { icon: House, colour: "purple" },
@@ -164,26 +104,30 @@ function addDays(date, n) {
 
 // Convert from Task to Event to display it into calendar
 function taskToEvent (task) {
-	const icon = categoryIcons[task.category] || {};
+  const iconConf = categoryIcons[task.category] || {};
+  const day = (task.dueDate || new Date()).toString().slice(0, 10);   // 👉 2025-05-04
 
-  const startTime = new Date(`${task.dueDate}T${task.startTime || "09:00"}:00`);
-  const endTime = new Date(`${task.dueDate}T${task.endTime || "10:00"}:00`);
+  // --- 2. merge with the clock ------------------------------------
+  const start = new Date(`${day}T${task.startTime || '09:00'}`);
+  const end   = new Date(`${day}T${task.endTime   || '10:00'}`);
 
-	// Return the Event
+  console.log(typeof(end));
+  
+
   return {
-    id: `task-${task.id}`,
-    title: task.title,
+    id         : task.id || task._id,
+    _id        : task._id,
+    title      : task.title,
     description: task.description,
-    priority: task.priority,
-    startTime,
-    endTime,
-    colour: icon.colour || priorityColours[task.priority],
-    icon: icon.icon,
-    isTask: true,
-    completed: task.completed,
+    priority   : task.priority,
+    startTime  : start,
+    endTime    : end,
+    colour     : task.colour || iconConf.colour || priorityColours[task.priority],
+    icon       : iconConf.icon,
+    isTask     : true,
+    completed  : task.completed
   };
 }
-
 
 function EventForm ({event,  onSave, onDelete, onCancel}) {
 	const [title, setTitle]= useState(event?.title || "");
@@ -255,7 +199,7 @@ function EventForm ({event,  onSave, onDelete, onCancel}) {
       
 			<form className="space-y-4 p-6" onSubmit={handleSubmit}>
         <div className="grid gap-2">
-          <labe className="text-sm font-medium"l>Title <span className="text-red-500">*</span></labe>
+          <label className="text-sm font-medium"l>Title <span className="text-red-500">*</span></label>
           <input
             required
             value={title}
@@ -387,23 +331,58 @@ function EventForm ({event,  onSave, onDelete, onCancel}) {
 function CalendarPage() {
 
 	// Initial States
-	const [view, setView] = useState("month");
-	const [event, setEvent] = useState(listOfEvents);
-	const [currentDate, setCurrentDate] = useState(new Date());
-	const [modelOpen, setModalOpen] = useState(false);
-	const [editEvent, setEditEvent] = useState(null);
+  const [view, setView] = useState("month");
+  const [events, setEvents] = useState([]);
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editEvent, setEditEvent] = useState(null);
 
-	// 
-	const hasSeedTasks = useRef(false);
+  // load on mount
+  /* ------------------------------------------------------------- */
+/*  ⏬ REPLACE the whole existing useEffect block with this one ⏬ */
+/* ------------------------------------------------------------- */
 
-	//
-	useEffect(() => {
-		if(!hasSeedTasks.current) {
-			const taskEvents = listOfTasks.map(taskToEvent);
-			setEvent((prev) => [...prev, ...taskEvents]);
-			hasSeedTasks.current = true;
-		}
-	}, []);
+useEffect(() => {
+  const abort = new AbortController();
+
+  (async () => {
+    try {
+      /* -------- 1. Fetch the “me” document (events + tasks) ---- */
+      const res  = await fetch(
+        'http://localhost:5000/api/users/me',
+        { credentials: 'include', signal: abort.signal }
+      );
+
+      const me = await res.json();
+      if (!res.ok) throw new Error(me.error || 'Could not load user data');
+
+      /* -------- 2. Normalise EVENTS --------------------------- */
+      const events1 = (me.events || []).map(e => ({
+        ...e,
+        id       : e._id,
+        startTime: new Date(e.startTime),
+        endTime  : new Date(e.endTime)
+      }));
+      
+
+      /* -------- 3. Convert TASKS → calendar‑events ------------- */
+      const taskEvents = (me.tasks || []).map(t =>
+        taskToEvent({ ...t, id: t._id || t.id })
+      );
+      console.log([...events1, ...taskEvents]);
+      
+
+      /* -------- 4. Merge & push to state ---------------------- */
+      setEvents([...events1, ...taskEvents]);
+    } catch (err) {
+      if (err.name !== 'AbortError') console.error(err);
+    }
+  })();
+
+  return () => abort.abort();
+}, []);
+
+  
 
 	// *** Navigations ***
 
@@ -440,35 +419,78 @@ function CalendarPage() {
       start: startOfMonth(currentDate),
       end: endOfMonth(currentDate),
     });
-  const eventsOn = (date) => event.filter((e) => isSameDay(e.startTime, date));
+    
+  const eventsOn = (date) => events.filter((e) => isSameDay(e.startTime, date));
 
-	//  ************** Controlling Models ************** 
-	function closeModel() {
-		setEditEvent(null);
-		setModalOpen(false);
-	}
+  const openModal = (evt = null) => {
+    setEditEvent(evt);
+    setModalOpen(true);
+  };
+  const closeModal = () => {
+    setModalOpen(false);
+    setEditEvent(null);
+  };
 
-	function openModel(tempEvent) {
-		setEditEvent(tempEvent || null);
-		setModalOpen(true);
-	}
+  // CREATE or UPDATE
+  const handleSave = async (evt) => {
+    try {
+      const isEdit = Boolean(evt.id);
+      const url    = isEdit
+        ? `http://localhost:5000/api/events/${evt.id}`
+        : "http://localhost:5000/api/events";
+      const method = isEdit ? "PATCH" : "POST";
+      const res = await fetch(url, {
+        method,
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(evt),
+      });
+      const saved = await res.json();
+      if (!res.ok) throw new Error(saved.error || (isEdit ? "Update failed" : "Create failed"));
+      // convert back to Date objects
+      const normalized = { ...saved, id: saved._id, startTime: new Date(saved.startTime), endTime: new Date(saved.endTime) };
+      setEvents(evts =>
+        isEdit
+          ? evts.map(e => (e.id === normalized.id ? normalized : e))
+          : [...evts, normalized]
+      );
+      closeModal();
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    }
+  };
 
-	function handleSave(tempEvent) {
-		if (tempEvent.id) {
-			setEvent((evts) => evts.map((evt) => (evt.id === tempEvent.id ? tempEvent : evt)));
-		} else {
-			tempEvent.id = Date.now().toString();
-			setEvent((evts) => [...evts, tempEvent]);
-		}
-		closeModel();
-	}
-
-	function handleDelete(id) {
-		setEvent((evts) => evts.filter((evt) => evt.id !== id));
-		closeModel();
-	}
-
-	//  ************** View by Months ************** 
+  // DELETE
+  const handleDelete = async (evt) => {
+    const { id, isTask } = evt;
+  
+    if (!window.confirm('Delete this item?')) return;
+  
+    try {
+      const res = await fetch(
+        isTask
+          ? `http://localhost:5000/api/tasks/${id}`
+          : `http://localhost:5000/api/events/${id}`,
+        {
+          method: 'DELETE',
+          credentials: 'include',
+        }
+      );
+  
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Delete failed');
+      }
+  
+      setEvents((evts) => evts.filter((e) => e.id !== id));
+  
+      closeModal();
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    }
+  };
 	function MonthView () {
 		const days=getMonthDays();
 		const blanks = Array.from({length: startOfMonth(currentDate).getDay()})
@@ -531,7 +553,7 @@ function CalendarPage() {
                       key={ev.id}
                       onClick={(e) => {
                         e.stopPropagation();
-                        openModel(ev);
+                        openModal(ev);
                       }}
                       className={`truncate text-[11px] px-1.5 py-0.5 rounded flex items-center ${colourStyles[ev.colour] || ev.colour}`}
                     >
@@ -585,7 +607,7 @@ function CalendarPage() {
               </div>
               {/* Days - Columns */}
               {days.map((day) => {
-                const ev = event.find((e) => e.startTime.getHours() === hour && isSameDay(e.startTime, day));
+                const ev = events.find((e) => e.startTime.getHours() === hour && isSameDay(e.startTime, day));
                 const Icon = ev?.icon;
                 return (
                   <div
@@ -597,7 +619,7 @@ function CalendarPage() {
                       <div
                         onClick={(e) => {
                           e.stopPropagation();
-                          openModel(ev);
+                          openModal(ev);
                         }}
                         className={`absolute left-1 right-1 top-[1px] p-1 rounded text-xs cursor-pointer flex items-center space-x-1 ${
                           colourStyles[ev.colour] || ev.colour
@@ -669,7 +691,7 @@ function CalendarPage() {
                   key={tempEvent.id}
                   onClick={(e) => {
                     e.stopPropagation();
-                    openModel(tempEvent);
+                    openModal(tempEvent);
                   }}
                   className={`absolute left-2 right-2 p-2 rounded shadow text-sm cursor-pointer flex items-start space-x-1 ${
                     colourStyles[tempEvent.colour] || tempEvent.colour
@@ -776,7 +798,7 @@ function CalendarPage() {
             return (
               <div
                 key={tempEvent.id}
-                onClick={() => openModel(tempEvent)}
+                onClick={() => openModal(tempEvent)}
                 className={`p-2 text-sm rounded cursor-pointer flex items-center space-x-1 ${
                   colourStyles[tempEvent.colour] || tempEvent.colour
                 }`}
@@ -839,7 +861,7 @@ function CalendarPage() {
 
             {/* Add Event */}
             <button
-              onClick={() => openModel()}
+              onClick={() => openModal()}
               className="hidden md:flex items-center px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-md"
             >
             <Plus className="w-4 h-4 mr-1" /> Add event
@@ -861,14 +883,14 @@ function CalendarPage() {
       </div>
 
       {/* Open Model*/}
-      {modelOpen && (
+      {modalOpen && (
         <div className="bg-black flex items-center justify-center bg-opacity-30 fixed inset-0 backdrop-blur-sm z-50 transition-opacity">
           <div className="bg-white max-w-md rounded-lg shadow-lg">
             <EventForm
               event={editEvent}
               onSave={handleSave}
               onDelete={handleDelete}
-              onCancel={closeModel}
+              onCancel={closeModal}
             />
           </div>
         </div>

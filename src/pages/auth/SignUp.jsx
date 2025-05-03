@@ -19,10 +19,27 @@ function SignUp() {
   const checkHasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
   const checkHasLongEnough = password.length >= 8;
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    /*Navigate to Login after Signing up*/
-    navigate('/login');
+  const handleSubmit = async (e) => {
+    e.preventDefault();             // stop the form’s normal redirect
+  
+    try {
+      const res = await fetch('http://localhost:5000/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ username, email, password }),
+      });
+  
+      const data = await res.json();
+  
+      if (!res.ok) throw new Error(data.error || 'Sign‑up failed');
+  
+      console.log('Signed‑up ✔️', data);
+      navigate('/dashboard');       // or navigate('/login')
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    }
   };
 
   return (

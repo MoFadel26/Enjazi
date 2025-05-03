@@ -91,15 +91,42 @@ export function Tasks() {
   // ### Operations
 
   // After adding a task
-  const handleAddTask = (task) => {
-    const newTask = {
-      id: Date.now(), ...task, completed: false
-      }; setTasks((prev) => [newTask, ...prev]);
+  const handleAddTask = async (task) => {
+    try {
+      const res = await fetch("http://localhost:5000/api/tasks", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(task)
+      });
+      const newTask = await res.json();
+      if (!res.ok) throw new Error(newTask.error || "Add failed");
+      setTasks(t => [{ ...newTask, id: newTask._id }, ...t]);
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    }
   };
 
   // After Editting a task
-  const handleEditTask = (updateTask) => {
-    setTasks((prev) => prev.map((task) => (task.id === updateTask.id ? updateTask : task)));
+  const handleEditTask = async (task) => {
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/tasks/${task.id}`,
+        {
+          method: "PATCH",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(task)
+        }
+      );
+      const updated = await res.json();
+      if (!res.ok) throw new Error(updated.error || "Update failed");
+      setTasks(t => t.map(x => (x.id === task.id ? { ...updated, id: updated._id } : x)));
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    }
   };
   
   // After entering check button (completed)
@@ -128,11 +155,25 @@ export function Tasks() {
     closeModal();
   }
 
-  function handleDelete(id) {
-		setTasks((tsks) => tsks.filter((tsk) => tsk.id !== id));
-    closeModal();
-	}
-
+  // DELETE
+  const handleDelete = async (id) => {
+    if (!window.confirm("Really delete this task?")) return;
+    try {
+      const res = await fetch(`http://localhost:5000/api/tasks/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const payload = await res.json();
+        throw new Error(payload.error || "Delete failed");
+      }
+      setTasks(t => t.filter(x => x.id !== id));
+      closeModal();
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    }
+  };
 
   // Filtering
   const filterTasks = () => {
