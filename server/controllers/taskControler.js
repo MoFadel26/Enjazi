@@ -1,60 +1,112 @@
 const jwt      = require('jsonwebtoken');
+const mongoose = require('mongoose');
 const User     = require('../models/userSchema');
 const Task     = require('../models/taskSchema');
-const mongoose = require('mongoose');
 
-exports.createTask = async function createTask(req, res) {
+function getToken(req) {
+  return (
+    req.cookies?.jwt || // cookie
+    (req.get('Authorization') || '') // Bearer
+      .replace(/^Bearer\s+/i, '')
+  );
+}
+
+function verifyToken(token) {
+  return jwt.verify(token, process.env.JWT_SECRET);
+}
+
+//POST/api/tasks --> For adding
+exports.createTask = async (req, res) => {
   try {
-    // Grab the token (from cookie or Authorization header)
-    const token =
-      // if you set it as an HTTP‐only cookie named "jwt":
-      req.cookies?.jwt
-      // or, if you’re sending it as a Bearer token:
-      || (req.get('Authorization') || '').replace(/^Bearer\s+/i, '');
+    const token   = getToken(req);
+    if (!token)      return res.status(401).json({ error: 'Not authenticated' });
 
-    if (!token) {
-      return res.status(401).json({ error: 'Not authenticated' });
-    }
-
-    // Verify & decode
     let payload;
-    try {
-      payload = jwt.verify(token, process.env.JWT_SECRET);
-    } catch(err) {
-      return res.status(401).json({ error: 'Invalid token' });
-    }
+    try { payload = verifyToken(token); }
+    catch { return res.status(401).json({ error: 'Invalid token' }); }
 
     const userId = payload.userId;
-    if (!mongoose.isValidObjectId(userId)) {
+    if (!mongoose.isValidObjectId(userId))
       return res.status(400).json({ error: 'Bad user ID in token' });
-    }
 
-    // Create the Task
     const taskData = {
-      title:       req.body.title,
+      title      : req.body.title,
       description: req.body.description,
-      priority:    req.body.priority,
-      category:    req.body.category,
-      dueDate:     req.body.dueDate,
-      startTime:   req.body.startTime,
-      endTime:     req.body.endTime,
-      completed:   req.body.completed      || false,
+      priority   : req.body.priority,
+      category   : req.body.category,
+      dueDate    : req.body.dueDate,
+      startTime  : req.body.startTime,
+      endTime    : req.body.endTime,
+      completed  : req.body.completed || false
     };
 
     const newTask = await Task.create(taskData);
 
-    // Push the Task._id onto the User.tasks array
     await User.findByIdAndUpdate(
       userId,
-      { $push: { tasks: newTask._id } },
-      { new: true }      // return the updated user (optional)
+      { $push: { tasks: newTask._id } }
     );
 
-    // Return the created task
-    return res.status(201).json(newTask);
+    res.status(201).json(newTask);
+  } catch (err) {
+    console.error('createTask: ', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
 
-  } catch(err) {
-    console.error('Error in createTask:', err);
-    return res.status(500).json({ error: 'Server error' });
+
+//PATCH /api/tasks/:id  --> For update
+exports.updateTask = async (req, res) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id))
+      return res.status(400).json({ error: 'Bad task id' });
+
+    const token = getToken(req);
+    if (!token) return res.status(401).json({ error: 'Not authenticated' });
+
+    try { verifyToken(token); }
+    catch { return res.status(401).json({ error: 'Invalid token' }); }
+
+    const body = { ...req.body };
+    delete body._id; // disallow id overwrite
+
+    const updated = await Task.findByIdAndUpdate(
+      req.params.id,
+      body,
+      { new: true, runValidators: true }
+    );
+
+    if (!updated) return res.status(404).json({ error: 'Task not found' });
+    res.json(updated);
+  } catch (err) {
+    console.error('updateTask: ', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// DELETE /api/tasks/:id --> for deleting
+exports.deleteTask = async (req, res) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id))
+      return res.status(400).json({ error: 'Bad task id' });
+
+    const token = getToken(req);
+    if (!token) return res.status(401).json({ error: 'Not authenticated' });
+
+    try { verifyToken(token); }
+    catch { return res.status(401).json({ error: 'Invalid token' }); }
+
+    const task = await Task.findByIdAndDelete(req.params.id);
+    if (!task) return res.status(404).json({ error: 'Task not found' });
+
+    await User.updateMany(
+      { tasks: task._id },
+      { $pull: { tasks: task._id } }
+    );
+
+    res.status(204).send();
+  } catch (err) {
+    console.error('deleteTask: ', err);
+    res.status(500).json({ error: 'Server error' });
   }
 };
