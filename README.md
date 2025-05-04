@@ -1,11 +1,11 @@
-# Enjazi · Smart Productivity Platform
+# Enjazi · Smart Productivity Platform
 
 Enjazi is a full‑stack productivity suite for students, professionals and anyone who enjoys a bit of friendly competition while getting things done.  
 Think adaptive scheduling, goal‑tracking, competitive “rooms”, streak‑based leader‑boards and more — all wrapped in an engaging UI.
 
 ---
 
-## Table of Contents
+## Table of Contents
 1. [Features](#features)
 2. [Tech stack](#tech-stack)
 3. [Quick start](#quick-start)
@@ -19,7 +19,8 @@ Think adaptive scheduling, goal‑tracking, competitive “rooms”, streak‑ba
 
 ---
 
-## Features
+## Features
+
 | Area | Highlights |
 |------|------------|
 | Task management | CRUD tasks, priorities, categories, deadlines |
@@ -33,6 +34,7 @@ Think adaptive scheduling, goal‑tracking, competitive “rooms”, streak‑ba
 ---
 
 ## Tech stack
+
 * **Frontend** – React 18 + Tailwind CSS
 * **Backend**  – Node 20, Express 4
 * **Database** – MongoDB 6 (with Mongoose ODM)
