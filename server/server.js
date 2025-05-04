@@ -8,6 +8,8 @@ const tasksRoutes = require('./routes/tasksRoutes');
 const eventsRoutes = require('./routes/eventsRoutes');
 const cors = require("cors");
 const passwordRoutes = require('./routes/passwordRoutes');// Z edit
+const oauthRoutes = require('./routes/oauthRoutes');
+const session = require('express-session');
 //  server start here
 const app = express();
 
@@ -53,6 +55,11 @@ app.use('/api/password', passwordRoutes);// Z edit
 
 const roomRoutes    = require('./routes/roomRoutes');
 app.use('/api/rooms', roomRoutes);
+app.use('/api/oauth', oauthRoutes);
+
+
+
+
 
 // Start the server
 (async () => {
@@ -65,3 +72,13 @@ app.use('/api/rooms', roomRoutes);
     process.exit(1);
   }
 })();
+
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'your-secret-key',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { 
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
+}));
