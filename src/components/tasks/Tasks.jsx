@@ -21,12 +21,20 @@ export function formatDate(dateString) {
 // Function returns today's date as a STRING --> yyyy-mm-dd
 export function getTodayString() {
   const today = new Date();
-  const month = String(today.getMonth() + 1).padStart(2,"0");
-  const year = today.getFullYear();
-  const day = String(today.getDate()).padStart(2, "00");
+  const year  = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day   = String(today.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
 
+// turn any date‐string or Date into "YYYY-MM-DD"
+function toYMD(date) {
+  const d = new Date(date);
+  const year  = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day   = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
 // Function for comparing a task's due date with today's date to check if the task is scheduled in the future.
 export function checkIsUpcoming(date) {
   const today = new Date(getTodayString());
@@ -180,7 +188,9 @@ export function Tasks() {
     let filtered = [...tasks];
     if (selectedView === "today") {
       const todayStr = getTodayString();
-      filtered = filtered.filter((task) => task.dueDate === todayStr);
+      filtered = filtered.filter(task =>
+        task.dueDate && toYMD(task.dueDate) === todayStr
+      );
     } else if (selectedView === "upcoming") {
       filtered = filtered.filter((task) => checkIsUpcoming(task.dueDate));
     } else if (selectedView === "completed") {

@@ -241,7 +241,7 @@ ENV=production pm2 start npm --name enjazi -- start
    - All unit tests must pass (`npm test`)
    - Follow [Conventional Commits](https://www.conventionalcommits.org/) (e.g., `feat:`, `fix:`, `docs:`)
 
-3. **Need Help?**  
+3. **Need Help?**
    Open an issue or contact our team
 
 ## License
