@@ -3,7 +3,7 @@ const { Schema } = mongoose;
 
 const profileSchema = new Schema(
   {
-    avatar: { type: String, default: '' },
+    avatarUrl: { type: String, default: '' },
     FName:     { type: String, default: '' },
     LName:     { type: String, default: '' },
     bio:       { type: String, default: '' },
