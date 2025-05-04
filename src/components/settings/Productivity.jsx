@@ -1,41 +1,148 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTheme } from "../../contexts/ThemeContext";
+import axios from "axios";
 
 const Productivity = () => {
   const { isDark } = useTheme();
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
   
-  // State for productivity roles
+  // State for productivity settings
   const [settings, setSettings] = useState({
     dailyTasks: 5,
     focusHours: 4,
     pomodoroSessions: 8,
-    weekStartDay: "mon",
+    weekStartDay: "Mon",
     defaultTaskDuration: 15,
-    taskOrder: "due-date-asc",
+    taskOrder: "due-asc",
   });
+
+  // State for loading and messages
+  const [isLoading, setIsLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  // Fetch current settings on component mount
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        setIsLoading(true);
+        const response = await axios.get(`${API_URL}/settings`, { withCredentials: true });
+        console.log("Fetched settings:", response.data);
+        
+        if (response.data && response.data.data && response.data.data.productivity) {
+          setSettings(response.data.data.productivity);
+        }
+        
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching productivity settings:", error);
+        setErrorMessage("Failed to load settings");
+        setIsLoading(false);
+      }
+    };
+
+    fetchSettings();
+  }, [API_URL]);
 
   // Handle input changes
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
     setSettings({
       ...settings,
-      [name]: value,
+      [name]: type === "number" ? Number(value) : value,
     });
   };
 
   // Handle week start day selection
   const handleWeekStartChange = (day) => {
+    // Convert to proper format for backend (first letter capitalized)
+    const formattedDay = day.charAt(0).toUpperCase() + day.slice(1, 3);
     setSettings({
       ...settings,
-      weekStartDay: day,
+      weekStartDay: formattedDay,
+    });
+  };
+
+  // Map frontend task order values to backend enum values
+  const mapTaskOrderToBackend = (frontendValue) => {
+    const mapping = {
+      "due-date-asc": "due-asc",
+      "due-date-desc": "due-desc",
+      "priority-asc": "priority",
+      "priority-desc": "priority",
+      "created-asc": "created",
+      "created-desc": "created"
+    };
+    return mapping[frontendValue] || "due-asc";
+  };
+
+  // Map backend task order values to frontend display values
+  const mapTaskOrderToFrontend = (backendValue) => {
+    const mapping = {
+      "due-asc": "due-date-asc",
+      "due-desc": "due-date-desc",
+      "priority": "priority-asc",
+      "created": "created-asc"
+    };
+    return mapping[backendValue] || "due-date-asc";
+  };
+
+  // Handle task order change
+  const handleTaskOrderChange = (e) => {
+    const frontendValue = e.target.value;
+    const backendValue = mapTaskOrderToBackend(frontendValue);
+    
+    setSettings({
+      ...settings,
+      taskOrder: backendValue,
+      // Store the frontend display value in a separate property
+      _frontendTaskOrder: frontendValue
     });
   };
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Productivity roles saved:", settings);
-    // Add logic to save roles
+    try {
+      setIsLoading(true);
+      setErrorMessage("");
+      setSuccessMessage("");
+      
+      console.log("Saving productivity settings:", settings);
+      
+      // Save settings to backend
+      const response = await axios.patch(
+        `${API_URL}/settings/productivity`, 
+        {
+          dailyTasks: settings.dailyTasks,
+          focusHours: settings.focusHours,
+          pomodoroSessions: settings.pomodoroSessions,
+          weekStartDay: settings.weekStartDay,
+          defaultTaskDuration: settings.defaultTaskDuration,
+          taskOrder: settings.taskOrder
+        },
+        { withCredentials: true }
+      );
+      
+      console.log("Save response:", response.data);
+      setSuccessMessage("Productivity settings saved successfully");
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error saving productivity settings:", error);
+      setErrorMessage("Failed to save settings: " + (error.response?.data?.message || error.message));
+      setIsLoading(false);
+    }
+  };
+
+  // Get the frontend display value for task order
+  const getTaskOrderDisplayValue = () => {
+    return settings._frontendTaskOrder || mapTaskOrderToFrontend(settings.taskOrder);
+  };
+
+  // Convert backend weekStartDay to frontend format
+  const getWeekStartDayLower = () => {
+    if (!settings.weekStartDay) return "mon";
+    return settings.weekStartDay.toLowerCase();
   };
 
   return (
@@ -44,6 +151,20 @@ const Productivity = () => {
       <p className={`${isDark ? 'text-gray-300' : 'text-gray-600'} text-sm mb-6`}>
         Set your daily productivity targets to track your progress.
       </p>
+
+      {/* Success message */}
+      {successMessage && (
+        <div className={`${isDark ? 'bg-green-900' : 'bg-green-100'} p-4 rounded-lg mb-4`}>
+          <p className={`${isDark ? 'text-green-200' : 'text-green-600'}`}>{successMessage}</p>
+        </div>
+      )}
+      
+      {/* Error message */}
+      {errorMessage && (
+        <div className={`${isDark ? 'bg-red-900' : 'bg-red-100'} p-4 rounded-lg mb-4`}>
+          <p className={`${isDark ? 'text-red-200' : 'text-red-600'}`}>{errorMessage}</p>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit}>
         {/* Daily Goals */}
@@ -112,7 +233,7 @@ const Productivity = () => {
                 key={day}
                 type="button"
                 className={`py-2 px-2 md:px-4 text-center rounded-md text-sm ${
-                  settings.weekStartDay === day
+                  getWeekStartDayLower() === day
                     ? "bg-blue-500 text-white"
                     : isDark 
                       ? "bg-gray-700 text-gray-300 hover:bg-gray-600" 
@@ -126,7 +247,7 @@ const Productivity = () => {
           </div>
         </div>
 
-        {/* Task roles */}
+        {/* Task Settings */}
         <div className="mb-8">
           <h3 className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'} mb-4`}>Task Settings</h3>
           
@@ -161,8 +282,8 @@ const Productivity = () => {
             <select
               id="taskOrder"
               name="taskOrder"
-              value={settings.taskOrder}
-              onChange={handleInputChange}
+              value={getTaskOrderDisplayValue()}
+              onChange={handleTaskOrderChange}
               className={`w-full px-3 py-2 border ${isDark ? 'bg-gray-800 border-gray-700 text-white' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
             >
               <option value="due-date-asc">Due date (ascending)</option>
@@ -179,9 +300,10 @@ const Productivity = () => {
         <div className="flex justify-center sm:justify-end">
           <button
             type="submit"
-            className="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white py-2 px-6 rounded"
+            className={`w-full sm:w-auto py-2 px-6 btn-accent rounded-md transition duration-200 ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+            disabled={isLoading}
           >
-            Save Settings
+            {isLoading ? 'Saving...' : 'Save Settings'}
           </button>
         </div>
       </form>

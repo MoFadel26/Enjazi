@@ -129,15 +129,24 @@ exports.updateAppearance = async (req, res) => {
 exports.updatePomodoro = async (req, res) => {
   try {
     const userId = req.user._id;
-    const { workDuration, breakDuration, longBreakDuration, longBreakInterval, autoStartBreaks, autoStartPomodoros } = req.body;
+    const { 
+      focusDuration, 
+      shortBreak, 
+      longBreak, 
+      sessionBeforeLongBreak, 
+      autoStart, 
+      autoStartNext,
+      audio
+    } = req.body;
 
     // Check if there are valid fields to update
-    if (workDuration === undefined && 
-        breakDuration === undefined && 
-        longBreakDuration === undefined && 
-        longBreakInterval === undefined && 
-        autoStartBreaks === undefined && 
-        autoStartPomodoros === undefined) {
+    if (focusDuration === undefined && 
+        shortBreak === undefined && 
+        longBreak === undefined && 
+        sessionBeforeLongBreak === undefined && 
+        autoStart === undefined && 
+        autoStartNext === undefined &&
+        !audio) {
       return res.status(400).json({
         status: 'error',
         message: 'No valid fields to update'
@@ -146,12 +155,18 @@ exports.updatePomodoro = async (req, res) => {
 
     // Build update object with only provided fields
     const updateFields = {};
-    if (workDuration !== undefined) updateFields['settings.pomodoro.workDuration'] = workDuration;
-    if (breakDuration !== undefined) updateFields['settings.pomodoro.breakDuration'] = breakDuration;
-    if (longBreakDuration !== undefined) updateFields['settings.pomodoro.longBreakDuration'] = longBreakDuration;
-    if (longBreakInterval !== undefined) updateFields['settings.pomodoro.longBreakInterval'] = longBreakInterval;
-    if (autoStartBreaks !== undefined) updateFields['settings.pomodoro.autoStartBreaks'] = autoStartBreaks;
-    if (autoStartPomodoros !== undefined) updateFields['settings.pomodoro.autoStartPomodoros'] = autoStartPomodoros;
+    if (focusDuration !== undefined) updateFields['settings.pomodoro.focusDuration'] = Number(focusDuration);
+    if (shortBreak !== undefined) updateFields['settings.pomodoro.shortBreak'] = Number(shortBreak);
+    if (longBreak !== undefined) updateFields['settings.pomodoro.longBreak'] = Number(longBreak);
+    if (sessionBeforeLongBreak !== undefined) updateFields['settings.pomodoro.sessionBeforeLongBreak'] = Number(sessionBeforeLongBreak);
+    if (autoStart !== undefined) updateFields['settings.pomodoro.autoStart'] = Boolean(autoStart);
+    if (autoStartNext !== undefined) updateFields['settings.pomodoro.autoStartNext'] = Boolean(autoStartNext);
+    
+    // Handle audio settings
+    if (audio) {
+      if (audio.focusEndSound !== undefined) updateFields['settings.pomodoro.audio.focusEndSound'] = audio.focusEndSound;
+      if (audio.breakEndSound !== undefined) updateFields['settings.pomodoro.audio.breakEndSound'] = audio.breakEndSound;
+    }
 
     const user = await User.findByIdAndUpdate(
       userId,
@@ -181,11 +196,18 @@ exports.updatePomodoro = async (req, res) => {
   }
 };
 
-// Update productivity settings
+// U// Update productivity settings
 exports.updateProductivity = async (req, res) => {
   try {
     const userId = req.user._id;
-    const { dailyTasks, focusHours, pomodoroSessions, weekStartDay, defaultTaskDuration, taskOrder } = req.body;
+    const { 
+      dailyTasks, 
+      focusHours, 
+      pomodoroSessions, 
+      weekStartDay, 
+      defaultTaskDuration, 
+      taskOrder 
+    } = req.body;
 
     // Check if there are valid fields to update
     if (dailyTasks === undefined && 
@@ -202,12 +224,43 @@ exports.updateProductivity = async (req, res) => {
 
     // Build update object with only provided fields
     const updateFields = {};
-    if (dailyTasks !== undefined) updateFields['settings.productivity.dailyTasks'] = dailyTasks;
-    if (focusHours !== undefined) updateFields['settings.productivity.focusHours'] = focusHours;
-    if (pomodoroSessions !== undefined) updateFields['settings.productivity.pomodoroSessions'] = pomodoroSessions;
-    if (weekStartDay !== undefined) updateFields['settings.productivity.weekStartDay'] = weekStartDay;
-    if (defaultTaskDuration !== undefined) updateFields['settings.productivity.defaultTaskDuration'] = defaultTaskDuration;
-    if (taskOrder !== undefined) updateFields['settings.productivity.taskOrder'] = taskOrder;
+    
+    if (dailyTasks !== undefined) updateFields['settings.productivity.dailyTasks'] = Number(dailyTasks);
+    if (focusHours !== undefined) updateFields['settings.productivity.focusHours'] = Number(focusHours);
+    if (pomodoroSessions !== undefined) updateFields['settings.productivity.pomodoroSessions'] = Number(pomodoroSessions);
+    
+    // Validate weekStartDay against enum values
+    if (weekStartDay !== undefined) {
+      // Convert frontend value to match backend schema enum
+      let formattedWeekStartDay;
+      switch(weekStartDay.toLowerCase()) {
+        case 'mon': case 'monday': formattedWeekStartDay = 'Mon'; break;
+        case 'tue': case 'tuesday': formattedWeekStartDay = 'Tue'; break;
+        case 'wed': case 'wednesday': formattedWeekStartDay = 'Wed'; break;
+        case 'thu': case 'thursday': formattedWeekStartDay = 'Thu'; break;
+        case 'fri': case 'friday': formattedWeekStartDay = 'Fri'; break;
+        case 'sat': case 'saturday': formattedWeekStartDay = 'Sat'; break;
+        case 'sun': case 'sunday': formattedWeekStartDay = 'Sun'; break;
+        default: formattedWeekStartDay = 'Mon';
+      }
+      updateFields['settings.productivity.weekStartDay'] = formattedWeekStartDay;
+    }
+    
+    if (defaultTaskDuration !== undefined) updateFields['settings.productivity.defaultTaskDuration'] = Number(defaultTaskDuration);
+    
+    // Validate taskOrder against enum values
+    if (taskOrder !== undefined) {
+      // Convert frontend value to match backend schema enum
+      let formattedTaskOrder;
+      switch(taskOrder) {
+        case 'due-date-asc': case 'due-asc': formattedTaskOrder = 'due-asc'; break;
+        case 'due-date-desc': case 'due-desc': formattedTaskOrder = 'due-desc'; break;
+        case 'priority-asc': case 'priority-desc': case 'priority': formattedTaskOrder = 'priority'; break;
+        case 'created-asc': case 'created-desc': case 'created': formattedTaskOrder = 'created'; break;
+        default: formattedTaskOrder = 'due-asc';
+      }
+      updateFields['settings.productivity.taskOrder'] = formattedTaskOrder;
+    }
 
     const user = await User.findByIdAndUpdate(
       userId,
@@ -361,44 +414,46 @@ exports.updateIntegrations = async (req, res) => {
 
 // Get appearance settings
 exports.getAppearanceSettings = async (req, res) => {
-    try {
-      const user = await User.findById(req.user._id);
-      if (!user) {
-        return res.status(404).json({ error: 'User not found' });
-      }
-      
-      res.json(user.settings.appearance || {});
-    } catch (error) {
-      console.error('Error getting appearance settings:', error);
-      res.status(500).json({ error: 'Internal Server Error' });
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
     }
-  };
+    
+    res.json(user.settings.appearance || {});
+  } catch (error) {
+    console.error('Error getting appearance settings:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
 
-  // Update appearance settings
+// Update appearance settings
 exports.updateAppearanceSettings = async (req, res) => {
-    try {
-      const { colorTheme, accentColor, fontSize, animation } = req.body;
-      
-      const user = await User.findById(req.user._id);
-      if (!user) {
-        return res.status(404).json({ error: 'User not found' });
-      }
-      
-      // Ensure settings objects exist
-      if (!user.settings) user.settings = {};
-      if (!user.settings.appearance) user.settings.appearance = {};
-      
-      // Update appearance settings
-      if (colorTheme) user.settings.appearance.colorTheme = colorTheme;
-      if (accentColor) user.settings.appearance.accentColor = accentColor;
-      if (fontSize) user.settings.appearance.fontSize = fontSize;
-      if (animation !== undefined) user.settings.appearance.animation = animation;
-      
-      await user.save();
-      
-      res.json(user.settings.appearance);
-    } catch (error) {
-      console.error('Error updating appearance settings:', error);
-      res.status(500).json({ error: 'Internal Server Error' });
+  try {
+    const { colorTheme, accentColor, fontSize, animation } = req.body;
+    
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
     }
-  };
+    
+    // Ensure settings objects exist
+    if (!user.settings) user.settings = {};
+    if (!user.settings.appearance) user.settings.appearance = {};
+    
+    // Update appearance settings
+    if (colorTheme) user.settings.appearance.colorTheme = colorTheme;
+    if (accentColor) user.settings.appearance.accentColor = accentColor;
+    if (fontSize) user.settings.appearance.fontSize = fontSize;
+    if (animation !== undefined) user.settings.appearance.animation = animation;
+    
+    await user.save();
+    
+    res.json(user.settings.appearance);
+  } catch (error) {
+    console.error('Error updating appearance settings:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+module.exports = exports;
