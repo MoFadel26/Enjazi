@@ -9,7 +9,7 @@ const eventsRoutes = require('./routes/eventsRoutes');
 const cors = require("cors");
 const passwordRoutes = require('./routes/passwordRoutes');// Z edit
 const oauthRoutes = require('./routes/oauthRoutes');
-const session = require('express-session');
+// const session = require('express-session');
 //  server start here
 const app = express();
 
@@ -73,12 +73,12 @@ app.use('/api/oauth', oauthRoutes);
   }
 })();
 
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'your-secret-key',
-  resave: false,
-  saveUninitialized: false,
-  cookie: { 
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
-  }
-}));
+// app.use(session({
+//   secret: process.env.SESSION_SECRET || 'your-secret-key',
+//   resave: false,
+//   saveUninitialized: false,
+//   cookie: { 
+//     secure: process.env.NODE_ENV === 'production',
+//     maxAge: 24 * 60 * 60 * 1000 // 24 hours
+//   }
+// }));
