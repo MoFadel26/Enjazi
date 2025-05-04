@@ -1,21 +1,63 @@
-// src/components/roles/Appearance.jsx
+// src/components/settings/Appearance.jsx
 import React, { useState, useEffect } from "react";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useAccentColor } from "../../contexts/AccentColorContext";
+import axios from "axios";
 import "../../styles/accentColor.css";
 
 const Appearance = ({ onThemeChange }) => {
   // Use the theme and accent color contexts
   const { isDark } = useTheme();
   const { accentColor, setAccentColor } = useAccentColor();
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
   
-  // State for appearance roles
+  // State for appearance settings
   const [settings, setSettings] = useState({
     colorTheme: isDark ? "dark" : "light", 
     accentColor: accentColor, 
     fontSize: "medium", 
     animation: "enable", 
   });
+
+  // State for loading and messages
+  const [isLoading, setIsLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  // Fetch current settings on component mount
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        setIsLoading(true);
+        const response = await axios.get(`${API_URL}/settings/appearance`, { withCredentials: true });
+        const appearanceData = response.data;
+        
+        // Update local state with fetched settings
+        setSettings({
+          colorTheme: appearanceData.colorTheme || (isDark ? "dark" : "light"),
+          accentColor: enumToHexMap[appearanceData.accentColor] || accentColor,
+          fontSize: appearanceData.fontSize || "medium",
+          animation: appearanceData.animation ? "enable" : "disable"
+        });
+        
+        // Update theme and accent color contexts
+        if (appearanceData.colorTheme) {
+          onThemeChange(appearanceData.colorTheme);
+        }
+        
+        if (appearanceData.accentColor) {
+          setAccentColor(enumToHexMap[appearanceData.accentColor] || accentColor);
+        }
+        
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching appearance settings:", error);
+        setIsLoading(false);
+      }
+    };
+
+    fetchSettings();
+  }, [API_URL, isDark, accentColor, onThemeChange, setAccentColor]);
 
   // Update local state when isDark or accentColor changes
   useEffect(() => {
@@ -66,11 +108,42 @@ const Appearance = ({ onThemeChange }) => {
     });
   };
 
-  // Handle save roles
-  const handleSave = () => {
-    // Here you would typically save roles to a backend or localStorage
-    console.log("Saving roles:", settings);
-    // You could also show a success message
+  const handleSave = async () => {
+    try {
+      setIsLoading(true);
+      setErrorMessage("");
+      setSuccessMessage("");
+      
+      // Convert settings to match backend schema
+      const appearanceData = {
+        colorTheme: settings.colorTheme, // This should be "light" or "dark"
+        accentColor: hexToEnumMap[settings.accentColor] || "blue",
+        fontSize: settings.fontSize,
+        animation: settings.animation === "enable"
+      };
+      
+      console.log("Saving appearance settings:", appearanceData);
+      
+      // Save settings to backend
+      const response = await axios.patch(
+        `${API_URL}/settings/appearance`, 
+        appearanceData,
+        { withCredentials: true }
+      );
+      
+      console.log("Response from server:", response.data);
+      
+      // Also save to localStorage for persistence
+      localStorage.setItem('theme', settings.colorTheme);
+      localStorage.setItem('accentColor', settings.accentColor);
+      
+      setSuccessMessage("Appearance settings saved successfully");
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error saving appearance settings:", error);
+      setErrorMessage("Failed to save settings: " + (error.response?.data?.error || error.message));
+      setIsLoading(false);
+    }
   };
 
   // Available accent colors
@@ -82,12 +155,44 @@ const Appearance = ({ onThemeChange }) => {
     { hex: "#FF9500", name: "Orange" }
   ];
 
+  // Map hex colors to enum values for backend
+  const hexToEnumMap = {
+    "#00A3FF": "blue",
+    "#FF3B30": "red",
+    "#34C759": "green",
+    "#AF52DE": "purple",
+    "#FF9500": "orange"
+  };
+  
+  // Map enum values to hex colors for frontend
+  const enumToHexMap = {
+    "blue": "#00A3FF",
+    "red": "#FF3B30",
+    "green": "#34C759",
+    "purple": "#AF52DE",
+    "orange": "#FF9500"
+  };
+
   return (
     <div className={`${isDark ? 'bg-gray-900 text-white' : 'bg-white'} rounded-lg p-4 md:p-6 shadow-sm`}>
       <h2 className="text-xl font-semibold mb-2">Theme Preferences</h2>
       <p className={`${isDark ? 'text-gray-300' : 'text-gray-600'} text-sm mb-6`}>
         Choose your preferred theme and appearance settings.
       </p>
+
+      {/* Success message */}
+      {successMessage && (
+        <div className={`${isDark ? 'bg-green-900' : 'bg-green-100'} p-4 rounded-lg mb-4`}>
+          <p className={`${isDark ? 'text-green-200' : 'text-green-600'}`}>{successMessage}</p>
+        </div>
+      )}
+      
+      {/* Error message */}
+      {errorMessage && (
+        <div className={`${isDark ? 'bg-red-900' : 'bg-red-100'} p-4 rounded-lg mb-4`}>
+          <p className={`${isDark ? 'text-red-200' : 'text-red-600'}`}>{errorMessage}</p>
+        </div>
+      )}
 
       {/* Color Theme */}
       <div className="mb-6">
@@ -203,13 +308,18 @@ const Appearance = ({ onThemeChange }) => {
 
       {/* Save Button */}
       <button
-        className="w-full py-2 px-4 btn-accent rounded-md transition duration-200"
+        className={`w-full py-2 px-4 btn-accent rounded-md transition duration-200 ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
         onClick={handleSave}
+        disabled={isLoading}
       >
-        Save Changes
+        {isLoading ? 'Saving...' : 'Save Changes'}
       </button>
     </div>
   );
+
+
+
+  
 };
 
 export default Appearance;

@@ -3,85 +3,109 @@ import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
-// Configure axios to include credentials (cookies)
+// Configure axios to always include credentials
 axios.defaults.withCredentials = true;
 
 // Get all settings
-export const getAllSettings = async () => {
+const getSettings = async () => {
   try {
     const response = await axios.get(`${API_URL}/settings`);
     return response.data;
   } catch (error) {
-    throw error.response?.data || error.message;
-  }
-};
-
-// Update profile settings
-export const updateProfile = async (profileData) => {
-  try {
-    const response = await axios.patch(`${API_URL}/settings/profile`, profileData);
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || error.message;
-  }
-};
-
-// Update appearance settings
-export const updateAppearance = async (appearanceData) => {
-  try {
-    const response = await axios.patch(`${API_URL}/settings/appearance`, appearanceData);
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || error.message;
-  }
-};
-
-// Update productivity settings
-export const updateProductivity = async (productivityData) => {
-  try {
-    const response = await axios.patch(`${API_URL}/settings/productivity`, productivityData);
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || error.message;
+    console.error('Error fetching settings:', error);
+    throw error;
   }
 };
 
 // Update pomodoro settings
-export const updatePomodoro = async (pomodoroData) => {
+const updatePomodoro = async (pomodoroSettings) => {
   try {
-    const response = await axios.patch(`${API_URL}/settings/pomodoro`, pomodoroData);
+    // Make sure we're sending the exact structure the backend expects
+    const payload = {
+      focusDuration: Number(pomodoroSettings.focusDuration),
+      shortBreak: Number(pomodoroSettings.shortBreak),
+      longBreak: Number(pomodoroSettings.longBreak),
+      sessionBeforeLongBreak: Number(pomodoroSettings.sessionBeforeLongBreak),
+      autoStart: Boolean(pomodoroSettings.autoStart),
+      autoStartNext: Boolean(pomodoroSettings.autoStartNext),
+      audio: {
+        focusEndSound: pomodoroSettings.audio?.focusEndSound || 'bell.mp3',
+        breakEndSound: pomodoroSettings.audio?.breakEndSound || 'ping.mp3'
+      }
+    };
+    
+    console.log('Sending pomodoro settings:', payload);
+    const response = await axios.patch(`${API_URL}/settings/pomodoro`, payload);
     return response.data;
   } catch (error) {
-    throw error.response?.data || error.message;
+    console.error('Error updating pomodoro settings:', error);
+    throw error;
+  }
+};
+
+// Update appearance settings
+const updateAppearance = async (appearanceSettings) => {
+  try {
+    const response = await axios.patch(`${API_URL}/settings/appearance`, appearanceSettings);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating appearance settings:', error);
+    throw error;
+  }
+};
+
+// Update productivity settings
+const updateProductivity = async (productivitySettings) => {
+  try {
+    const response = await axios.patch(`${API_URL}/settings/productivity`, productivitySettings);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating productivity settings:', error);
+    throw error;
   }
 };
 
 // Update notification settings
-export const updateNotifications = async (notificationData) => {
+const updateNotifications = async (notificationSettings) => {
   try {
-    const response = await axios.patch(`${API_URL}/settings/notifications`, notificationData);
+    const response = await axios.patch(`${API_URL}/settings/notifications`, notificationSettings);
     return response.data;
   } catch (error) {
-    throw error.response?.data || error.message;
+    console.error('Error updating notification settings:', error);
+    throw error;
   }
 };
 
 // Update integration settings
-export const updateIntegrations = async (integrationData) => {
+const updateIntegrations = async (integrationSettings) => {
   try {
-    const response = await axios.patch(`${API_URL}/settings/integrations`, integrationData);
+    const response = await axios.patch(`${API_URL}/settings/integrations`, integrationSettings);
     return response.data;
   } catch (error) {
-    throw error.response?.data || error.message;
+    console.error('Error updating integration settings:', error);
+    throw error;
   }
 };
 
-// Change password
-export const changePassword = async (passwordData) => {
+// Update profile settings
+const updateProfile = async (profileSettings) => {
   try {
-    const response = await axios.post(`${API_URL}/password/change`, passwordData);
+    const response = await axios.patch(`${API_URL}/settings/profile`, profileSettings);
     return response.data;
   } catch (error) {
-    throw error.response?.data || error.message;
+    console.error('Error updating profile settings:', error);
+    throw error;
   }
 };
+
+const settingsService = {
+  getSettings,
+  updatePomodoro,
+  updateAppearance,
+  updateProductivity,
+  updateNotifications,
+  updateIntegrations,
+  updateProfile
+};
+
+export default settingsService;

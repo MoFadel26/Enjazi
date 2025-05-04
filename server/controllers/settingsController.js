@@ -358,3 +358,47 @@ exports.updateIntegrations = async (req, res) => {
     });
   }
 };
+
+// Get appearance settings
+exports.getAppearanceSettings = async (req, res) => {
+    try {
+      const user = await User.findById(req.user._id);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+      
+      res.json(user.settings.appearance || {});
+    } catch (error) {
+      console.error('Error getting appearance settings:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  };
+
+  // Update appearance settings
+exports.updateAppearanceSettings = async (req, res) => {
+    try {
+      const { colorTheme, accentColor, fontSize, animation } = req.body;
+      
+      const user = await User.findById(req.user._id);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+      
+      // Ensure settings objects exist
+      if (!user.settings) user.settings = {};
+      if (!user.settings.appearance) user.settings.appearance = {};
+      
+      // Update appearance settings
+      if (colorTheme) user.settings.appearance.colorTheme = colorTheme;
+      if (accentColor) user.settings.appearance.accentColor = accentColor;
+      if (fontSize) user.settings.appearance.fontSize = fontSize;
+      if (animation !== undefined) user.settings.appearance.animation = animation;
+      
+      await user.save();
+      
+      res.json(user.settings.appearance);
+    } catch (error) {
+      console.error('Error updating appearance settings:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  };
