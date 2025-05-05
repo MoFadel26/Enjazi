@@ -1,6 +1,6 @@
 // src/App.js
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { AuthProvider } from './contexts/AuthContext';
 import './styles/darkMode.css';
@@ -34,6 +34,9 @@ function App() {
               <Route path="/" element={<LandingPage />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
+              
+              {/* Admin redirect route */}
+              <Route path="/admin" element={<Navigate to="/admin/users" replace />} />
               
               {/* Protected admin routes - require 'admin' role */}
               <Route element={

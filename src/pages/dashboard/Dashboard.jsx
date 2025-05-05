@@ -9,7 +9,7 @@ export default function Dashboard(){
     const { user } = useAuth();
     
     // Get user name with fallbacks
-    const userName = user?.name || user?.fullName || user?.firstName || "User";
+    const userName = user?.username || user?.fullName || user?.firstName;
 
     return (
         <>

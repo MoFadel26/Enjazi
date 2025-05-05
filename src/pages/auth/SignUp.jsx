@@ -1,15 +1,18 @@
 import React, { useState } from "react";
 import {Link, useNavigate} from 'react-router-dom';
 import {FaGoogle} from 'react-icons/fa';
+import { useAuth } from "../../contexts/AuthContext";
 // import googleIcon from '../../assets/icons/svg/google.svg';
 // import googleIcon from 'assets/icons/svg/google.svg'; // Adjust the path as necessary
 
 function SignUp() {
   // Define navigate
   const navigate = useNavigate();
+  const { error: authError, loading } = useAuth();
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState("");
   // Check if the user to see his password while writing...
   const [showPassword, setShowPassword] = useState(false);
   /*Checking the vaildity of password for more security*/
@@ -33,14 +36,16 @@ function SignUp() {
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data.error || "Sign-up failed!");  // Show error if the sign-up fails
+        setError(data.error || "Sign-up failed!");
         throw new Error(data.error || "Sign-up failed");
       }
 
       console.log("Signed up successfully!", data);
-      navigate("/dashboard"); // navigate to the dashboard or any other page on success
+      
+      // After successful signup, redirect to the login page
+      navigate("/login"); 
     } catch (err) {
-      alert(err.message || "An error occurred during sign-up");  // Show unexpected errors
+      setError(err.message || "An error occurred during sign-up");
       console.error("Error during sign-up:", err);
     }
   };
@@ -61,6 +66,12 @@ function SignUp() {
 
           <h2 className="text-2xl xl:text-3xl font-extrabold text-center">Get started with your account</h2>
          
+          {error && (
+            <div className="mb-4 mt-4 p-2 bg-red-100 border border-red-400 text-red-700 rounded">
+              {error}
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-4 w-full flex-1 mt-8">
 
             <div>
@@ -132,10 +143,10 @@ function SignUp() {
                 type="submit"
                 className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
                 disabled={
-                  !checkLowerCase || !checkUpperCase || !checkHasSpecial || ! checkHasNumber || !checkHasLongEnough
+                  !checkLowerCase || !checkUpperCase || !checkHasSpecial || ! checkHasNumber || !checkHasLongEnough || loading
                 }
               >
-                Sign Up
+                {loading ? 'Creating account...' : 'Sign Up'}
               </button>
           </form>
         </div>
