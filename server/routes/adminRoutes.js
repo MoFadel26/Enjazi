@@ -1,9 +1,13 @@
 const express = require('express');
 const router = express.Router();
+const { protectRoute } = require('../middleware/protectRoute');
 const { adminAuth, requirePermission } = require('../middleware/adminAuth');
 const adminController = require('../controllers/adminController');
 
-// Apply admin auth middleware to all routes
+// Apply protectRoute middleware first to ensure authentication
+router.use(protectRoute);
+
+// Then apply admin auth middleware to ensure admin role
 router.use(adminAuth);
 
 // Get all users (requires manageUsers permission)

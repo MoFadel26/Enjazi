@@ -3,8 +3,13 @@ const User = require('../models/userSchema');
 
 const adminAuth = async (req, res, next) => {
   try {
-    // Get token from header
-    const token = req.header('Authorization')?.replace('Bearer ', '');
+    // Get token from cookie or Authorization header
+    let token = req.cookies.jwt;
+    
+    // If no cookie, check Authorization header
+    if (!token && req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+      token = req.headers.authorization.split(' ')[1];
+    }
     
     if (!token) {
       return res.status(401).json({ message: 'No authentication token, access denied' });
@@ -29,6 +34,7 @@ const adminAuth = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
+    console.error('Admin auth error:', error);
     res.status(401).json({ message: 'Token is not valid' });
   }
 };

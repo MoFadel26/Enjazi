@@ -1,6 +1,7 @@
 const User = require("../models/userSchema.js");
 const bcrypt  = require('bcryptjs');
 const generateTokenAndSetCookie = require("../lib/utils/generateToken.js");
+const { trackAdminLogin } = require('./adminController.js');
 
 /*  regexes that mirror the checks in your React sign‑up form  */
 const EMAIL_REGEX   = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -97,7 +98,18 @@ async function login(req, res) {
     // 4) Generate JWT and set it as an HTTP-only cookie
     generateTokenAndSetCookie(user._id, res);
 
-    // 5) Return the same user payload (match your signup response)
+    // 5) If the user is an admin, track this login
+    if (user.role === 'admin') {
+      // Get IP and user-agent info if available
+      const ip = req.ip || req.headers['x-forwarded-for'] || 'unknown';
+      const device = req.headers['user-agent'] || 'unknown';
+      
+      // Track the login asynchronously (don't await)
+      trackAdminLogin(user._id, ip, device)
+        .catch(err => console.error('Error tracking admin login:', err));
+    }
+
+    // 6) Return the same user payload (match your signup response)
     return res.json({
       id         : user._id,
       username   : user.username,
@@ -121,7 +133,18 @@ async function login(req, res) {
 
 async function logout(req, res) { 
   try {
-    res.cookie("jwt", "", {maxAge:0});
+    // Clear the JWT cookie with all possible configurations
+    res.cookie("jwt", "", {
+      maxAge: 0,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      sameSite: "strict"
+    });
+    
+    // Clear any non-httpOnly cookies that might be used
+    res.cookie("authToken", "", { maxAge: 0, path: "/" });
+    
     return res.status(200).json({ message: 'Logged out successfully' });
 
   } catch (error) {

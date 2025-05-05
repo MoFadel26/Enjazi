@@ -1,4 +1,3 @@
-// Import all needed libraries:
 const dotenv = require("dotenv");
 dotenv.config({ path: "./.env" });
 const express = require("express");
@@ -9,6 +8,7 @@ const eventsRoutes = require('./routes/eventsRoutes');
 const cors = require("cors");
 const passwordRoutes = require('./routes/passwordRoutes');// Z edit
 const oauthRoutes = require('./routes/oauthRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 // const session = require('express-session');
 //  server start here
 const app = express();
@@ -17,7 +17,7 @@ const authRoutes = require("./routes/authRoutes.js")
 
 // Connect MongoDB from config folder:
 const connectMongoDB = require("./config/db.js")
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 // server.js
 
 const cookieParser = require('cookie-parser');
@@ -56,10 +56,7 @@ app.use('/api/password', passwordRoutes);// Z edit
 const roomRoutes    = require('./routes/roomRoutes');
 app.use('/api/rooms', roomRoutes);
 app.use('/api/oauth', oauthRoutes);
-
-
-
-
+app.use('/api/admin', adminRoutes);
 
 // Start the server
 (async () => {

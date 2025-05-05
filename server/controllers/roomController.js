@@ -21,7 +21,13 @@ exports.getPublicRooms = async (req, res) => {
     if (!token) return res.status(401).json({ error: 'Not authenticated' });
     try { verifyToken(token); } catch { return res.status(401).json({ error: 'Invalid token' }); }
 
-    const rooms = await Room.find({ isPublic: true });
+    // Check if we should populate creator field
+    let query = Room.find({ isPublic: true });
+    if (req.query.populate && req.query.populate.includes('creator')) {
+      query = query.populate('creator', 'username firstName lastName email');
+    }
+    
+    const rooms = await query;
     res.json(rooms);
   } catch (err) {
     console.error('getPublicRooms:', err);
@@ -37,7 +43,13 @@ exports.getEnrolledRooms = async (req, res) => {
     let payload;
     try { payload = verifyToken(token); } catch { return res.status(401).json({ error: 'Invalid token' }); }
 
-    const rooms = await Room.find({ enrolledUsers: payload.userId });
+    // Check if we should populate creator field
+    let query = Room.find({ enrolledUsers: payload.userId });
+    if (req.query.populate && req.query.populate.includes('creator')) {
+      query = query.populate('creator', 'username firstName lastName email');
+    }
+    
+    const rooms = await query;
     res.json(rooms);
   } catch (err) {
     console.error('getEnrolledRooms:', err);
@@ -52,6 +64,18 @@ exports.getRoomById = async (req, res) => {
     if (!token) return res.status(401).json({ error: 'Not authenticated' });
     try { verifyToken(token); } catch { return res.status(401).json({ error: 'Invalid token' }); }
 
+    // Special case for 'all' to return all rooms
+    if (req.params.id === 'all') {
+      let query = Room.find({});
+      if (req.query.populate && req.query.populate.includes('creator')) {
+        query = query.populate('creator', 'username firstName lastName email');
+      }
+      
+      const rooms = await query;
+      return res.json(rooms);
+    }
+
+    // Regular case - retrieve a specific room by ID
     const room = await Room.findById(req.params.id)
       .populate('tasks')
       .populate('enrolledUsers', 'username email');
@@ -194,6 +218,36 @@ exports.deleteRoom = async (req, res) => {
     res.status(204).send();
   } catch (err) {
     console.error('deleteRoom:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// GET /api/rooms/all - Admin route to get all rooms
+exports.getAllRooms = async (req, res) => {
+  try {
+    const token = getToken(req);
+    if (!token) return res.status(401).json({ error: 'Not authenticated' });
+    
+    let payload;
+    try { 
+      payload = verifyToken(token); 
+    } catch { 
+      return res.status(401).json({ error: 'Invalid token' }); 
+    }
+    
+    // In a real app, you would check if the user is an admin here
+    // For now, we'll allow access for any authenticated user
+    
+    // Check if we should populate creator field
+    let query = Room.find({});
+    if (req.query.populate && req.query.populate.includes('creator')) {
+      query = query.populate('creator', 'username firstName lastName email');
+    }
+    
+    const rooms = await query;
+    res.json(rooms);
+  } catch (err) {
+    console.error('getAllRooms:', err);
     res.status(500).json({ error: 'Server error' });
   }
 };

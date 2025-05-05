@@ -7,19 +7,28 @@ const {
   updateRoom,
   deleteRoom,
   joinRoom,
-  leaveRoom
+  leaveRoom,
+  getAllRooms
 } = require('../controllers/roomController');
+const { protectRoute } = require('../middleware/protectRoute');
+
 
 const router = express.Router();
 
+
 // Each route handles its own token internally
-router.get('/public', getPublicRooms);
-router.get('/enrolled', getEnrolledRooms);
-router.get('/:id', getRoomById);
-router.post('/', createRoom);
-router.patch('/:id/join', joinRoom);
-router.patch('/:id/leave', leaveRoom);
-router.put('/:id', updateRoom);
-router.delete('/:id', deleteRoom);
+router.get('/public', protectRoute, getPublicRooms);
+router.get('/enrolled', protectRoute, getEnrolledRooms);
+router.get('/all', protectRoute, getAllRooms);
+router.get('/:id', protectRoute, getRoomById);
+
+router.post('/', protectRoute, createRoom);
+
+router.patch('/:id/join', protectRoute, joinRoom);
+router.patch('/:id/leave', protectRoute, leaveRoom);
+
+router.put('/:id', protectRoute, updateRoom);
+
+router.delete('/:id', protectRoute, deleteRoom);
 
 module.exports = router;
