@@ -1,38 +1,48 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
 function Login() {
-  // Define navigate
+  // Define navigate and location
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login, error: authError, loading } = useAuth();
+  
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError]       = useState("");
+  const [error, setError] = useState("");
+
+  // Get redirect path from location state or default to dashboard
+  const from = location.state?.from || "/dashboard";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    
     try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',  // Required for cookie handling
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        alert(data.error || "Login failed!"); // Show error message to the user
-        throw new Error(data.error || "Login failed");
+      // Use the login function from AuthContext
+      const userData = await login(email, password);
+      
+      console.log("Logged in successfully!", userData);
+      
+      // Redirect based on user role or redirect path
+      if (userData.role === 'admin') {
+        navigate('/admin/users');
+      } else {
+        navigate(from);
       }
-
-      console.log("Logged in successfully!", data);
-      navigate('/dashboard');
     } catch (err) {
-      alert(err.message || "An error occurred during login");  // Show any unexpected errors
+      setError(err.message || "An error occurred during login");
       console.error("Error during login:", err);
     }
   };
+
+  // Display auth context error if present
+  useEffect(() => {
+    if (authError) {
+      setError(authError);
+    }
+  }, [authError]);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -46,6 +56,13 @@ function Login() {
           </div>
         </Link>
         <h2 className="text-2xl font-semibold text-center mb-6">Login</h2>
+        
+        {error && (
+          <div className="mb-4 p-2 bg-red-100 border border-red-400 text-red-700 rounded">
+            {error}
+          </div>
+        )}
+        
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
@@ -79,14 +96,17 @@ function Login() {
 
           <button
               type="submit"
-              className="w-full py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300 transition duration-200"
+              disabled={loading}
+              className={`w-full py-2 text-white font-semibold rounded-md focus:outline-none focus:ring focus:ring-blue-300 transition duration-200 ${
+                loading ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+              }`}
           >
-            Login
+            {loading ? 'Signing in...' : 'Login'}
           </button>
         </form>
 
         <div className="mt-4 text-center text-sm text-gray-600">
-          Don't have an account?
+          Don't have an account?{' '}
           <Link to="/signup" className="text-blue-600 hover:underline">
             Sign Up
           </Link>
