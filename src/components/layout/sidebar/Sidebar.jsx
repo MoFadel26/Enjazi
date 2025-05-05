@@ -1,13 +1,34 @@
-// src/components/layout/sidebar/sidebar.jsx
-import { Link, useLocation } from "react-router-dom"
-import { LayoutDashboard, CheckSquare, Calendar, BarChart2, Users, Settings, HelpCircle, Menu, X } from "lucide-react"
+import { Link, useLocation, NavLink, useNavigate} from "react-router-dom"
+import { LayoutDashboard, 
+  CheckSquare, 
+  Calendar, 
+  BarChart2, 
+  Users, 
+  HelpCircle, 
+  Menu, 
+  X,
+  Settings, 
+  Home, 
+  LogOut } from "lucide-react"
 import { useState } from "react"
 import { useTheme } from "../../../contexts/ThemeContext" // Add this import
+import { Button } from "components/ui/Button";
+import axios from "axios";
 
 export default function Sidebar() {
+  const navigate = useNavigate();
   const location = useLocation()
   const [isOpen, setIsOpen] = useState(false)
   const { isDark } = useTheme() // Add this line
+
+  const handleLogout = async () => {
+    try {
+      await axios.post('/api/auth/logout');
+      navigate('/login');
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  }
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen)
@@ -111,6 +132,18 @@ export default function Sidebar() {
               })}
             </ul>
           </nav>
+            <div className="p-6 border-t bg-muted/20 dark:bg-muted/10">
+                <div className="flex flex-col gap-3">
+                    <Button
+                        variant="ghost"
+                        className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30"
+                        onClick={handleLogout} // Attach logout handler
+                    >
+                        <LogOut className="mr-3 h-5 w-5" />
+                        Logout
+                    </Button>
+                </div>
+            </div>
 
           <div className={`p-4 ${isDark ? 'border-t border-gray-700' : 'border-t border-[#e2e8f0]'}`}>
             <Link

@@ -1,8 +1,9 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { BarChart3, Users, FileText, AlertCircle, Settings, Shield, Home, LogOut } from "lucide-react";
 import { cn } from "lib/utils";
 import { Button } from "components/ui/Button";
-// import { useTheme } from "@/components/theme-provider";
+import Cookies from "js-cookie"; // Import js-cookie library
+import axios from "axios";
 
 const adminRoutes = [
     {
@@ -17,22 +18,35 @@ const adminRoutes = [
         href: "/admin/rooms",
         color: "text-green-500",
     },
-    {
-        label: "System Monitoring",
-        icon: AlertCircle,
-        href: "/admin/monitoring",
-        color: "text-orange-500",
-    },
-    {
-        label: "Role Management",
-        icon: Shield,
-        href: "/admin/roles",
-        color: "text-emerald-500",
-    },
 ];
 
 export function AdminSidebar() {
-    // const { theme } = useTheme();
+    const navigate = useNavigate(); // Initialize navigate
+
+    const handleLogout = async () => {
+        try {
+            // Clear local storage tokens if any
+            // localStorage.removeItem("authToken");
+            
+            // Make a request to the server to clear HTTP-only cookies
+            // This is the most reliable way to clear HTTP-only cookies
+            await axios.post('/api/auth/logout');
+            
+            // Force clear any client-accessible cookies including potential non-httpOnly duplicates
+            // document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; sameSite=strict";
+            // document.cookie = "authToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; sameSite=strict";
+            
+            // Redirect to login page
+            navigate("/login");
+            
+            // Optional: force reload to clear any state
+            window.location.reload();
+        } catch (error) {
+            console.error("Logout failed:", error);
+            // Still redirect even if the server request fails
+            navigate("/login");
+        }
+    };
 
     return (
         <div className="h-full w-64 border-r bg-card flex flex-col">
@@ -63,18 +77,10 @@ export function AdminSidebar() {
             </div>
             <div className="p-6 border-t bg-muted/20 dark:bg-muted/10">
                 <div className="flex flex-col gap-3">
-                    <NavLink to="/dashboard">
-                        <Button
-                            variant="ghost"
-                            className="w-full justify-start text-muted-foreground hover:text-foreground"
-                        >
-                            <Home className="mr-3 h-5 w-5" />
-                            Back to App
-                        </Button>
-                    </NavLink>
                     <Button
                         variant="ghost"
                         className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30"
+                        onClick={handleLogout} // Attach logout handler
                     >
                         <LogOut className="mr-3 h-5 w-5" />
                         Logout

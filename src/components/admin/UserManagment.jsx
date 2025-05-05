@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
     Search,
     Filter,
@@ -9,6 +9,7 @@ import {
     Shield,
     Mail,
     Download,
+    AlertCircle
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "components/ui/Avatar";
 import { Badge } from "components/ui/Badge";
@@ -34,54 +35,206 @@ import {
 } from "components/ui/Pagination";
 import { UserDialog } from "components/ui/UserDialog";
 
-// Mock data for users
-const mockUsers = Array.from({ length: 100 }, (_, i) => ({
-    id: i + 1,
-    name: `User ${i + 1}`,
-    email: `user${i + 1}@example.com`,
-    avatar: `/placeholder.svg?height=40&width=40`,
-    initials: `U${i + 1}`,
-    role: i % 20 === 0 ? "admin" : i % 10 === 0 ? "moderator" : "user",
-    status: i % 15 === 0 ? "suspended" : i % 7 === 0 ? "inactive" : "active",
-    createdAt: new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString(),
-    lastActive: new Date(Date.now() - Math.floor(Math.random() * 1000000000)).toISOString(),
-}));
-
 export function UserManagement() {
+    const [users, setUsers] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [roleFilter, setRoleFilter] = useState("all");
     const [statusFilter, setStatusFilter] = useState("all");
     const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalUsers, setTotalUsers] = useState(0);
     const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
 
     const itemsPerPage = 10;
 
-    // Filter users based on search query and filters
-    const filteredUsers = mockUsers.filter((user) => {
-        const matchesSearch =
-            user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            user.email.toLowerCase().includes(searchQuery.toLowerCase());
+    const handleSearch = (e) => {
+        setSearchQuery(e.target.value);
+        setCurrentPage(1); // Reset to the first page when searching
+    };
 
-        const matchesRole = roleFilter === "all" || user.role === roleFilter;
-        const matchesStatus = statusFilter === "all" || user.status === statusFilter;
+    // Handle role filter change
+    const handleRoleFilterChange = (value) => {
+        setRoleFilter(value);
+        setCurrentPage(1); // Reset to first page when filter changes
+    };
+    
+    // Handle status filter change
+    const handleStatusFilterChange = (value) => {
+        setStatusFilter(value);
+        setCurrentPage(1); // Reset to first page when filter changes
+    };
 
-        return matchesSearch && matchesRole && matchesStatus;
-    });
+    // Utility function to build query parameters
+    const buildQueryParams = useCallback((page = currentPage) => {
+        let queryParams = `page=${page}&limit=${itemsPerPage}`;
+        
+        // Add role filter if not "all"
+        if (roleFilter !== "all") {
+            queryParams += `&role=${roleFilter}`;
+        }
+        
+        // Add search query if not empty
+        if (searchQuery.trim()) {
+            queryParams += `&search=${encodeURIComponent(searchQuery.trim())}`;
+        }
+        
+        // Add status filter if not "all"
+        if (statusFilter !== "all") {
+            queryParams += `&status=${statusFilter}`;
+        }
+        
+        return queryParams;
+    }, [currentPage, itemsPerPage, roleFilter, searchQuery, statusFilter]);
 
-    // Paginate users
-    const paginatedUsers = filteredUsers.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-    );
+    // Utility function to fetch users
+    const fetchUsers = useCallback(async (page = currentPage) => {
+        try {
+            setLoading(true);
+            
+            const queryParams = buildQueryParams(page);
+            const response = await fetch(`http://localhost:5000/api/admin/users?${queryParams}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+            });
 
-    const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                const text = await response.text();
+                console.error('Non-JSON response:', text);
+                throw new Error('The server did not return JSON. This might indicate a server error or an authentication issue.');
+            }
+
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data.message || `Server error: ${response.status}`);
+            }
+            
+            setUsers(data.users);
+            setTotalPages(data.totalPages);
+            setTotalUsers(data.totalUsers);
+            setError(null);
+        } catch (err) {
+            console.error('Error fetching users:', err);
+            setError(err.message);
+            
+            // If there's an authentication error, provide more helpful message
+            if (err.message.includes('authentication') || err.message.includes('token')) {
+                setError('Authentication error. Please make sure you are logged in as an admin.');
+            }
+        } finally {
+            setLoading(false);
+        }
+    }, [buildQueryParams, currentPage]);
+
+    useEffect(() => {
+        fetchUsers();
+    }, [fetchUsers]);
+
+    // Function to handle user deletion
+    const handleDeleteUser = async (userId) => {
+        if (!window.confirm("Are you sure you want to delete this user?")) return;
+        
+        try {
+            const response = await fetch(`http://localhost:5000/api/admin/users/${userId}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to delete user');
+            }
+
+            // Adjust page if necessary
+            if (users.length === 1 && currentPage > 1) {
+                const newPage = currentPage - 1;
+                setCurrentPage(newPage);
+                fetchUsers(newPage);
+            } else {
+                fetchUsers();
+            }
+        } catch (err) {
+            console.error('Error deleting user:', err);
+            alert(`Error: ${err.message}`);
+        }
+    };
+
+    // Function to handle role change
+    const handleRoleChange = async (userId, newRole) => {
+        try {
+            const response = await fetch(`http://localhost:5000/api/admin/users/${userId}/role`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ role: newRole }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to update user role');
+            }
+
+            // Refresh user list
+            fetchUsers();
+        } catch (err) {
+            console.error('Error updating user role:', err);
+            alert(`Error: ${err.message}`);
+        }
+    };
 
     const handleEditUser = (user) => {
         setSelectedUser(user);
         setIsEditDialogOpen(true);
     };
+
+    // Function to get initials from username
+    const getInitials = (username) => {
+        if (!username) return 'U';
+        return username.substring(0, 2).toUpperCase();
+    };
+
+    // Function to determine active status based on login history
+    const getUserStatus = (user) => {
+        if (!user.admin?.lastLogin) return 'inactive';
+        
+        const lastLogin = new Date(user.admin.lastLogin);
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        
+        return lastLogin > thirtyDaysAgo ? 'active' : 'inactive';
+    };
+
+    if (loading && users.length === 0) {
+        return (
+            <div className="flex flex-col items-center justify-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mb-4"></div>
+                <p>Loading users...</p>
+            </div>
+        );
+    }
+
+    if (error && users.length === 0) {
+        return (
+            <div className="flex flex-col items-center justify-center h-64 text-red-500">
+                <AlertCircle className="h-12 w-12 mb-4" />
+                <p>Error: {error}</p>
+                <Button 
+                    variant="outline" 
+                    className="mt-4"
+                    onClick={() => window.location.reload()}
+                >
+                    Retry
+                </Button>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6">
@@ -111,39 +264,54 @@ export function UserManagement() {
                                 <Input
                                     placeholder="Search users..."
                                     value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onChange={handleSearch}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            // Search is already handled by the useEffect dependency
+                                        }
+                                    }}
                                     className="h-9"
                                 />
-                                <Button variant="outline" size="sm" className="h-9 px-3">
+                                <Button 
+                                    variant="outline" 
+                                    size="sm" 
+                                    className="h-9 px-3"
+                                    onClick={() => {
+                                        // Search is already handled by the useEffect dependency
+                                        // This button is just for UI consistency
+                                    }}
+                                    type="button"
+                                >
                                     <Search className="h-4 w-4" />
                                 </Button>
                             </div>
                             <div className="flex flex-col gap-2 sm:flex-row">
                                 <div className="flex items-center gap-2">
                                     <Filter className="h-4 w-4 text-muted-foreground" />
-                                    <Select value={roleFilter} onValueChange={setRoleFilter}>
+                                    <Select value={roleFilter} onValueChange={handleRoleFilterChange}>
                                         <SelectTrigger className="h-9 w-[130px]">
                                             <SelectValue placeholder="Role" />
                                         </SelectTrigger>
-                                        <SelectContent>
+                                        <SelectContent position="popper" sideOffset={5}>
                                             <SelectItem value="all">All Roles</SelectItem>
                                             <SelectItem value="admin">Admin</SelectItem>
-                                            <SelectItem value="moderator">Moderator</SelectItem>
                                             <SelectItem value="user">User</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
-                                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                                    <SelectTrigger className="h-9 w-[130px]">
-                                        <SelectValue placeholder="Status" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">All Status</SelectItem>
-                                        <SelectItem value="active">Active</SelectItem>
-                                        <SelectItem value="inactive">Inactive</SelectItem>
-                                        <SelectItem value="suspended">Suspended</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                                <div className="flex items-center gap-2">
+                                    <Select value={statusFilter} onValueChange={handleStatusFilterChange}>
+                                        <SelectTrigger className="h-9 w-[130px]">
+                                            <SelectValue placeholder="Status" />
+                                        </SelectTrigger>
+                                        <SelectContent position="popper" sideOffset={5}>
+                                            <SelectItem value="all">All Status</SelectItem>
+                                            <SelectItem value="active">Active</SelectItem>
+                                            <SelectItem value="inactive">Inactive</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
                             </div>
                         </div>
 
@@ -161,71 +329,86 @@ export function UserManagement() {
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {paginatedUsers.map((user) => (
-                                        <tr
-                                            key={user.id}
-                                            className="border-b transition-colors hover:bg-muted/50"
-                                        >
-                                            <td className="p-4">
-                                                <div className="flex items-center gap-3">
-                                                    <Avatar>
-                                                        <AvatarImage
-                                                            src={user.avatar || "/placeholder.svg"}
-                                                            alt={user.name}
-                                                        />
-                                                        <AvatarFallback>{user.initials}</AvatarFallback>
-                                                    </Avatar>
-                                                    <div>
-                                                        <div className="font-medium">{user.name}</div>
-                                                        <div className="text-xs text-muted-foreground">
-                                                            {user.email}
+                                    {users.map((user) => {
+                                        const avatarUrl = user.settings?.profile?.avatarUrl;
+                                        const status = getUserStatus(user);
+                                        return (
+                                            <tr
+                                                key={user._id}
+                                                className="border-b transition-colors hover:bg-muted/50"
+                                            >
+                                                <td className="p-4">
+                                                    <div className="flex items-center gap-3">
+                                                        <Avatar>
+                                                            <AvatarImage
+                                                                src={avatarUrl || "/placeholder.svg"}
+                                                                alt={user.username}
+                                                            />
+                                                            <AvatarFallback>{getInitials(user.username)}</AvatarFallback>
+                                                        </Avatar>
+                                                        <div>
+                                                            <div className="font-medium">{user.username}</div>
+                                                            <div className="text-xs text-muted-foreground">
+                                                                {user.email}
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            </td>
-                                            <td className="p-4">
-                                                <RoleBadge role={user.role} />
-                                            </td>
-                                            <td className="p-4">
-                                                <StatusBadge status={user.status} />
-                                            </td>
-                                            <td className="p-4 text-muted-foreground">
-                                                {new Date(user.createdAt).toLocaleDateString()}
-                                            </td>
-                                            <td className="p-4 text-muted-foreground">
-                                                {new Date(user.lastActive).toLocaleDateString()}
-                                            </td>
-                                            <td className="p-4 text-right">
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <Button variant="ghost" size="sm">
-                                                            <MoreHorizontal className="h-4 w-4" />
-                                                            <span className="sr-only">Actions</span>
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end">
-                                                        <DropdownMenuItem onClick={() => handleEditUser(user)}>
-                                                            <Edit className="mr-2 h-4 w-4" />
-                                                            Edit
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuItem>
-                                                            <Mail className="mr-2 h-4 w-4" />
-                                                            Email
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuItem>
-                                                            <Shield className="mr-2 h-4 w-4" />
-                                                            Change Role
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuSeparator />
-                                                        <DropdownMenuItem className="text-red-600">
-                                                            <Trash2 className="mr-2 h-4 w-4" />
-                                                            Delete
-                                                        </DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
-                                            </td>
-                                        </tr>
-                                    ))}
+                                                </td>
+                                                <td className="p-4">
+                                                    <RoleBadge role={user.role} />
+                                                </td>
+                                                <td className="p-4">
+                                                    <StatusBadge status={status} />
+                                                </td>
+                                                <td className="p-4 text-muted-foreground">
+                                                    {new Date(user.createdAt).toLocaleDateString()}
+                                                </td>
+                                                <td className="p-4 text-muted-foreground">
+                                                    {user.admin?.lastLogin 
+                                                        ? new Date(user.admin.lastLogin).toLocaleDateString()
+                                                        : "Never"
+                                                    }
+                                                </td>
+                                                <td className="p-4 text-right">
+                                                    <DropdownMenu>
+                                                        <DropdownMenuTrigger asChild>
+                                                            <Button variant="ghost" size="sm">
+                                                                <MoreHorizontal className="h-4 w-4" />
+                                                                <span className="sr-only">Actions</span>
+                                                            </Button>
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent align="end">
+                                                            <DropdownMenuItem onClick={() => handleEditUser(user)}>
+                                                                <Edit className="mr-2 h-4 w-4" />
+                                                                Edit
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem>
+                                                                <Mail className="mr-2 h-4 w-4" />
+                                                                Email
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem 
+                                                                onClick={() => handleRoleChange(
+                                                                    user._id, 
+                                                                    user.role === 'admin' ? 'user' : 'admin'
+                                                                )}
+                                                            >
+                                                                <Shield className="mr-2 h-4 w-4" />
+                                                                {user.role === 'admin' ? 'Make User' : 'Make Admin'}
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuSeparator />
+                                                            <DropdownMenuItem 
+                                                                className="text-red-600"
+                                                                onClick={() => handleDeleteUser(user._id)}
+                                                            >
+                                                                <Trash2 className="mr-2 h-4 w-4" />
+                                                                Delete
+                                                            </DropdownMenuItem>
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
                                     </tbody>
                                 </table>
                             </div>
@@ -233,11 +416,11 @@ export function UserManagement() {
 
                         <div className="flex items-center justify-between">
                             <div className="text-sm text-muted-foreground">
-                                Showing <strong>{(currentPage - 1) * itemsPerPage + 1}</strong> to{" "}
+                                Showing <strong>{users.length ? (currentPage - 1) * itemsPerPage + 1 : 0}</strong> to{" "}
                                 <strong>
-                                    {Math.min(currentPage * itemsPerPage, filteredUsers.length)}
+                                    {Math.min(currentPage * itemsPerPage, totalUsers)}
                                 </strong>{" "}
-                                of <strong>{filteredUsers.length}</strong> users
+                                of <strong>{totalUsers}</strong> users
                             </div>
                             <Pagination>
                                 <PaginationContent>
@@ -304,6 +487,11 @@ export function UserManagement() {
                 open={isCreateDialogOpen}
                 onOpenChange={setIsCreateDialogOpen}
                 mode="create"
+                onSuccess={() => {
+                    // Refresh the user list after creating a new user
+                    setCurrentPage(1); // Go back to first page to see the new user
+                    fetchUsers(1);
+                }}
             />
 
             {selectedUser && (
@@ -312,6 +500,10 @@ export function UserManagement() {
                     onOpenChange={setIsEditDialogOpen}
                     mode="edit"
                     user={selectedUser}
+                    onSuccess={() => {
+                        // Refresh the user list after editing
+                        fetchUsers();
+                    }}
                 />
             )}
         </div>
@@ -321,7 +513,6 @@ export function UserManagement() {
 function RoleBadge({ role }) {
     const variants = {
         admin: { variant: "default", label: "Admin" },
-        moderator: { variant: "secondary", label: "Moderator" },
         user: { variant: "outline", label: "User" },
     };
 

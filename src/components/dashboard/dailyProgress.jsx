@@ -1,16 +1,122 @@
-import React from "react";
-import { useState } from "react"
+import React, { useState, useEffect } from "react";
 import { CheckCircle, Clock, Zap } from "lucide-react";
 
 export default function DailyProgress() {
-    // In a real app, this would come from an API
-    const [progress, setProgress] = useState(65)
+    const [progress, setProgress] = useState(0);
+    const [tasksCompleted, setTasksCompleted] = useState(0);
+    const [totalTasks, setTotalTasks] = useState(0);
+    const [hoursStudied, setHoursStudied] = useState(0);
+    const [dailyGoal, setDailyGoal] = useState(5); // Default daily goal
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    // Calculate the remaining tasks and hours
-    const tasksCompleted = 5
-    const totalTasks = 8
-    const hoursStudied = 3.5
-    const dailyGoal = 5
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                setLoading(true);
+                
+                // Fetch user data, including tasks and settings
+                const res = await fetch('http://localhost:5000/api/users/me', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                
+                if (!res.ok) {
+                    throw new Error('Failed to fetch user data');
+                }
+                
+                const userData = await res.json();
+                
+                // Get tasks
+                const userTasks = Array.isArray(userData.tasks) ? userData.tasks : [];
+                
+                // Filter for today's tasks
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                const todaysTasks = userTasks.filter(task => {
+                    if (!task.dueDate) return false;
+                    const taskDate = new Date(task.dueDate);
+                    taskDate.setHours(0, 0, 0, 0);
+                    return taskDate.getTime() === today.getTime();
+                });
+                
+                // Calculate task statistics
+                const completedTasks = todaysTasks.filter(task => task.completed);
+                const totalTaskCount = todaysTasks.length;
+                const completedTaskCount = completedTasks.length;
+                
+                // Get productivity settings (if available)
+                const productivitySettings = userData.settings?.productivity || {};
+                const userDailyGoal = productivitySettings.focusHours || 5;
+                
+                // Calculate study hours (based on completed tasks duration)
+                let studyHours = 0;
+                completedTasks.forEach(task => {
+                    if (task.startTime && task.endTime) {
+                        const startTime = new Date(task.startTime);
+                        const endTime = new Date(task.endTime);
+                        const durationHours = (endTime - startTime) / (1000 * 60 * 60);
+                        studyHours += durationHours;
+                    }
+                });
+                
+                // Round study hours to 1 decimal place
+                studyHours = Math.round(studyHours * 10) / 10;
+                
+                // Calculate overall progress
+                let overallProgress = 0;
+                
+                if (totalTaskCount > 0) {
+                    const taskProgressWeight = 0.6; // 60% weight to tasks
+                    const studyProgressWeight = 0.4; // 40% weight to study hours
+                    
+                    const taskProgress = totalTaskCount > 0 ? (completedTaskCount / totalTaskCount) * 100 : 0;
+                    const studyProgress = userDailyGoal > 0 ? Math.min((studyHours / userDailyGoal) * 100, 100) : 0;
+                    
+                    overallProgress = Math.round(
+                        (taskProgress * taskProgressWeight) + 
+                        (studyProgress * studyProgressWeight)
+                    );
+                }
+                
+                // Update state with fetched data
+                setTasksCompleted(completedTaskCount);
+                setTotalTasks(totalTaskCount);
+                setHoursStudied(studyHours);
+                setDailyGoal(userDailyGoal);
+                setProgress(overallProgress);
+                
+            } catch (err) {
+                console.error('Error fetching progress data:', err);
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+        
+        fetchUserData();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="bg-white border border-[#e2e8f0] rounded-lg p-6 shadow-sm">
+                <div className="flex items-center justify-center py-10">
+                    <p className="text-[#64748b]">Loading progress data...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="bg-white border border-[#e2e8f0] rounded-lg p-6 shadow-sm">
+                <div className="flex items-center justify-center py-6">
+                    <p className="text-red-500">Error: {error}</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="bg-white border border-[#e2e8f0] rounded-lg p-6 shadow-sm">
